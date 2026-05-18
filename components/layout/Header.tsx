@@ -1,0 +1,118 @@
+"use client";
+import * as React from "react";
+import Link from "next/link";
+import { Search, Bell, Settings, FileText, Filter, ChevronDown, HelpCircle, Plus, BarChart3 } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
+import { Avatar } from "@/components/ui/Avatar";
+import { CommandPalette } from "@/components/ui/CommandPalette";
+import { cn } from "@/lib/utils";
+
+export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
+  return (
+    <>
+      <CommandPalette />
+      <header className="h-14 sticky top-0 z-40 glass-strong border-b border-bingo-gray-150 flex items-center px-4 lg:px-5 gap-3">
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          className="p-2 -mr-2 rounded-lg hover:bg-bingo-gray-100 lg:hidden text-bingo-charcoal"
+          aria-label="תפריט"
+        >
+          <span className="block w-5 h-[2px] bg-current mb-[5px] rounded-full" />
+          <span className="block w-5 h-[2px] bg-current mb-[5px] rounded-full" />
+          <span className="block w-5 h-[2px] bg-current rounded-full" />
+        </button>
+
+        <Link href="/dashboard" className="flex items-center gap-3 shrink-0">
+          <Logo size={24} />
+        </Link>
+
+        <SearchTrigger />
+
+        <div className="ml-auto flex items-center gap-1">
+          <HeaderLink href="/dashboard" icon={<BarChart3 className="size-4" />} label="הבית" />
+          <HeaderLink href="/leads" icon={<FileText className="size-4" />} label="לידים" />
+          <HeaderLink href="/tasks" icon={<FileText className="size-4" />} label="משימות" />
+          <HeaderLink href="/reports" icon={<BarChart3 className="size-4" />} label="דוחות" />
+          <HeaderLink href="/docs" icon={<FileText className="size-4" />} label="מחקר" />
+
+          <div className="w-px h-5 bg-bingo-gray-200 mx-1.5 hidden md:block" />
+
+          <button
+            type="button"
+            className="size-9 rounded-lg text-bingo-gray-600 hover:text-bingo-black hover:bg-bingo-gray-100 inline-flex items-center justify-center transition"
+            title="הוספת ליד"
+          >
+            <Plus className="size-4" strokeWidth={2.5} />
+          </button>
+          <NotificationButton />
+          <HeaderIcon icon={<Settings className="size-4" />} label="הגדרות" />
+          <HeaderIcon icon={<HelpCircle className="size-4" />} label="עזרה" />
+
+          <Link
+            href="/profile"
+            className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg hover:bg-bingo-gray-100 transition mr-1"
+          >
+            <Avatar name="חן צולר" emoji="💼" size="sm" />
+            <span className="text-sm font-bold text-bingo-black hidden md:block">חן צולר</span>
+            <ChevronDown className="size-3 text-bingo-gray-500 hidden md:block" />
+          </Link>
+        </div>
+      </header>
+    </>
+  );
+}
+
+function SearchTrigger() {
+  return (
+    <button
+      onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }))}
+      className="hidden md:flex flex-1 max-w-md items-center bg-white rounded-xl border border-bingo-gray-200 hover:border-bingo-gray-300 transition px-3 h-9 text-bingo-gray-500 cursor-text"
+    >
+      <Search className="size-4 ml-2" />
+      <span className="flex-1 text-right text-[13px] font-medium">חיפוש לידים, תהליכים, פעולות...</span>
+      <kbd className="text-[10px] font-mono font-semibold bg-bingo-gray-100 rounded px-1.5 py-0.5 border border-bingo-gray-200 text-bingo-gray-600">⌘K</kbd>
+    </button>
+  );
+}
+
+function HeaderLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="hidden md:inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-bold text-bingo-charcoal hover:bg-bingo-gray-100 transition"
+    >
+      {icon}
+      {label}
+    </Link>
+  );
+}
+
+function HeaderIcon({ icon, label, className }: { icon: React.ReactNode; label?: string; className?: string }) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "size-9 rounded-lg text-bingo-gray-600 hover:text-bingo-black hover:bg-bingo-gray-100 inline-flex items-center justify-center transition",
+        className
+      )}
+      aria-label={label}
+      title={label}
+    >
+      {icon}
+    </button>
+  );
+}
+
+function NotificationButton() {
+  return (
+    <button
+      type="button"
+      className="relative size-9 rounded-lg text-bingo-gray-600 hover:text-bingo-black hover:bg-bingo-gray-100 inline-flex items-center justify-center transition"
+      aria-label="התראות"
+    >
+      <Bell className="size-4" />
+      <span className="absolute top-1 left-1 size-1.5 rounded-full bg-status-red ring-2 ring-bingo-cream" />
+    </button>
+  );
+}
