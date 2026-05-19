@@ -75,21 +75,25 @@ function Widget({
     <Link
       href={href}
       className={cn(
-        "group relative rounded-2xl p-4 bg-gradient-to-br border bingo-shadow-sm hover:bingo-shadow-lg hover:-translate-y-0.5 transition-all overflow-hidden",
-        palette[accent]
+        "group relative surface-card hover-lift overflow-hidden p-4",
       )}
     >
-      <div className="flex items-start justify-between gap-3 mb-2">
-        <div className={cn("size-10 rounded-xl inline-flex items-center justify-center", iconPalette[accent])}>{icon}</div>
-        <ArrowUpRight className="size-4 text-bingo-gray-400 group-hover:text-bingo-black group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+      {/* Background gradient */}
+      <div className={cn("absolute inset-0 bg-gradient-to-br opacity-50 pointer-events-none", palette[accent])} />
+
+      <div className="relative">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className={cn("size-11 rounded-2xl inline-flex items-center justify-center bingo-shadow-sm", iconPalette[accent])}>{icon}</div>
+          <ArrowUpRight className="size-4 text-bingo-gray-400 group-hover:text-bingo-black group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+        </div>
+        {big !== undefined ? (
+          <div className="num-display text-4xl text-bingo-black leading-none mt-1">{formatNumber(big)}</div>
+        ) : (
+          <div className="num-display text-4xl text-bingo-black/40 leading-none mt-1">—</div>
+        )}
+        <div className="text-[13px] font-extrabold text-bingo-black mt-2.5">{title}</div>
+        {sub && <div className="text-[11px] text-bingo-gray-500 mt-0.5 font-medium">{sub}</div>}
       </div>
-      {big !== undefined ? (
-        <div className="text-3xl font-black text-bingo-black tabular-nums leading-none mt-1">{formatNumber(big)}</div>
-      ) : (
-        <div className="text-3xl font-black text-bingo-black leading-none mt-1">—</div>
-      )}
-      <div className="text-[13px] font-extrabold text-bingo-black mt-2">{title}</div>
-      {sub && <div className="text-[11px] text-bingo-gray-600 mt-0.5">{sub}</div>}
     </Link>
   );
 }

@@ -75,6 +75,26 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     letter-spacing: -0.01em;
+    font-feature-settings: "ss01" on, "cv01" on, "cv11" on;
+  }
+
+  /* Fintech typography refinements */
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.02em;
+  }
+  .tabular-nums {
+    font-feature-settings: "tnum" on, "lnum" on;
+  }
+
+  /* Subtle focus ring everywhere */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--color-bingo-green);
+    outline-offset: 2px;
+    border-radius: 8px;
   }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -119,6 +139,107 @@
   .bingo-glow-soft {
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-bingo-green) 12%, transparent);
   }
+
+  /* === Fintech polish === */
+  /* Frosted-glass surface */
+  .surface-glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.72));
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    border: 1px solid rgba(220, 219, 215, 0.5);
+  }
+  /* Crisp card surface (Mercury/Ramp inspired) */
+  .surface-card {
+    background: white;
+    border: 1px solid var(--color-bingo-gray-150);
+    box-shadow: 0 1px 0 0 rgba(20,19,17,0.02), 0 0 0 0.5px rgba(20,19,17,0.04);
+    border-radius: 1rem;
+  }
+  .surface-card-elevated {
+    background: white;
+    border: 1px solid var(--color-bingo-gray-150);
+    box-shadow:
+      0 0 0 0.5px rgba(20,19,17,0.06),
+      0 4px 12px -2px rgba(20,19,17,0.06),
+      0 16px 32px -8px rgba(20,19,17,0.04);
+    border-radius: 1.25rem;
+  }
+
+  /* Hover lift micro-interaction */
+  .hover-lift {
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 0.5px rgba(20,19,17,0.08),
+      0 8px 24px -4px rgba(20,19,17,0.10),
+      0 24px 48px -12px rgba(20,19,17,0.05);
+  }
+
+  /* Big numbers (financial display) */
+  .num-display {
+    font-feature-settings: "tnum" on, "lnum" on, "ss01" on;
+    letter-spacing: -0.03em;
+    font-weight: 900;
+  }
+
+  /* Stat sparkle background */
+  .stat-sparkle {
+    background:
+      radial-gradient(circle at 100% 0%, color-mix(in oklab, var(--color-bingo-green) 8%, transparent) 0%, transparent 50%),
+      linear-gradient(135deg, white 0%, color-mix(in oklab, var(--color-bingo-green) 4%, white) 100%);
+  }
+
+  /* Subtle inner shadow for inputs */
+  .input-fintech {
+    background: white;
+    border: 1px solid var(--color-bingo-gray-200);
+    box-shadow: inset 0 1px 2px rgba(20,19,17,0.04);
+    transition: border-color 150ms, box-shadow 150ms;
+  }
+  .input-fintech:hover {
+    border-color: var(--color-bingo-gray-300);
+  }
+  .input-fintech:focus {
+    border-color: var(--color-bingo-green);
+    box-shadow:
+      inset 0 1px 2px rgba(20,19,17,0.04),
+      0 0 0 3px color-mix(in oklab, var(--color-bingo-green) 15%, transparent);
+    outline: none;
+  }
+
+  /* Skeleton shimmer */
+  @keyframes skeleton-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--color-bingo-gray-100) 0%, var(--color-bingo-gray-150) 50%, var(--color-bingo-gray-100) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: 8px;
+  }
+
+  /* Page transition */
+  @keyframes page-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  .page-transition {
+    animation: page-in 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Toast slide-in */
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+    to { opacity: 1; transform: none; }
+  }
+  .toast-in {
+    animation: toast-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Grid background subtle */
   .grid-bg {
     background-image:
       linear-gradient(to right, rgba(20, 19, 17, 0.025) 1px, transparent 1px),
