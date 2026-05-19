@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
-import { BarChart3, Users, Pen, ShieldCheck, TrendingUp, DollarSign, Building2, Bell, MessageCircle, Brain } from "lucide-react";
+import { BarChart3, Users, Pen, ShieldCheck, TrendingUp, DollarSign, Building2, Bell, MessageCircle, Brain, Wallet, Megaphone } from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "סקירה", icon: <BarChart3 className="size-4" /> },
@@ -11,7 +11,10 @@ const NAV = [
   { href: "/admin/checks", label: "בדיקות אשראי", icon: <ShieldCheck className="size-4" /> },
   { href: "/admin/funnel", label: "אנליזת משפך", icon: <TrendingUp className="size-4" /> },
   { href: "/admin/financials", label: "פיננסים", icon: <DollarSign className="size-4" /> },
+  { href: "/admin/commissions", label: "עמלות", icon: <Wallet className="size-4" /> },
   { href: "/admin/lenders", label: "ביצועי גופים", icon: <Building2 className="size-4" /> },
+  { href: "/admin/partners", label: "שותפים", icon: <Building2 className="size-4" /> },
+  { href: "/admin/campaigns", label: "קמפיינים", icon: <Megaphone className="size-4" /> },
   { href: "/admin/alerts", label: "התראות חכמות", icon: <Bell className="size-4" /> },
 ];
 
