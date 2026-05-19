@@ -2,7 +2,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-interface FieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
+interface FieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "prefix"> {
   label?: string;
   hint?: string;
   error?: string;

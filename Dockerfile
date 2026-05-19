@@ -1,9 +1,10 @@
 # ====== Bingo CRM Production Dockerfile ======
-# Built for Coolify / production deployment.
+# Built for Coolify / production deployment with Next.js standalone output.
 
 # ---- Stage 1: Dependencies ----
 FROM node:22-alpine AS deps
 WORKDIR /app
+RUN apk add --no-cache libc6-compat
 COPY package.json package-lock.json* ./
 RUN npm ci --legacy-peer-deps
 
@@ -29,15 +30,14 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy artifacts
+# Copy standalone build (much smaller than full node_modules)
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/research ./research
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
