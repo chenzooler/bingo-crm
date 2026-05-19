@@ -5,6 +5,7 @@ import { Search, Bell, Settings, FileText, ChevronDown, HelpCircle, Plus, BarCha
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { CommandPalette } from "@/components/ui/CommandPalette";
+import { NotificationDropdown } from "@/components/layout/NotificationDropdown";
 import { cn } from "@/lib/utils";
 
 export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
@@ -49,7 +50,7 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
           >
             <Plus className="size-4" strokeWidth={2.5} />
           </button>
-          <NotificationButton />
+          <NotificationDropdown />
           <HeaderIcon icon={<HelpCircle className="size-4" />} label="עזרה" />
 
           <Link
