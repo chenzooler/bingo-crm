@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { ReactNode } from "react";
-import { BarChart3, Users, Pen, ShieldCheck, TrendingUp, DollarSign, Building2, Bell } from "lucide-react";
+import { BarChart3, Users, Pen, ShieldCheck, TrendingUp, DollarSign, Building2, Bell, MessageCircle, Brain } from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "סקירה", icon: <BarChart3 className="size-4" /> },
   { href: "/admin/team", label: "ביצועי צוות", icon: <Users className="size-4" /> },
+  { href: "/admin/wati", label: "WATI Monitor", icon: <MessageCircle className="size-4" /> },
+  { href: "/admin/objections", label: "בנק התנגדויות AI", icon: <Brain className="size-4" /> },
   { href: "/admin/signatures", label: "חתימות וחוזים", icon: <Pen className="size-4" /> },
   { href: "/admin/checks", label: "בדיקות אשראי", icon: <ShieldCheck className="size-4" /> },
   { href: "/admin/funnel", label: "אנליזת משפך", icon: <TrendingUp className="size-4" /> },

@@ -35,6 +35,7 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
           <HeaderLink href="/inbox" icon={<MessageCircle className="size-4" />} label="הודעות" />
           <HeaderLink href="/calls" icon={<Phone className="size-4" />} label="שיחות" />
           <HeaderLink href="/dialer" icon={<Phone className="size-4" />} label="תותח" />
+          <HeaderLink href="/call-center" icon={<Phone className="size-4" />} label="Live" />
           <HeaderLink href="/calendar" icon={<Home className="size-4" />} label="יומן" />
           <HeaderLink href="/admin" icon={<ShieldCheck className="size-4" />} label="מנהל" />
           <HeaderLink href="/settings" icon={<Settings className="size-4" />} label="הגדרות" />

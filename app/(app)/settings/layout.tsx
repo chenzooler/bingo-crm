@@ -17,6 +17,7 @@ const NAV = [
   { href: "/settings/forms", label: "טפסים והסכמים", group: "גופי מימון" },
 
   { href: "/settings/templates", label: "תבניות הודעות", group: "תקשורת" },
+  { href: "/settings/numbers", label: "מספרי טלפון + ספאם ✨", group: "תקשורת" },
   { href: "/settings/integrations", label: "אינטגרציות", group: "תקשורת" },
   { href: "/settings/webhooks", label: "Webhooks", group: "תקשורת" },
 
