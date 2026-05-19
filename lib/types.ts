@@ -177,7 +177,22 @@ export interface Lead {
   // Sources can be multi
   sources: LeadSource[];
   sourcesText?: string;
-  // Process / status
+
+  // === Unified lifecycle model ===
+  /** Current lifecycle stage (NEW → PAID/EXIT) */
+  stage?: import("./data/lifecycle").LifecycleStage;
+  /** Loan category */
+  category?: import("./data/lifecycle").LeadCategory;
+  /** Tags - flexible attributes */
+  tags?: string[];
+  /** If stage === EXIT */
+  exitReason?: import("./data/lifecycle").ExitReason;
+  /** Was the questionnaire fully completed - drives lead card UI mode */
+  questionnaireCompleted?: boolean;
+  /** When stage last changed */
+  stageChangedAt?: string;
+
+  // === Legacy (kept for backward compat) ===
   processes: LeadProcess[];
   primaryPipeline: Pipeline;
   primaryStatus: string;

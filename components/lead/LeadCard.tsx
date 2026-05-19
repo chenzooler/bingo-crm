@@ -22,10 +22,16 @@ import {
   IconShieldCheck, IconClock, IconKids, IconHeartFamily, IconPhone, IconBolt,
 } from "@/components/icons/PremiumIcon";
 import { BingoBall } from "@/components/icons/ServiceIcons";
+import { LeadSummary } from "./LeadSummary";
+import { deriveLifecycle } from "@/lib/data/lead-augment";
 import { formatDate, formatCurrency, cn, isValidIsraeliId, isValidIsraeliPhone } from "@/lib/utils";
 
 export function LeadCard({ lead: initial }: { lead: Lead }) {
-  const [lead, setLead] = React.useState<Lead>(initial);
+  const augmented = React.useMemo(() => ({ ...initial, ...deriveLifecycle(initial) }), [initial]);
+  const [lead, setLead] = React.useState<Lead>(augmented);
+  const [mode, setMode] = React.useState<"summary" | "wizard">(() =>
+    lead.questionnaireCompleted ? "summary" : "wizard"
+  );
   const [activeStep, setActiveStep] = React.useState<StepKey>(() => {
     const visible = STEPS.filter((s) => !s.visibleWhen || s.visibleWhen(initial));
     const next = visible.find((s) => evaluateStep(initial, s.key) !== "done");
@@ -47,7 +53,30 @@ export function LeadCard({ lead: initial }: { lead: Lead }) {
   return (
     <div className="space-y-3 max-w-[1600px]">
       <CardHeaderBar lead={lead} />
-      <StepNav lead={lead} active={activeStep} onChange={setActiveStep} />
+
+      {/* Mode switcher - show only if questionnaire is completed */}
+      {lead.questionnaireCompleted && (
+        <div className="flex items-center gap-1 bg-white border border-bingo-gray-200 rounded-2xl p-1 bingo-shadow-sm w-fit">
+          <button
+            onClick={() => setMode("summary")}
+            className={cn("h-9 px-4 rounded-xl text-[12px] font-bold transition inline-flex items-center gap-1.5",
+              mode === "summary" ? "bg-bingo-black text-white" : "text-bingo-charcoal hover:bg-bingo-gray-100"
+            )}
+          >
+            📊 סיכום ליד
+          </button>
+          <button
+            onClick={() => setMode("wizard")}
+            className={cn("h-9 px-4 rounded-xl text-[12px] font-bold transition inline-flex items-center gap-1.5",
+              mode === "wizard" ? "bg-bingo-black text-white" : "text-bingo-charcoal hover:bg-bingo-gray-100"
+            )}
+          >
+            ✏️ ערוך שאלון
+          </button>
+        </div>
+      )}
+
+      {mode === "wizard" && <StepNav lead={lead} active={activeStep} onChange={setActiveStep} />}
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-3">
         <div className="xl:col-span-3 space-y-3 xl:order-1">
@@ -57,16 +86,17 @@ export function LeadCard({ lead: initial }: { lead: Lead }) {
         </div>
 
         <div className="xl:col-span-6 xl:order-2">
-          {activeStep === "intake" && <StepIntake lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "credit-history" && <StepCreditHistory lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "personal" && <StepPersonal lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "household" && <StepHousehold lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "income" && <StepIncome lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "assets" && <StepAssets lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "vehicle" && <StepVehicle lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "bank" && <StepBank lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "bdi" && <StepBDI lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "lenders" && (
+          {mode === "summary" && <LeadSummary lead={lead} />}
+          {mode === "wizard" && activeStep === "intake" && <StepIntake lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "credit-history" && <StepCreditHistory lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "personal" && <StepPersonal lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "household" && <StepHousehold lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "income" && <StepIncome lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "assets" && <StepAssets lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "vehicle" && <StepVehicle lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "bank" && <StepBank lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "bdi" && <StepBDI lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "lenders" && (
             <WizardShell
               stepKey="lenders"
               title="בדיקות מול גופי המימון"
@@ -78,7 +108,7 @@ export function LeadCard({ lead: initial }: { lead: Lead }) {
               <LenderChecks lead={lead} onChange={setLender} />
             </WizardShell>
           )}
-          {activeStep === "result" && (
+          {mode === "wizard" && activeStep === "result" && (
             <WizardShell
               stepKey="result"
               title="התוצאה לבחור הלקוח"
@@ -89,8 +119,8 @@ export function LeadCard({ lead: initial }: { lead: Lead }) {
               <ResultsSummary lead={lead} />
             </WizardShell>
           )}
-          {activeStep === "offer" && <StepOffer lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
-          {activeStep === "forms" && <StepForms lead={lead} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "offer" && <StepOffer lead={lead} set={set} onNext={next ? () => setActiveStep(next.key) : undefined} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
+          {mode === "wizard" && activeStep === "forms" && <StepForms lead={lead} onBack={prev ? () => setActiveStep(prev.key) : undefined} />}
         </div>
 
         <div className="xl:col-span-3 xl:order-3">

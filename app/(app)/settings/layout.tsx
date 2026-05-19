@@ -6,7 +6,8 @@ const NAV = [
   { href: "/settings/users", label: "משתמשים והרשאות", group: "ארגון" },
   { href: "/settings/teams", label: "צוותים", group: "ארגון" },
 
-  { href: "/settings/pipelines", label: "תהליכים וסטטוסים", group: "זרימת עבודה" },
+  { href: "/settings/lifecycle", label: "Lifecycle - שלבי ליד ✨", group: "זרימת עבודה" },
+  { href: "/settings/pipelines", label: "תהליכים וסטטוסים (מערכת ישנה)", group: "זרימת עבודה" },
   { href: "/settings/sources", label: "מקורות לידים", group: "זרימת עבודה" },
   { href: "/settings/loan-purposes", label: "מטרות הלוואה", group: "זרימת עבודה" },
   { href: "/settings/automations", label: "אוטומציות", group: "זרימת עבודה" },
