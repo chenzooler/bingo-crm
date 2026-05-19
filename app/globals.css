@@ -58,6 +58,26 @@
   --radius-3xl: 2rem;
 }
 
+/* === Dark mode overrides === */
+html.dark {
+  --color-bingo-cream: #0E0E10;
+  --color-bingo-paper: #16161A;
+  --color-bingo-mist: #1F1E1D;
+  --color-bingo-gray-50: #16161A;
+  --color-bingo-gray-100: #1F1E1D;
+  --color-bingo-gray-150: #292929;
+  --color-bingo-gray-200: #353432;
+  --color-bingo-gray-300: #4D4C49;
+  --color-bingo-gray-400: #6E6D69;
+  --color-bingo-gray-500: #9A9994;
+  --color-bingo-gray-600: #C4C3BE;
+  --color-bingo-gray-700: #DCDBD7;
+  --color-bingo-gray-800: #ECECEA;
+  --color-bingo-black: #FAFAF9;
+  --color-bingo-charcoal: #ECECEA;
+  --color-bingo-onyx: #ECECEA;
+}
+
 @layer base {
   *, *::before, *::after {
     border-color: var(--color-bingo-gray-200);
@@ -150,10 +170,13 @@
   }
   /* Crisp card surface (Mercury/Ramp inspired) */
   .surface-card {
-    background: white;
+    background: var(--color-bingo-paper);
     border: 1px solid var(--color-bingo-gray-150);
     box-shadow: 0 1px 0 0 rgba(20,19,17,0.02), 0 0 0 0.5px rgba(20,19,17,0.04);
     border-radius: 1rem;
+  }
+  html.dark .surface-card {
+    background: var(--color-bingo-gray-100);
   }
   .surface-card-elevated {
     background: white;

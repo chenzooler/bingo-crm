@@ -6,6 +6,8 @@ import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { NotificationDropdown } from "@/components/layout/NotificationDropdown";
+import { UserDropdown } from "@/components/layout/UserDropdown";
+import { ThemeQuickToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
@@ -51,16 +53,9 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
             <Plus className="size-4" strokeWidth={2.5} />
           </button>
           <NotificationDropdown />
+          <ThemeQuickToggle />
           <HeaderIcon icon={<HelpCircle className="size-4" />} label="עזרה" />
-
-          <Link
-            href="/profile"
-            className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg hover:bg-bingo-gray-100 transition mr-1"
-          >
-            <Avatar name="חן צולר" emoji="💼" size="sm" />
-            <span className="text-sm font-bold text-bingo-black hidden md:block">חן צולר</span>
-            <ChevronDown className="size-3 text-bingo-gray-500 hidden md:block" />
-          </Link>
+          <UserDropdown />
         </div>
       </header>
     </>
