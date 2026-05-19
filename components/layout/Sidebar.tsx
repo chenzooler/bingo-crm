@@ -4,6 +4,8 @@ import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { ChevronDown, Users, User, Search, X } from "lucide-react";
 import { PIPELINES, STATUSES, USERS } from "@/lib/data/static";
+import { PipelineGlyph } from "@/components/icons/PipelineIcons";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatNumber, cn } from "@/lib/utils";
 
 export function Sidebar() {
@@ -84,7 +86,9 @@ export function Sidebar() {
                   <ChevronDown
                     className={cn("size-3.5 shrink-0 text-bingo-gray-400 transition-transform", !isOpen && "-rotate-90")}
                   />
-                  <span className="text-base shrink-0">{p.emoji}</span>
+                  <span className="size-6 rounded-md bg-bingo-gray-100 text-bingo-charcoal inline-flex items-center justify-center shrink-0">
+                    <PipelineGlyph kind={p.key} size={13} />
+                  </span>
                   <span className="truncate">{p.label}</span>
                 </span>
                 <span className={cn(
@@ -110,7 +114,7 @@ export function Sidebar() {
                       )}
                     >
                       <span className="flex items-center gap-1.5 truncate">
-                        <span className="text-[13px] leading-none">{s.emoji}</span>
+                        <span className="size-1.5 rounded-full shrink-0" style={{ background: statusDot(s.color) }} />
                         <span className="truncate">{s.label}</span>
                       </span>
                       <span className={cn(
@@ -159,4 +163,18 @@ function ScopeBtn({ active, onClick, icon, label }: { active?: boolean; onClick?
       {label}
     </button>
   );
+}
+
+function statusDot(color: string): string {
+  const map: Record<string, string> = {
+    green: "#50FF0A",
+    yellow: "#FACC15",
+    red: "#EF4444",
+    blue: "#2D7BF7",
+    orange: "#FB923C",
+    purple: "#A855F7",
+    pink: "#EC4899",
+    gray: "#9A9994",
+  };
+  return map[color] || "#9A9994";
 }

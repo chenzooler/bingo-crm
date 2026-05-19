@@ -29,10 +29,16 @@ export interface PipelineDef {
   count: number;
 }
 
+export type StatusGlyph =
+  | "new" | "call" | "no-answer" | "callback" | "waiting"
+  | "approved" | "rejected" | "paid" | "docs" | "sign"
+  | "blocked" | "hot" | "id" | "checking" | "chat";
+
 export interface StatusDef {
   key: string;
   label: string;
-  emoji: string;
+  emoji: string;     // legacy / fallback (will be removed)
+  glyph?: StatusGlyph;
   pipeline: Pipeline;
   color: "green" | "yellow" | "red" | "blue" | "orange" | "purple" | "pink" | "gray";
   count: number;

@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { Search, Bell, Settings, FileText, Filter, ChevronDown, HelpCircle, Plus, BarChart3 } from "lucide-react";
+import { Search, Bell, Settings, FileText, ChevronDown, HelpCircle, Plus, BarChart3, Phone, MessageCircle, ShieldCheck, ListChecks, Home } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { CommandPalette } from "@/components/ui/CommandPalette";
@@ -30,11 +30,13 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
         <SearchTrigger />
 
         <div className="ml-auto flex items-center gap-1">
-          <HeaderLink href="/dashboard" icon={<BarChart3 className="size-4" />} label="הבית" />
+          <HeaderLink href="/dashboard" icon={<Home className="size-4" />} label="הבית" />
           <HeaderLink href="/leads" icon={<FileText className="size-4" />} label="לידים" />
-          <HeaderLink href="/tasks" icon={<FileText className="size-4" />} label="משימות" />
-          <HeaderLink href="/reports" icon={<BarChart3 className="size-4" />} label="דוחות" />
-          <HeaderLink href="/docs" icon={<FileText className="size-4" />} label="מחקר" />
+          <HeaderLink href="/inbox" icon={<MessageCircle className="size-4" />} label="הודעות" />
+          <HeaderLink href="/dialer" icon={<Phone className="size-4" />} label="חיוג" />
+          <HeaderLink href="/tasks" icon={<ListChecks className="size-4" />} label="משימות" />
+          <HeaderLink href="/admin" icon={<ShieldCheck className="size-4" />} label="מנהל" />
+          <HeaderLink href="/settings" icon={<Settings className="size-4" />} label="הגדרות" />
 
           <div className="w-px h-5 bg-bingo-gray-200 mx-1.5 hidden md:block" />
 
@@ -46,7 +48,6 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
             <Plus className="size-4" strokeWidth={2.5} />
           </button>
           <NotificationButton />
-          <HeaderIcon icon={<Settings className="size-4" />} label="הגדרות" />
           <HeaderIcon icon={<HelpCircle className="size-4" />} label="עזרה" />
 
           <Link

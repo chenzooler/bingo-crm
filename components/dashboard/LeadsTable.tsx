@@ -6,7 +6,7 @@ import type { Lead } from "@/lib/types";
 import { LEADS } from "@/lib/data/leads";
 import { getUser, getStatus, SOURCES } from "@/lib/data/static";
 import { Avatar } from "@/components/ui/Avatar";
-import { Tag } from "@/components/ui/Tag";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatDate, cn } from "@/lib/utils";
 
 export function LeadsTable({ pipeline, status }: { pipeline?: string; status?: string }) {
@@ -99,12 +99,7 @@ export function LeadsTable({ pipeline, status }: { pipeline?: string; status?: s
                     </div>
                   </td>
                   <td className="px-3 py-2.5">
-                    {st ? (
-                      <Tag color={st.color}>
-                        <span className="text-sm leading-none">{st.emoji}</span>
-                        <span>{st.label}</span>
-                      </Tag>
-                    ) : null}
+                    {st ? <StatusBadge status={st} size="sm" /> : null}
                   </td>
                   <td className="px-3 py-2.5 text-[11px] font-mono tabular-nums text-bingo-gray-600 whitespace-nowrap">{formatDate(l.intakeDate)}</td>
                   <td className="px-2 py-2.5">
