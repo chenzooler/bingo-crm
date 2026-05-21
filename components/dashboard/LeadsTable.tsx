@@ -1,18 +1,21 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { Lock, ArrowUpDown, MoreHorizontal, Phone, MessageCircle, Mail } from "lucide-react";
+import { Lock, ArrowUpDown, MoreHorizontal, Phone, MessageCircle, Mail, X, Tag, Users, Trash2, Archive, Send, Download, UserPlus, CheckSquare, Trophy } from "lucide-react";
 import type { Lead } from "@/lib/types";
 import { LEADS } from "@/lib/data/leads";
 import { getUser, getStatus, SOURCES } from "@/lib/data/static";
 import { Avatar } from "@/components/ui/Avatar";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { LeadComparison } from "@/components/leads/LeadComparison";
 import { formatDate, cn } from "@/lib/utils";
 
 export function LeadsTable({ pipeline, status }: { pipeline?: string; status?: string }) {
   const [sortKey, setSortKey] = React.useState<keyof Lead>("intakeDate");
   const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc");
   const [tab, setTab] = React.useState<"cards" | "duplicates" | "test" | "contacts">("cards");
+  const [selected, setSelected] = React.useState<Set<string>>(new Set());
+  const [comparing, setComparing] = React.useState(false);
 
   const filtered = LEADS.filter((l) => (pipeline ? l.primaryPipeline === pipeline : true)).filter((l) =>
     status ? l.primaryStatus === status : true
@@ -32,8 +35,27 @@ export function LeadsTable({ pipeline, status }: { pipeline?: string; status?: s
     else { setSortKey(k); setSortDir("desc"); }
   }
 
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelected((prev) => {
+      if (prev.size === sorted.length && sorted.length > 0) return new Set();
+      return new Set(sorted.map((l) => l.id));
+    });
+  }
+
+  const allSelected = selected.size > 0 && selected.size === sorted.length;
+  const someSelected = selected.size > 0 && selected.size < sorted.length;
+
   return (
-    <div className="bg-white rounded-2xl border border-bingo-gray-200 bingo-shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-bingo-gray-200 bingo-shadow-sm overflow-hidden relative">
       <div className="border-b border-bingo-gray-150 px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-1 bg-bingo-gray-100 rounded-lg p-0.5">
           <TabPill active={tab === "cards"} onClick={() => setTab("cards")} label="כרטיסים" badge={sorted.length} />
@@ -56,6 +78,14 @@ export function LeadsTable({ pipeline, status }: { pipeline?: string; status?: s
         <table className="w-full text-sm">
           <thead className="bg-bingo-gray-50/50">
             <tr className="text-right text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 border-b border-bingo-gray-150">
+              <th className="px-2 py-2.5 w-9">
+                <Checkbox
+                  checked={allSelected}
+                  indeterminate={someSelected}
+                  onChange={toggleSelectAll}
+                  ariaLabel="בחר הכל"
+                />
+              </th>
               <th className="px-3 py-2.5 w-10">
                 <span className="block text-center">#</span>
               </th>
@@ -72,11 +102,22 @@ export function LeadsTable({ pipeline, status }: { pipeline?: string; status?: s
             {sorted.map((l, i) => {
               const owner = getUser(l.ownerId);
               const st = getStatus(l.primaryStatus);
+              const isSelected = selected.has(l.id);
               return (
                 <tr
                   key={l.id}
-                  className="border-b border-bingo-gray-100 last:border-0 hover:bg-bingo-green/[0.04] transition group"
+                  className={cn(
+                    "border-b border-bingo-gray-100 last:border-0 hover:bg-bingo-green/[0.04] transition group",
+                    isSelected && "bg-bingo-green/[0.07]"
+                  )}
                 >
+                  <td className="px-2 py-2.5">
+                    <Checkbox
+                      checked={isSelected}
+                      onChange={() => toggleSelect(l.id)}
+                      ariaLabel={`בחר ${l.fullName}`}
+                    />
+                  </td>
                   <td className="px-3 py-2.5 text-center">
                     <div className="flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-bingo-gray-500 tabular-nums">
                       {l.locked && <Lock className="size-3 text-bingo-gray-400" />}
@@ -124,7 +165,7 @@ export function LeadsTable({ pipeline, status }: { pipeline?: string; status?: s
             })}
             {sorted.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-6 py-16 text-center text-sm text-bingo-gray-500">
+                <td colSpan={9} className="px-6 py-16 text-center text-sm text-bingo-gray-500">
                   אין לידים בתצוגה הזו
                 </td>
               </tr>
@@ -136,7 +177,106 @@ export function LeadsTable({ pipeline, status }: { pipeline?: string; status?: s
         <div>סה"כ <span className="font-mono font-bold tabular-nums text-bingo-charcoal">{sorted.length}</span> רשומות</div>
         <button className="font-bold text-bingo-green-dark hover:underline">הצג עוד תוצאות ←</button>
       </div>
+
+      {/* Bulk Actions Floating Bar */}
+      {selected.size > 0 && (
+        <BulkActionBar
+          count={selected.size}
+          onClear={() => setSelected(new Set())}
+          onCompare={selected.size >= 2 && selected.size <= 4 ? () => setComparing(true) : undefined}
+        />
+      )}
+
+      {/* Lead Comparison Modal */}
+      {comparing && (
+        <LeadComparison
+          leadIds={Array.from(selected)}
+          onClose={() => setComparing(false)}
+        />
+      )}
     </div>
+  );
+}
+
+function Checkbox({
+  checked,
+  indeterminate,
+  onChange,
+  ariaLabel,
+}: {
+  checked: boolean;
+  indeterminate?: boolean;
+  onChange: () => void;
+  ariaLabel?: string;
+}) {
+  const ref = React.useRef<HTMLInputElement>(null);
+  React.useEffect(() => {
+    if (ref.current) ref.current.indeterminate = !!indeterminate && !checked;
+  }, [indeterminate, checked]);
+  return (
+    <label className="flex items-center justify-center cursor-pointer">
+      <input
+        ref={ref}
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        aria-label={ariaLabel}
+        className="size-4 rounded border-bingo-gray-300 text-bingo-green focus:ring-1 focus:ring-bingo-green/40 cursor-pointer accent-bingo-green"
+      />
+    </label>
+  );
+}
+
+function BulkActionBar({ count, onClear, onCompare }: { count: number; onClear: () => void; onCompare?: () => void }) {
+  return (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 animate-fade-in">
+      <div className="surface-card-elevated flex items-center gap-1 pl-1 pr-3 py-1.5 bingo-shadow-lg">
+        <div className="flex items-center gap-2 pr-2 pl-3 border-l border-bingo-gray-150">
+          <div className="size-8 rounded-lg bg-bingo-green/15 text-bingo-green-dark inline-flex items-center justify-center">
+            <CheckSquare className="size-4" />
+          </div>
+          <div className="flex flex-col leading-tight">
+            <span className="text-[13px] font-extrabold text-bingo-black tabular-nums">{count} נבחרו</span>
+            <span className="text-[10px] text-bingo-gray-500">{onCompare ? "ניתן להשוות" : "בחר פעולה"}</span>
+          </div>
+        </div>
+        {onCompare && <BulkBtn icon={<Trophy className="size-3.5" />} label="השווה" highlight onClick={onCompare} />}
+        <BulkBtn icon={<UserPlus className="size-3.5" />} label="הקצה אחראי" />
+        <BulkBtn icon={<Tag className="size-3.5" />} label="תייג" />
+        <BulkBtn icon={<Users className="size-3.5" />} label="העבר לקבוצה" />
+        <BulkBtn icon={<Send className="size-3.5" />} label="שלח WhatsApp" />
+        <BulkBtn icon={<Download className="size-3.5" />} label="ייצא CSV" />
+        <BulkBtn icon={<Archive className="size-3.5" />} label="ארכוב" />
+        <BulkBtn icon={<Trash2 className="size-3.5" />} label="מחק" danger />
+        <div className="border-l border-bingo-gray-150 h-7 mx-1" />
+        <button
+          onClick={onClear}
+          className="size-8 rounded-lg hover:bg-bingo-gray-100 inline-flex items-center justify-center text-bingo-gray-500 hover:text-bingo-black transition"
+          title="בטל בחירה"
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function BulkBtn({ icon, label, danger, highlight, onClick }: { icon: React.ReactNode; label: string; danger?: boolean; highlight?: boolean; onClick?: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "h-8 px-2.5 rounded-lg text-[12px] font-bold inline-flex items-center gap-1.5 transition",
+        highlight
+          ? "bg-bingo-green text-bingo-black hover:bg-bingo-green/80"
+          : danger
+            ? "text-status-red hover:bg-status-red/10"
+            : "text-bingo-charcoal hover:bg-bingo-gray-100"
+      )}
+    >
+      {icon}
+      <span className="hidden md:inline">{label}</span>
+    </button>
   );
 }
 

@@ -1,5 +1,4 @@
-import { Suspense } from "react";
-import { LeadsTable } from "@/components/dashboard/LeadsTable";
+import { LeadsViewSwitcher } from "@/components/leads/LeadsViewSwitcher";
 import { getPipeline } from "@/lib/data/static";
 import { Search, Plus, Sparkles } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
@@ -43,9 +42,7 @@ export default async function LeadsPage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      <Suspense fallback={null}>
-        <LeadsTable pipeline={sp.p} status={sp.s} />
-      </Suspense>
+      <LeadsViewSwitcher pipeline={sp.p} status={sp.s} />
     </div>
   );
 }

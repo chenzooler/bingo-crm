@@ -6,7 +6,12 @@ import { BonusTrack } from "@/components/dashboard/BonusTrack";
 import { DealsList } from "@/components/dashboard/DealsList";
 import { ActivityHeatmap } from "@/components/dashboard/ActivityHeatmap";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
-import { Phone, MessageCircle, ListChecks, BarChart3 } from "lucide-react";
+import { SparklineKpi } from "@/components/dashboard/SparklineKpi";
+import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel";
+import { PipelineFunnel } from "@/components/dashboard/PipelineFunnel";
+import { LiveActivityFeed } from "@/components/dashboard/LiveActivityFeed";
+import { GamificationWidget } from "@/components/dashboard/GamificationWidget";
+import { Phone, MessageCircle, ListChecks, BarChart3, Target, Banknote, Trophy, TrendingUp } from "lucide-react";
 import { DEALS, AGENT_GOALS, filterDealsByRange, summarizeDeals, getStreak, type DateRange } from "@/lib/data/performance";
 import { TASKS } from "@/lib/data/leads";
 import { formatNumber, formatCurrency } from "@/lib/utils";
@@ -51,19 +56,53 @@ export default function DashboardPage() {
         <DateRangePicker value={range} onChange={setRange} />
       </div>
 
-      {/* Period KPIs */}
+      {/* Period KPIs with sparklines */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Kpi label="עסקאות" value={formatNumber(summary.count)} accent="bingo" />
-        <Kpi label="היקף הלוואות" value={formatCurrency(summary.loanVolume)} accent="blue" />
-        <Kpi label="שכר טרחה (הכנסה)" value={formatCurrency(summary.revenue)} accent="orange" />
-        <Kpi label="עמלה שלי" value={formatCurrency(summary.commission)} accent="green" highlight />
+        <SparklineKpi
+          label="עסקאות"
+          value={formatNumber(summary.count)}
+          delta={12.4}
+          data={[4, 6, 5, 8, 7, 9, 11, 10, 12]}
+          accent="bingo"
+          icon={<Target className="size-4" />}
+        />
+        <SparklineKpi
+          label="היקף הלוואות"
+          value={formatCurrency(summary.loanVolume)}
+          delta={8.7}
+          data={[40, 55, 52, 70, 65, 82, 88, 95, 102]}
+          accent="blue"
+          icon={<Banknote className="size-4" />}
+        />
+        <SparklineKpi
+          label="שכר טרחה"
+          value={formatCurrency(summary.revenue)}
+          delta={-2.3}
+          data={[15, 18, 17, 22, 20, 19, 21, 18, 17]}
+          accent="orange"
+          icon={<TrendingUp className="size-4" />}
+        />
+        <SparklineKpi
+          label="עמלה שלי"
+          value={formatCurrency(summary.commission)}
+          delta={18.2}
+          data={[2, 3, 3, 5, 4, 6, 7, 8, 9]}
+          accent="green"
+          icon={<Trophy className="size-4" />}
+          highlight
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <div className="lg:col-span-2">
+        {/* Mobile ordering: Gamification first (motivation), then Insights, Deals, etc. */}
+        <div className="lg:col-span-2 space-y-3 order-2 lg:order-1">
+          <AIInsightsPanel />
           <DealsList deals={filtered} />
+          <PipelineFunnel />
         </div>
-        <div className="space-y-3">
+        <div className="space-y-3 order-1 lg:order-2">
+          <GamificationWidget />
+          <LiveActivityFeed />
           <ActivityHeatmap deals={DEALS} dailyTarget={goal.dailyDealsTarget} />
           <QuickStats todayCount={todayDeals.length} dailyTarget={goal.dailyDealsTarget} overdueTasks={overdueTasks} streak={streak.current} longestStreak={streak.longest} />
           <QuickActions />

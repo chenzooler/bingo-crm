@@ -5,6 +5,19 @@ export const metadata: Metadata = {
   title: "BINGO CRM — מימון בול בשבילך",
   description: "מערכת ניהול לידים של בינגו ישראל",
   icons: { icon: "/favicon.svg" },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "BINGO CRM",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport = {
+  themeColor: "#50FF0A",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

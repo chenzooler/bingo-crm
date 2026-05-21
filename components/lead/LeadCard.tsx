@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { ChevronRight, Trash2, Copy as CopyIcon, Phone, Mail, MessageCircle, Plus, Cloud, ShieldCheck } from "lucide-react";
+import { ChevronRight, Trash2, Copy as CopyIcon, Phone, Mail, MessageCircle, Plus, Cloud, ShieldCheck, Sparkles } from "lucide-react";
 import type { Lead, LenderCheck } from "@/lib/types";
 import { getUser, getStatus, getPipeline } from "@/lib/data/static";
 import { Avatar } from "@/components/ui/Avatar";
@@ -23,6 +23,8 @@ import {
 } from "@/components/icons/PremiumIcon";
 import { BingoBall } from "@/components/icons/ServiceIcons";
 import { LeadSummary } from "./LeadSummary";
+import { AICopilotDrawer } from "./AICopilotDrawer";
+import { LivePresence } from "@/components/ui/LivePresence";
 import { deriveLifecycle } from "@/lib/data/lead-augment";
 import { formatDate, formatCurrency, cn, isValidIsraeliId, isValidIsraeliPhone } from "@/lib/utils";
 
@@ -168,9 +170,19 @@ function CardHeaderBar({ lead }: { lead: Lead }) {
         </div>
       </div>
       <div className="flex items-center gap-1.5">
+        <LivePresence leadId={lead.id} />
         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 rounded-md px-2 py-1 inline-flex items-center gap-1">
           <Cloud className="size-3" /> נשמר אוטומטית
         </span>
+        <AICopilotDrawer lead={lead}>
+          <button
+            className="h-9 px-3 rounded-xl bg-bingo-black text-bingo-green text-[12px] font-bold inline-flex items-center gap-1.5 hover:bg-bingo-charcoal transition bingo-shadow"
+            title="פתח AI Co-pilot"
+          >
+            <Sparkles className="size-3.5" />
+            <span className="hidden sm:inline">AI Co-pilot</span>
+          </button>
+        </AICopilotDrawer>
         <Button variant="ghost" size="icon" title="שכפול"><CopyIcon className="size-4" /></Button>
         <Button variant="ghost" size="icon" title="מחיקה"><Trash2 className="size-4 text-status-red" /></Button>
       </div>
