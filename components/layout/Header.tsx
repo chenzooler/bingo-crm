@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { Search, Bell, Settings, FileText, ChevronDown, HelpCircle, Plus, BarChart3, Phone, MessageCircle, ShieldCheck, ListChecks, Home } from "lucide-react";
+import { Search, Bell, Settings, FileText, ChevronDown, HelpCircle, Plus, BarChart3, Phone, MessageCircle, ShieldCheck, ListChecks, Home, Radar } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { CommandPalette } from "@/components/ui/CommandPalette";
@@ -33,6 +33,7 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
         <SearchTrigger />
 
         <div className="ml-auto flex items-center gap-1">
+          <HeaderLink href="/command-center" icon={<Radar className="size-4" />} label="Command" highlight />
           <HeaderLink href="/dashboard" icon={<Home className="size-4" />} label="הבית" />
           <HeaderLink href="/leads" icon={<FileText className="size-4" />} label="לידים" />
           <HeaderLink href="/inbox" icon={<MessageCircle className="size-4" />} label="הודעות" />
@@ -75,14 +76,20 @@ function SearchTrigger() {
   );
 }
 
-function HeaderLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+function HeaderLink({ href, icon, label, highlight }: { href: string; icon: React.ReactNode; label: string; highlight?: boolean }) {
   return (
     <Link
       href={href}
-      className="hidden md:inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-bold text-bingo-charcoal hover:bg-bingo-gray-100 transition"
+      className={cn(
+        "hidden md:inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-bold transition",
+        highlight
+          ? "bg-bingo-black text-bingo-green hover:bg-bingo-charcoal bingo-shadow-sm"
+          : "text-bingo-charcoal hover:bg-bingo-gray-100"
+      )}
     >
       {icon}
       {label}
+      {highlight && <span className="size-1.5 rounded-full bg-bingo-green animate-pulse" />}
     </Link>
   );
 }
