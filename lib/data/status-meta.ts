@@ -188,6 +188,73 @@ const STATUS_ENRICHMENTS: Record<string, {
   "v-no-final":          { emoji: "😞", sentiment: "negative", urgency: "none",        description: "לא מעוניין באישור הסופי", nextAction: "ארכב", isTerminal: true },
   "v-rejected":          { emoji: "❌", sentiment: "negative", urgency: "none",        description: "סורב", nextAction: "ארכב", isTerminal: true },
   "v-rejected-red":      { emoji: "🚨", sentiment: "negative", urgency: "none",        description: "סורב - אדום! (דגל אזהרה)", nextAction: "ארכב - לא לחזור!", isTerminal: true },
+
+  // ───────────── GENERIC UNDERWRITING ADDITIONS ─────────────
+  "u-waiting-docs":      { emoji: "📑", sentiment: "pending",  urgency: "today",       description: "ממתין למסמכים מהלקוח", nextAction: "תזכר ללקוח להעלות מסמכים", slaHours: 48 },
+  "u-waiting-final":     { emoji: "⏳", sentiment: "pending",  urgency: "today",       description: "ממתין לאישור סופי מהמלווה", nextAction: "פולואפ עם המלווה", slaHours: 48 },
+  "u-sign-contract":     { emoji: "✍️", sentiment: "positive", urgency: "now",         description: "אישור סופי - להחתים חוזה", nextAction: "סגור חתימה היום!", slaHours: 24 },
+  "u-waiting-insurance": { emoji: "🛡️", sentiment: "pending",  urgency: "this-week",   description: "ממתין לביטוח", nextAction: "פולואפ עם חברת ביטוח" },
+  "u-waiting-win":       { emoji: "🎯", sentiment: "pending",  urgency: "today",       description: "ממתין לזכייה / זיהוי", nextAction: "פולואפ", slaHours: 48 },
+  "u-waiting-loan":      { emoji: "⌛", sentiment: "pending",  urgency: "today",       description: "ממתין להלוואה", nextAction: "ודא העברה מהמלווה", slaHours: 48 },
+  "u-got-loan":          { emoji: "💰", sentiment: "celebrate", urgency: "today",      description: "קיבל הלוואה!", nextAction: "שלח חשבונית עמלה", slaHours: 24 },
+  "u-final-id":          { emoji: "🪪", sentiment: "pending",  urgency: "today",       description: "אישור סופי - השלמת זיהוי", nextAction: "תזכר ללקוח להעלות תעודה", slaHours: 24 },
+  "u-deal-cancel":       { emoji: "🚫", sentiment: "negative", urgency: "none",        description: "ביטול עסקה לאחר אישור", nextAction: "תיעוד סיבה - ארכב", isTerminal: true },
+  "u-deleted":           { emoji: "🗑️", sentiment: "neutral",  urgency: "none",        description: "תהליך נמחק ידנית", nextAction: "אין", isTerminal: true },
+  "u-first-no-interest": { emoji: "👋", sentiment: "negative", urgency: "none",        description: "עבר לסטטוס לא מעוניינים מהשיחה הראשונית", nextAction: "ארכב", isTerminal: true },
+
+  // ───────────── RETENTION YONI ─────────────
+  "y-pool":              { emoji: "🏊", sentiment: "neutral",  urgency: "this-week",   description: "מאגר לידים לטיפול יוני", nextAction: "מיון לפי פוטנציאל" },
+  "y-new-vehicle":       { emoji: "🚗", sentiment: "positive", urgency: "today",       description: "ליד חדש לשימור רכב", nextAction: "צור קשר תוך 24h", slaHours: 24 },
+  "y-new-general":       { emoji: "💸", sentiment: "positive", urgency: "today",       description: "ליד חדש לשימור הלוואה לכל מטרה", nextAction: "חייג היום", slaHours: 24 },
+  "y-new-purchase":      { emoji: "🛒", sentiment: "positive", urgency: "today",       description: "ליד חדש לקניית שיעבוד", nextAction: "צור קשר וטפל", slaHours: 24 },
+  "y-callback":          { emoji: "📞", sentiment: "pending",  urgency: "today",       description: "לחזור ללקוח (שימור)", nextAction: "חייג בזמן המבוקש", slaHours: 24 },
+  "y-no-answer":         { emoji: "📵", sentiment: "warning",  urgency: "today",       description: "אין מענה (שימור)", nextAction: "נסה WhatsApp או שעה אחרת", slaHours: 24 },
+  "y-interested":        { emoji: "🔥", sentiment: "celebrate", urgency: "now",        description: "חזר להתעניין! פוטנציאל סגירה", nextAction: "סגור במהירות!", slaHours: 4 },
+  "y-docs-purchase":     { emoji: "📑", sentiment: "pending",  urgency: "today",       description: "להשלים מסמכים קניית שיעבוד", nextAction: "תזכר ללקוח", slaHours: 48 },
+  "y-waiting-loan":      { emoji: "⌛", sentiment: "pending",  urgency: "today",       description: "ממתין להלוואה (שימור)", nextAction: "פולואפ עם המלווה", slaHours: 48 },
+  "y-got-loan":          { emoji: "🎉", sentiment: "celebrate", urgency: "today",      description: "סגר דרך שימור!", nextAction: "תעד הצלחה + חשבונית", slaHours: 24 },
+  "y-paid":              { emoji: "💵", sentiment: "celebrate", urgency: "none",       description: "שילם דרך שימור", nextAction: "מזל טוב 🎊", isTerminal: true },
+  "y-not-interested":    { emoji: "👋", sentiment: "negative", urgency: "none",        description: "לא חוזר לשימור", nextAction: "ארכב", isTerminal: true },
+
+  // ───────────── WATI ─────────────
+  "w-incoming":          { emoji: "💬", sentiment: "positive", urgency: "today",       description: "פנייה חדשה ב-WATI", nextAction: "בוט יענה אוטומטית", slaHours: 1 },
+  "w-bot-screening":     { emoji: "🤖", sentiment: "pending",  urgency: "monitor",     description: "בבדיקת בוט", nextAction: "המתן לתשובה מהלקוח" },
+  "w-handed-to-agent":   { emoji: "👤", sentiment: "positive", urgency: "now",         description: "בוט סיים — הועבר לנציג", nextAction: "צור קשר תוך שעה!", slaHours: 1 },
+  "w-no-response":       { emoji: "📭", sentiment: "warning",  urgency: "none",        description: "לא הגיב לבוט", nextAction: "ארכב או נסה קמפיין חוזר", isTerminal: true },
+  "w-promo":             { emoji: "📣", sentiment: "pending",  urgency: "monitor",     description: "תגובה לקמפיין שיווקי", nextAction: "בדוק כוונה" },
+  "w-faq":               { emoji: "❓", sentiment: "neutral",  urgency: "monitor",     description: "שאלה ב-FAQ", nextAction: "בוט יענה" },
+  "w-greeting":          { emoji: "👋", sentiment: "neutral",  urgency: "monitor",     description: "ברכה / שלום", nextAction: "בוט יחזיר ברכה" },
+  "w-spam-detected":     { emoji: "🚯", sentiment: "negative", urgency: "none",        description: "זוהה כספאם ב-WATI", nextAction: "אוטו - חסום", isTerminal: true },
+  "w-broadcast-reply":   { emoji: "📢", sentiment: "pending",  urgency: "monitor",     description: "תגובה ל-Broadcast", nextAction: "מיין לפי כוונה" },
+
+  // ───────────── LEGAL ─────────────
+  "l-pending":           { emoji: "📋", sentiment: "warning",  urgency: "today",       description: "פתיחת תיק משפטי", nextAction: "העבר לעו\"ד", slaHours: 24 },
+  "l-in-court":          { emoji: "⚖️", sentiment: "warning",  urgency: "monitor",     description: "בטיפול עורך דין", nextAction: "פולואפ שבועי עם עו\"ד" },
+  "l-mediation":         { emoji: "🤝", sentiment: "pending",  urgency: "this-week",   description: "גישור / משא ומתן", nextAction: "המתן לתוצאת גישור" },
+  "l-settlement":        { emoji: "✅", sentiment: "positive", urgency: "today",       description: "פשרה הושגה", nextAction: "בצע פשרה - גבה תשלום", slaHours: 48 },
+  "l-judgement":         { emoji: "🔨", sentiment: "warning",  urgency: "monitor",     description: "פסק דין", nextAction: "פעל לפי פסק הדין" },
+  "l-bankruptcy":        { emoji: "💸", sentiment: "negative", urgency: "none",        description: "פשיטת רגל", nextAction: "ארכב — אבוד", isTerminal: true },
+  "l-closed":            { emoji: "📁", sentiment: "neutral",  urgency: "none",        description: "תיק נסגר", nextAction: "אין", isTerminal: true },
+
+  // ───────────── SPAM ─────────────
+  "s-invalid-phone":     { emoji: "📵", sentiment: "negative", urgency: "none",        description: "מספר טלפון לא תקין", nextAction: "אוטו - ספאם", isTerminal: true },
+  "s-foreign-phone":     { emoji: "🌍", sentiment: "negative", urgency: "none",        description: "מספר זר / קידומת לא ישראלית", nextAction: "אוטו - ספאם", isTerminal: true },
+  "s-bot-detected":      { emoji: "🤖", sentiment: "negative", urgency: "none",        description: "זוהה כבוט", nextAction: "אוטו - חסום", isTerminal: true },
+  "s-duplicate-spam":    { emoji: "👥", sentiment: "negative", urgency: "none",        description: "כפיל ספאם", nextAction: "אוטו - חסום", isTerminal: true },
+  "s-blacklist":         { emoji: "🚷", sentiment: "negative", urgency: "none",        description: "ברשימה שחורה", nextAction: "חסום - אין לחזור!", isTerminal: true },
+  "s-no-data":           { emoji: "❓", sentiment: "neutral",  urgency: "none",        description: "ללא נתונים מספיקים", nextAction: "ארכב", isTerminal: true },
+
+  // ───────────── ARCHIVE ─────────────
+  "a-cold-6m":           { emoji: "❄️", sentiment: "neutral",  urgency: "monitor",     description: "קר 6 חודשים — לא פעיל", nextAction: "פוטנציאל לקמפיין שיווק" },
+  "a-cold-1y":           { emoji: "🧊", sentiment: "neutral",  urgency: "monitor",     description: "קר שנה+ — לא פעיל", nextAction: "אופציה לקמפיין חימום" },
+  "a-historical":        { emoji: "📚", sentiment: "neutral",  urgency: "none",        description: "היסטורי (מעל שנתיים)", nextAction: "שמירה לרגולציה", isTerminal: true },
+  "a-deleted":           { emoji: "🗑️", sentiment: "neutral",  urgency: "none",        description: "תהליך נמחק (ארכיב)", nextAction: "אין", isTerminal: true },
+  "a-merged":            { emoji: "🔗", sentiment: "neutral",  urgency: "none",        description: "מוזג עם ליד אחר", nextAction: "עיין בליד הראשי", isTerminal: true },
+
+  // ───────────── IRRELEVANT ADDITIONS ─────────────
+  "i-deal-cancel":       { emoji: "🚫", sentiment: "negative", urgency: "none",        description: "ביטול עסקה לאחר אישור", nextAction: "ארכב + תיעוד", isTerminal: true },
+  "i-cooling":           { emoji: "🥶", sentiment: "neutral",  urgency: "monitor",     description: "תקופת התקררות", nextAction: "חזור בעוד 30 יום" },
+  "i-disrespect":        { emoji: "⛔", sentiment: "negative", urgency: "none",        description: "התנהגות לא ראויה", nextAction: "ארכב + הוסף לרשימה שחורה", isTerminal: true },
 };
 
 /** Default enrichment for unknown statuses (fallback) */

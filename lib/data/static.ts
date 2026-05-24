@@ -111,6 +111,87 @@ export const STATUSES: StatusDef[] = [
   { key: "v-no-final", label: "לא מעוניין באישור הסופי", emoji: "❗", pipeline: "vehicle", color: "red", count: 5 },
   { key: "v-rejected", label: "סורב", emoji: "❌", pipeline: "vehicle", color: "red", count: 1915 },
   { key: "v-rejected-red", label: "סורב - אדום!", emoji: "🛑", pipeline: "vehicle", color: "red", count: 169 },
+
+  // ───────────────────────────────────────────────────────────
+  // GENERIC UNDERWRITING ADDITIONS (workflow-wide statuses)
+  // ───────────────────────────────────────────────────────────
+  { key: "u-waiting-docs", label: "ממתין למסמכים", emoji: "📑", pipeline: "underwriting", color: "yellow", count: 87 },
+  { key: "u-waiting-final", label: "ממתין לאישור סופי", emoji: "⏳", pipeline: "underwriting", color: "yellow", count: 42 },
+  { key: "u-sign-contract", label: "אישור סופי - להחתים חוזה", emoji: "✍️", pipeline: "underwriting", color: "green", count: 18 },
+  { key: "u-waiting-insurance", label: "ממתין לביטוח", emoji: "🛡️", pipeline: "underwriting", color: "yellow", count: 11 },
+  { key: "u-waiting-win", label: "ממתין לזכייה / זיהוי", emoji: "🎯", pipeline: "underwriting", color: "blue", count: 9 },
+  { key: "u-waiting-loan", label: "ממתין להלוואה", emoji: "⌛", pipeline: "underwriting", color: "yellow", count: 23 },
+  { key: "u-got-loan", label: "קיבל הלוואה", emoji: "💰", pipeline: "underwriting", color: "green", count: 14 },
+  { key: "u-final-id", label: "אישור סופי - השלמת זיהוי", emoji: "🪪", pipeline: "underwriting", color: "blue", count: 7 },
+  { key: "u-deal-cancel", label: "ביטול עסקה", emoji: "🚫", pipeline: "underwriting", color: "red", count: 31 },
+  { key: "u-deleted", label: "תהליך נמחק", emoji: "🗑️", pipeline: "underwriting", color: "gray", count: 19 },
+  { key: "u-first-no-interest", label: "עבר ללא מעוניינים מהשיחה הראשונית", emoji: "👋", pipeline: "underwriting", color: "red", count: 56 },
+
+  // ───────────────────────────────────────────────────────────
+  // RETENTION YONI (y-*) — 2,527 leads
+  // ───────────────────────────────────────────────────────────
+  { key: "y-pool", label: "מאגר לידים יוני", emoji: "🏊", pipeline: "retention-yoni", color: "purple", count: 1247 },
+  { key: "y-new-vehicle", label: "ליד חדש שימור רכב", emoji: "🚗", pipeline: "retention-yoni", color: "purple", count: 184 },
+  { key: "y-new-general", label: "ליד חדש שימור הלוואה לכל מטרה", emoji: "💸", pipeline: "retention-yoni", color: "purple", count: 213 },
+  { key: "y-new-purchase", label: "ליד חדש קניית שיעבוד", emoji: "🛒", pipeline: "retention-yoni", color: "purple", count: 67 },
+  { key: "y-callback", label: "לחזור ללקוח (שימור)", emoji: "📞", pipeline: "retention-yoni", color: "yellow", count: 142 },
+  { key: "y-no-answer", label: "אין מענה (שימור)", emoji: "📵", pipeline: "retention-yoni", color: "yellow", count: 198 },
+  { key: "y-interested", label: "חזר להתעניין", emoji: "🔥", pipeline: "retention-yoni", color: "green", count: 89 },
+  { key: "y-docs-purchase", label: "להשלים מסמכים קניית שיעבוד", emoji: "📑", pipeline: "retention-yoni", color: "yellow", count: 34 },
+  { key: "y-waiting-loan", label: "ממתין להלוואה (שימורים יוני)", emoji: "⌛", pipeline: "retention-yoni", color: "yellow", count: 52 },
+  { key: "y-got-loan", label: "סגר דרך שימור!", emoji: "🎉", pipeline: "retention-yoni", color: "green", count: 41 },
+  { key: "y-paid", label: "שילם דרך שימור", emoji: "💵", pipeline: "retention-yoni", color: "green", count: 187 },
+  { key: "y-not-interested", label: "לא חוזר (שימור)", emoji: "👋", pipeline: "retention-yoni", color: "red", count: 73 },
+
+  // ───────────────────────────────────────────────────────────
+  // WATI (w-*) — 60,467 leads
+  // ───────────────────────────────────────────────────────────
+  { key: "w-incoming", label: "פנייה חדשה ב-WATI", emoji: "💬", pipeline: "wati", color: "green", count: 1247 },
+  { key: "w-bot-screening", label: "בבדיקת בוט", emoji: "🤖", pipeline: "wati", color: "blue", count: 423 },
+  { key: "w-handed-to-agent", label: "הועבר לנציג", emoji: "👤", pipeline: "wati", color: "green", count: 287 },
+  { key: "w-no-response", label: "לא הגיב לבוט", emoji: "📭", pipeline: "wati", color: "yellow", count: 8743 },
+  { key: "w-promo", label: "תגובה לקמפיין", emoji: "📣", pipeline: "wati", color: "blue", count: 12389 },
+  { key: "w-faq", label: "שאלה ב-FAQ", emoji: "❓", pipeline: "wati", color: "gray", count: 4621 },
+  { key: "w-greeting", label: "ברכה / שלום", emoji: "👋", pipeline: "wati", color: "gray", count: 5832 },
+  { key: "w-spam-detected", label: "זוהה כספאם ב-WATI", emoji: "🚯", pipeline: "wati", color: "red", count: 18743 },
+  { key: "w-broadcast-reply", label: "תגובה ל-Broadcast", emoji: "📢", pipeline: "wati", color: "blue", count: 8182 },
+
+  // ───────────────────────────────────────────────────────────
+  // LEGAL (l-*) — 129 leads
+  // ───────────────────────────────────────────────────────────
+  { key: "l-pending", label: "פתיחת תיק משפטי", emoji: "📋", pipeline: "legal", color: "orange", count: 34 },
+  { key: "l-in-court", label: "בטיפול עורך דין", emoji: "⚖️", pipeline: "legal", color: "orange", count: 47 },
+  { key: "l-mediation", label: "גישור / משא ומתן", emoji: "🤝", pipeline: "legal", color: "yellow", count: 18 },
+  { key: "l-settlement", label: "פשרה הושגה", emoji: "✅", pipeline: "legal", color: "green", count: 12 },
+  { key: "l-judgement", label: "פסק דין", emoji: "🔨", pipeline: "legal", color: "red", count: 8 },
+  { key: "l-bankruptcy", label: "פשיטת רגל", emoji: "💸", pipeline: "legal", color: "red", count: 5 },
+  { key: "l-closed", label: "תיק נסגר", emoji: "📁", pipeline: "legal", color: "gray", count: 5 },
+
+  // ───────────────────────────────────────────────────────────
+  // SPAM (s-*) — 14,028 leads
+  // ───────────────────────────────────────────────────────────
+  { key: "s-invalid-phone", label: "מספר לא תקין", emoji: "📵", pipeline: "spam", color: "red", count: 6824 },
+  { key: "s-foreign-phone", label: "מספר זר", emoji: "🌍", pipeline: "spam", color: "red", count: 1247 },
+  { key: "s-bot-detected", label: "זוהה כבוט", emoji: "🤖", pipeline: "spam", color: "red", count: 2143 },
+  { key: "s-duplicate-spam", label: "כפיל / ספאם", emoji: "👥", pipeline: "spam", color: "red", count: 1842 },
+  { key: "s-blacklist", label: "ברשימה שחורה", emoji: "🚷", pipeline: "spam", color: "red", count: 437 },
+  { key: "s-no-data", label: "ללא נתונים", emoji: "❓", pipeline: "spam", color: "gray", count: 1535 },
+
+  // ───────────────────────────────────────────────────────────
+  // ARCHIVE (a-*) — 52,133 leads
+  // ───────────────────────────────────────────────────────────
+  { key: "a-cold-6m", label: "קר 6 חודשים", emoji: "❄️", pipeline: "archive", color: "blue", count: 18432 },
+  { key: "a-cold-1y", label: "קר שנה+", emoji: "🧊", pipeline: "archive", color: "blue", count: 24187 },
+  { key: "a-historical", label: "היסטורי (מעל שנתיים)", emoji: "📚", pipeline: "archive", color: "gray", count: 7843 },
+  { key: "a-deleted", label: "תהליך נמחק (ארכיב)", emoji: "🗑️", pipeline: "archive", color: "gray", count: 1247 },
+  { key: "a-merged", label: "מוזג עם ליד אחר", emoji: "🔗", pipeline: "archive", color: "gray", count: 424 },
+
+  // ───────────────────────────────────────────────────────────
+  // IRRELEVANT additions
+  // ───────────────────────────────────────────────────────────
+  { key: "i-deal-cancel", label: "ביטול עסקה לאחר אישור", emoji: "🚫", pipeline: "irrelevant", color: "red", count: 87 },
+  { key: "i-cooling", label: "תקופת התקררות", emoji: "🥶", pipeline: "irrelevant", color: "gray", count: 134 },
+  { key: "i-disrespect", label: "התנהגות לא ראויה", emoji: "⛔", pipeline: "irrelevant", color: "red", count: 23 },
 ];
 
 export const SOURCES: SourceDef[] = [

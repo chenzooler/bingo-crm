@@ -104,6 +104,73 @@ export const STATUS_TO_LIFECYCLE: Record<string, StatusMapping> = {
   "v-no-final":             { stage: "EXIT", exitReason: "NOT_INTERESTED", category: "vehicle", tags: ["no-final"] },
   "v-rejected":             { stage: "EXIT", exitReason: "REJECTED", category: "vehicle" },
   "v-rejected-red":         { stage: "EXIT", exitReason: "REJECTED", category: "vehicle", tags: ["red-alert"] },
+
+  // ───── GENERIC UNDERWRITING ADDITIONS ─────
+  "u-waiting-docs":         { stage: "DOCS", tags: ["docs-pending"] },
+  "u-waiting-final":        { stage: "DECISION" },
+  "u-sign-contract":        { stage: "DOCS", tags: ["sign-pending"], priority: 9 },
+  "u-waiting-insurance":    { stage: "DOCS", tags: ["insurance-pending"] },
+  "u-waiting-win":          { stage: "DISBURSEMENT", tags: ["winning"] },
+  "u-waiting-loan":         { stage: "DISBURSEMENT" },
+  "u-got-loan":             { stage: "DISBURSEMENT", tags: ["got-loan"], priority: 9 },
+  "u-final-id":             { stage: "DOCS", tags: ["id-pending"] },
+  "u-deal-cancel":          { stage: "EXIT", exitReason: "OTHER", tags: ["deal-cancelled"] },
+  "u-deleted":              { stage: "EXIT", exitReason: "OTHER", tags: ["deleted"] },
+  "u-first-no-interest":    { stage: "EXIT", exitReason: "NOT_INTERESTED", tags: ["first-call"] },
+
+  // ───── RETENTION YONI ─────
+  "y-pool":                 { stage: "CONTACT", tags: ["retention", "yoni"] },
+  "y-new-vehicle":          { stage: "NEW", category: "vehicle", tags: ["retention", "yoni"], priority: 7 },
+  "y-new-general":          { stage: "NEW", category: "general", tags: ["retention", "yoni"], priority: 7 },
+  "y-new-purchase":         { stage: "NEW", category: "vehicle", tags: ["retention", "yoni", "purchase"], priority: 7 },
+  "y-callback":             { stage: "CONTACT", tags: ["callback", "retention", "yoni"], priority: 7 },
+  "y-no-answer":            { stage: "CONTACT", tags: ["no-answer", "retention", "yoni"] },
+  "y-interested":           { stage: "SCREENING", tags: ["hot", "retention", "yoni"], priority: 10 },
+  "y-docs-purchase":        { stage: "DOCS", category: "vehicle", tags: ["retention", "yoni"] },
+  "y-waiting-loan":         { stage: "DISBURSEMENT", tags: ["retention", "yoni"] },
+  "y-got-loan":             { stage: "DISBURSEMENT", tags: ["got-loan", "retention", "yoni"], priority: 10 },
+  "y-paid":                 { stage: "PAID", tags: ["retention", "yoni"] },
+  "y-not-interested":       { stage: "EXIT", exitReason: "NOT_INTERESTED", tags: ["retention", "yoni"] },
+
+  // ───── WATI ─────
+  "w-incoming":             { stage: "NEW", tags: ["wati"], priority: 6 },
+  "w-bot-screening":        { stage: "CONTACT", tags: ["wati", "bot-active"] },
+  "w-handed-to-agent":      { stage: "CONTACT", tags: ["wati"], priority: 8 },
+  "w-no-response":          { stage: "EXIT", exitReason: "NO_ANSWER", tags: ["wati"] },
+  "w-promo":                { stage: "NEW", tags: ["wati", "promo"] },
+  "w-faq":                  { stage: "CONTACT", tags: ["wati", "faq"] },
+  "w-greeting":             { stage: "CONTACT", tags: ["wati", "greeting"] },
+  "w-spam-detected":        { stage: "EXIT", exitReason: "SPAM", tags: ["wati"] },
+  "w-broadcast-reply":      { stage: "NEW", tags: ["wati", "broadcast"] },
+
+  // ───── LEGAL ─────
+  "l-pending":              { stage: "EXIT", exitReason: "LEGAL", tags: ["legal-new"] },
+  "l-in-court":             { stage: "EXIT", exitReason: "LEGAL", tags: ["court"] },
+  "l-mediation":            { stage: "EXIT", exitReason: "LEGAL", tags: ["mediation"] },
+  "l-settlement":           { stage: "EXIT", exitReason: "LEGAL", tags: ["settled"] },
+  "l-judgement":            { stage: "EXIT", exitReason: "LEGAL", tags: ["judgement"] },
+  "l-bankruptcy":           { stage: "EXIT", exitReason: "LEGAL", tags: ["bankruptcy"] },
+  "l-closed":               { stage: "EXIT", exitReason: "LEGAL", tags: ["closed"] },
+
+  // ───── SPAM ─────
+  "s-invalid-phone":        { stage: "EXIT", exitReason: "SPAM", tags: ["invalid-phone"] },
+  "s-foreign-phone":        { stage: "EXIT", exitReason: "SPAM", tags: ["foreign-phone"] },
+  "s-bot-detected":         { stage: "EXIT", exitReason: "SPAM", tags: ["bot-detected"] },
+  "s-duplicate-spam":       { stage: "EXIT", exitReason: "DUPLICATE", tags: ["spam"] },
+  "s-blacklist":            { stage: "EXIT", exitReason: "SPAM", tags: ["blacklist"] },
+  "s-no-data":              { stage: "EXIT", exitReason: "SPAM", tags: ["no-data"] },
+
+  // ───── ARCHIVE ─────
+  "a-cold-6m":              { stage: "EXIT", exitReason: "OTHER", tags: ["cold-6m"] },
+  "a-cold-1y":              { stage: "EXIT", exitReason: "OTHER", tags: ["cold-1y"] },
+  "a-historical":           { stage: "EXIT", exitReason: "OTHER", tags: ["historical"] },
+  "a-deleted":              { stage: "EXIT", exitReason: "OTHER", tags: ["deleted"] },
+  "a-merged":               { stage: "EXIT", exitReason: "DUPLICATE", tags: ["merged"] },
+
+  // ───── IRRELEVANT ADDITIONS ─────
+  "i-deal-cancel":          { stage: "EXIT", exitReason: "OTHER", tags: ["deal-cancelled"] },
+  "i-cooling":              { stage: "EXIT", exitReason: "OTHER", tags: ["cooling"] },
+  "i-disrespect":           { stage: "EXIT", exitReason: "OTHER", tags: ["disrespect", "blacklist"] },
 };
 
 /**
