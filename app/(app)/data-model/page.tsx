@@ -11,10 +11,16 @@ import { STATUSES, PIPELINES, SOURCES, USERS } from "@/lib/data/static";
 import { LENDERS } from "@/lib/types";
 import { getMappingCoverage, getStatusesForStage } from "@/lib/data/status-mapper";
 import { PROCESSES, ACTIVE_PROCESSES, TOTAL_LEADS_ALL_PROCESSES, type ProcessDef } from "@/lib/data/processes";
+import {
+  ALL_STATUS_META, TOP_STATUSES_BY_COUNT,
+  groupStatusesByStage, groupStatusesBySentiment,
+  getSentimentMeta, getUrgencyMeta,
+  type StatusMeta, type Sentiment,
+} from "@/lib/data/status-meta";
 import { cn } from "@/lib/utils";
 
 export default function DataModelPage() {
-  const [activeTab, setActiveTab] = React.useState<"overview" | "processes" | "sections" | "stages" | "mapping">("overview");
+  const [activeTab, setActiveTab] = React.useState<"overview" | "processes" | "statuses" | "sections" | "stages" | "mapping">("overview");
   const coverage = React.useMemo(() => getMappingCoverage(), []);
 
   return (
@@ -53,6 +59,7 @@ export default function DataModelPage() {
       <div className="flex items-center gap-1 bg-bingo-gray-100 p-1 rounded-2xl w-fit sticky top-2 z-10 bingo-shadow-sm">
         <TabBtn active={activeTab === "overview"} onClick={() => setActiveTab("overview")} icon={<Database className="size-3.5" />} label="סקירה" />
         <TabBtn active={activeTab === "processes"} onClick={() => setActiveTab("processes")} icon={<Workflow className="size-3.5" />} label="9 תהליכים" />
+        <TabBtn active={activeTab === "statuses"} onClick={() => setActiveTab("statuses")} icon={<Tag className="size-3.5" />} label={`${ALL_STATUS_META.length} סטטוסים`} />
         <TabBtn active={activeTab === "sections"} onClick={() => setActiveTab("sections")} icon={<Layers className="size-3.5" />} label={`8 קבוצות שדות`} />
         <TabBtn active={activeTab === "stages"} onClick={() => setActiveTab("stages")} icon={<Workflow className="size-3.5" />} label="10 שלבי lifecycle" />
         <TabBtn active={activeTab === "mapping"} onClick={() => setActiveTab("mapping")} icon={<GitBranch className="size-3.5" />} label="מיפוי סטטוסים" />
@@ -61,6 +68,7 @@ export default function DataModelPage() {
       {/* Tab content */}
       {activeTab === "overview" && <OverviewTab />}
       {activeTab === "processes" && <ProcessesTab />}
+      {activeTab === "statuses" && <StatusesTab />}
       {activeTab === "sections" && <SectionsTab />}
       {activeTab === "stages" && <StagesTab />}
       {activeTab === "mapping" && <MappingTab coverage={coverage} />}
@@ -259,6 +267,291 @@ function StagesTab() {
               </div>
             );
           })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────── STATUSES TAB ───────────────
+function StatusesTab() {
+  const [view, setView] = React.useState<"stage" | "sentiment" | "popular">("stage");
+  const [search, setSearch] = React.useState("");
+  const [selectedStatus, setSelectedStatus] = React.useState<StatusMeta | null>(null);
+
+  const filtered = React.useMemo(() => {
+    if (!search.trim()) return ALL_STATUS_META;
+    const q = search.toLowerCase();
+    return ALL_STATUS_META.filter((s) =>
+      s.def.label.toLowerCase().includes(q) ||
+      s.key.toLowerCase().includes(q) ||
+      s.description.toLowerCase().includes(q)
+    );
+  }, [search]);
+
+  return (
+    <div className="space-y-4">
+      {/* Summary banner */}
+      <div className="rounded-2xl border-2 border-status-purple/40 bg-gradient-to-bl from-status-purple/15 to-transparent p-5">
+        <h2 className="text-lg font-extrabold text-bingo-black mb-1 inline-flex items-center gap-2">
+          <Tag className="size-5 text-status-purple" />
+          ספריית סטטוסים — {ALL_STATUS_META.length} סטטוסים
+        </h2>
+        <p className="text-[12px] text-bingo-charcoal mb-4">
+          <strong>כל סטטוס</strong> מהמערכת הישנה מקבל מטא-דאטה מלאה: סנטימנט, פעולה מומלצת, דחיפות ו-SLA.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          {(["celebrate", "positive", "pending", "warning", "negative"] as Sentiment[]).map((s) => {
+            const meta = getSentimentMeta(s);
+            const count = ALL_STATUS_META.filter((x) => x.sentiment === s).length;
+            const totalLeads = ALL_STATUS_META.filter((x) => x.sentiment === s).reduce((sum, x) => sum + x.def.count, 0);
+            return (
+              <div key={s} className={cn("rounded-xl border p-2.5", meta.bg, meta.border)}>
+                <div className={cn("text-[10px] font-bold uppercase tracking-wider mb-1", meta.text)}>{meta.label}</div>
+                <div className="text-2xl font-black text-bingo-black tabular-nums leading-none">{count}</div>
+                <div className="text-[10px] text-bingo-gray-500 mt-0.5">{totalLeads.toLocaleString("he-IL")} לידים</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* View toggle + search */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-0.5 bg-bingo-gray-100 rounded-xl p-0.5">
+          <ViewBtn active={view === "stage"} onClick={() => setView("stage")} label="לפי שלב" />
+          <ViewBtn active={view === "sentiment"} onClick={() => setView("sentiment")} label="לפי סנטימנט" />
+          <ViewBtn active={view === "popular"} onClick={() => setView("popular")} label="פופולריים" />
+        </div>
+        <input
+          type="text"
+          placeholder="חיפוש סטטוס..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-9 w-full md:w-64 px-3 rounded-xl border border-bingo-gray-200 text-[12px] font-medium bg-white focus:border-bingo-green focus:outline-none focus:ring-2 focus:ring-bingo-green/20"
+        />
+      </div>
+
+      {/* Search results override grouping */}
+      {search.trim() ? (
+        <StatusGrid statuses={filtered} onSelect={setSelectedStatus} />
+      ) : view === "stage" ? (
+        <StatusByStageView onSelect={setSelectedStatus} />
+      ) : view === "sentiment" ? (
+        <StatusBySentimentView onSelect={setSelectedStatus} />
+      ) : (
+        <StatusGrid statuses={TOP_STATUSES_BY_COUNT.slice(0, 30)} onSelect={setSelectedStatus} />
+      )}
+
+      {/* Detail drawer */}
+      {selectedStatus && <StatusDetailDrawer status={selectedStatus} onClose={() => setSelectedStatus(null)} />}
+    </div>
+  );
+}
+
+function ViewBtn({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "h-8 px-3 rounded-lg text-[12px] font-bold transition",
+        active ? "bg-white text-bingo-black bingo-shadow-sm" : "text-bingo-charcoal hover:bg-white/60"
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
+function StatusByStageView({ onSelect }: { onSelect: (s: StatusMeta) => void }) {
+  const grouped = React.useMemo(() => groupStatusesByStage(), []);
+  return (
+    <div className="space-y-3">
+      {STAGES.map((stage) => {
+        const list = grouped[stage.key] || [];
+        if (list.length === 0) return null;
+        const total = list.reduce((sum, s) => sum + s.def.count, 0);
+        const colorBg = {
+          blue: "border-status-blue/30 bg-status-blue/5",
+          yellow: "border-status-yellow/40 bg-status-yellow/10",
+          orange: "border-status-orange/30 bg-status-orange/5",
+          green: "border-bingo-green/40 bg-bingo-green/8",
+          purple: "border-status-purple/30 bg-status-purple/5",
+          pink: "border-status-pink/30 bg-status-pink/5",
+          gray: "border-bingo-gray-200 bg-bingo-gray-50",
+        }[stage.color];
+        return (
+          <div key={stage.key} className={cn("rounded-2xl border-2 p-4", colorBg)}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="size-10 rounded-xl bg-white inline-flex items-center justify-center font-black text-sm tabular-nums bingo-shadow-sm">
+                {String(stage.position).padStart(2, "0")}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-extrabold text-bingo-black">{stage.label}</h3>
+                <div className="text-[11px] text-bingo-charcoal">{list.length} סטטוסים · {total.toLocaleString("he-IL")} לידים</div>
+              </div>
+            </div>
+            <StatusGrid statuses={list} onSelect={onSelect} compact />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function StatusBySentimentView({ onSelect }: { onSelect: (s: StatusMeta) => void }) {
+  const grouped = React.useMemo(() => groupStatusesBySentiment(), []);
+  const order: Sentiment[] = ["celebrate", "positive", "pending", "warning", "neutral", "negative"];
+  return (
+    <div className="space-y-3">
+      {order.map((sent) => {
+        const list = grouped[sent] || [];
+        if (list.length === 0) return null;
+        const meta = getSentimentMeta(sent);
+        const total = list.reduce((sum, s) => sum + s.def.count, 0);
+        return (
+          <div key={sent} className={cn("rounded-2xl border-2 p-4", meta.bg, meta.border)}>
+            <div className="flex items-center gap-3 mb-3">
+              <span className={cn("size-3 rounded-full", meta.dot)} />
+              <h3 className={cn("text-base font-extrabold", meta.text)}>{meta.label}</h3>
+              <div className="text-[11px] text-bingo-charcoal mr-auto">{list.length} סטטוסים · {total.toLocaleString("he-IL")} לידים</div>
+            </div>
+            <StatusGrid statuses={list} onSelect={onSelect} compact />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function StatusGrid({ statuses, onSelect, compact }: { statuses: StatusMeta[]; onSelect: (s: StatusMeta) => void; compact?: boolean }) {
+  if (statuses.length === 0) {
+    return <div className="text-center py-8 text-sm text-bingo-gray-500">אין סטטוסים בקבוצה זו</div>;
+  }
+  return (
+    <div className={cn("grid gap-2", compact ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3")}>
+      {statuses.map((s) => <StatusChip key={s.key} status={s} onClick={() => onSelect(s)} />)}
+    </div>
+  );
+}
+
+function StatusChip({ status, onClick }: { status: StatusMeta; onClick: () => void }) {
+  const meta = getSentimentMeta(status.sentiment);
+  const urgMeta = getUrgencyMeta(status.urgency);
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "text-right rounded-xl border-2 p-3 transition hover-lift bg-white relative group",
+        meta.border
+      )}
+    >
+      {/* Header */}
+      <div className="flex items-start gap-2 mb-2">
+        <div className="size-9 rounded-lg bg-bingo-gray-50 inline-flex items-center justify-center text-lg shrink-0">
+          {status.emoji}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-[13px] font-extrabold text-bingo-black truncate">{status.def.label}</div>
+          <div className="text-[10px] font-mono text-bingo-gray-400 truncate" dir="ltr">{status.key}</div>
+        </div>
+        {status.isTerminal && (
+          <span className="text-[9px] font-bold bg-bingo-gray-100 text-bingo-charcoal rounded px-1 py-0.5">TERMINAL</span>
+        )}
+      </div>
+
+      {/* Footer: count + sentiment + urgency */}
+      <div className="flex items-center gap-1 flex-wrap">
+        <span className={cn("text-[9px] font-bold rounded-md px-1.5 py-0.5 border", meta.chip)}>
+          {meta.label}
+        </span>
+        {status.urgency !== "none" && (
+          <span className={cn("text-[9px] font-bold rounded-md px-1.5 py-0.5", urgMeta.color)}>
+            {urgMeta.label}
+          </span>
+        )}
+        <span className="text-[10px] font-mono font-bold text-bingo-gray-500 tabular-nums mr-auto">
+          {status.def.count.toLocaleString("he-IL")} לידים
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function StatusDetailDrawer({ status, onClose }: { status: StatusMeta; onClose: () => void }) {
+  const meta = getSentimentMeta(status.sentiment);
+  const urgMeta = getUrgencyMeta(status.urgency);
+  return (
+    <div className="fixed inset-0 z-50 bg-bingo-onyx/40 backdrop-blur-sm animate-fade-in flex items-center justify-center p-4" onClick={onClose}>
+      <div className="w-full max-w-2xl max-h-[90vh] surface-card-elevated overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className={cn("px-6 py-4 border-b border-bingo-gray-150 flex items-center justify-between", meta.bg)}>
+          <div className="flex items-center gap-3">
+            <div className="size-14 rounded-2xl bg-white inline-flex items-center justify-center text-3xl bingo-shadow-sm">{status.emoji}</div>
+            <div>
+              <h2 className="text-xl font-black text-bingo-black">{status.def.label}</h2>
+              <p className="text-[12px] font-mono text-bingo-gray-500" dir="ltr">{status.key}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="size-9 rounded-lg hover:bg-bingo-gray-100 inline-flex items-center justify-center">
+            <span className="text-xl">×</span>
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+          {/* Quick stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <ProcessStat label="לידים" value={status.def.count.toLocaleString("he-IL")} sub="במערכת" />
+            <ProcessStat label="סנטימנט" value={meta.label} sub="" />
+            <ProcessStat label="דחיפות" value={urgMeta.label} sub="" highlight={status.urgency === "now"} />
+            {status.slaHours && <ProcessStat label="SLA" value={`${status.slaHours}h`} sub="זמן יעד" />}
+          </div>
+
+          {/* Description */}
+          <div>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">תיאור</h3>
+            <p className="text-[13px] text-bingo-charcoal leading-relaxed">{status.description}</p>
+          </div>
+
+          {/* Next action */}
+          <div className={cn("rounded-xl border-2 p-4", meta.bg, meta.border)}>
+            <div className="text-[11px] font-bold uppercase tracking-wider text-bingo-charcoal mb-1 inline-flex items-center gap-1.5">
+              <Sparkles className={cn("size-3", meta.text)} />
+              פעולה מומלצת
+            </div>
+            <p className="text-[14px] font-bold text-bingo-black leading-relaxed">{status.nextAction}</p>
+          </div>
+
+          {/* Linked stage */}
+          {(() => {
+            const stage = STAGES.find((s) => s.key === status.stage);
+            if (!stage) return null;
+            return (
+              <div className="rounded-xl bg-bingo-gray-50 border border-bingo-gray-200 p-3">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500">מתחבר לשלב Lifecycle</div>
+                <div className="text-[14px] font-extrabold text-bingo-black mt-0.5 inline-flex items-center gap-2">
+                  <span className="text-[11px] font-mono bg-white rounded px-1.5">{String(stage.position).padStart(2, "0")}</span>
+                  {stage.label}
+                </div>
+                <div className="text-[11px] text-bingo-charcoal mt-1">{stage.description}</div>
+              </div>
+            );
+          })()}
+
+          {/* Terminal indicator */}
+          {status.isTerminal && (
+            <div className="rounded-xl bg-bingo-gray-100 border border-bingo-gray-200 p-3 text-center">
+              <div className="text-[11px] font-bold text-bingo-charcoal">🔚 סטטוס סופי — הליד יוצא מהמערכת</div>
+            </div>
+          )}
+        </div>
+
+        <div className="px-6 py-3 border-t border-bingo-gray-150 bg-bingo-gray-50 flex justify-between items-center">
+          <Link href={`/leads?status=${status.key}`} className="text-[12px] font-bold text-bingo-green-dark hover:underline">
+            הצג {status.def.count.toLocaleString("he-IL")} לידים בסטטוס זה ←
+          </Link>
+          <button onClick={onClose} className="text-[11px] text-bingo-gray-500 hover:text-bingo-black">סגור</button>
         </div>
       </div>
     </div>
