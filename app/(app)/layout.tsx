@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TasksPanel } from "@/components/layout/TasksPanel";
@@ -22,9 +21,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="min-h-screen bg-bingo-cream">
           <Header />
           <div className="flex">
-            <Suspense fallback={<div className="w-72" />}>
-              <Sidebar />
-            </Suspense>
+            <Sidebar />
             <main className="flex-1 min-w-0 p-4 sm:p-6">
               <div className="page-transition">{children}</div>
             </main>
