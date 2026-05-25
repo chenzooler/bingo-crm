@@ -395,18 +395,16 @@ html.dark {
   .icon-3d-rose   { background: linear-gradient(135deg, #FDA4AF 0%, #E11D48 100%); }
   .icon-3d-bingo  { background: linear-gradient(135deg, #B5FF8C 0%, #50FF0A 50%, #2EA10D 100%); }
 
-  /* Vibrant glassmorphism card */
+  /* Vibrant card — clean on white background */
   .card-vibrant {
     position: relative;
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: saturate(180%) blur(24px);
-    -webkit-backdrop-filter: saturate(180%) blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    border-radius: 20px;
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 18px;
     box-shadow:
-      0 1px 0 0 rgba(255,255,255,0.6) inset,
-      0 1px 2px 0 rgba(0,0,0,0.04),
-      0 8px 32px -8px rgba(99, 102, 241, 0.12);
+      0 0.5px 0 0 rgba(0, 0, 0, 0.04),
+      0 2px 4px -1px rgba(0, 0, 0, 0.03),
+      0 8px 24px -6px rgba(46, 161, 13, 0.08);
     overflow: hidden;
   }
 
