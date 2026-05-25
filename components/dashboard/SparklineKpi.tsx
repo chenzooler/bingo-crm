@@ -2,6 +2,16 @@
 import * as React from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Icon3D } from "@/components/ui/Icon3D";
+
+const TONE_MAP: Record<string, "bingo" | "blue" | "orange" | "green" | "purple" | "red" | "pink"> = {
+  bingo: "bingo",
+  blue: "blue",
+  orange: "orange",
+  green: "green",
+  purple: "purple",
+  red: "red",
+};
 
 type Accent = "bingo" | "blue" | "orange" | "green" | "purple" | "red";
 
@@ -81,9 +91,9 @@ export function SparklineKpi({
 
       {/* Content */}
       <div className="relative">
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-600">{label}</span>
-          {icon && <span className={cn("opacity-60", p.text)}>{icon}</span>}
+        <div className="flex items-start justify-between mb-2">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-600 mt-1">{label}</span>
+          {icon && <Icon3D icon={icon} tone={TONE_MAP[accent] || "bingo"} size={32} />}
         </div>
         <div className="text-2xl sm:text-3xl font-black text-bingo-black tabular-nums mt-0.5 leading-none num-display">
           {value}

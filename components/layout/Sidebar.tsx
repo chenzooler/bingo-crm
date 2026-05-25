@@ -188,7 +188,7 @@ export function Sidebar() {
   }).filter(Boolean);
 
   return (
-    <aside className="hidden md:flex w-72 shrink-0 bg-bingo-cream border-l border-bingo-gray-150 h-[calc(100vh-3.5rem)] sticky top-14 overflow-hidden flex-col">
+    <aside className="hidden md:flex w-72 shrink-0 surface-sidebar h-[calc(100vh-3rem)] sticky top-12 overflow-hidden flex-col">
       <div className="px-3 pt-3 pb-2 border-b border-bingo-gray-150">
         <div className="flex items-center gap-1 mb-2 bg-white rounded-lg p-0.5 border border-bingo-gray-200">
           <ScopeBtn active={scope === "me"} onClick={() => setScope("me")} icon={<User className="size-3" />} label="שלי" />

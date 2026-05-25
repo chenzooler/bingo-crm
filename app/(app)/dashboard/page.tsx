@@ -12,6 +12,7 @@ import { PipelineFunnel } from "@/components/dashboard/PipelineFunnel";
 import { LiveActivityFeed } from "@/components/dashboard/LiveActivityFeed";
 import { GamificationWidget } from "@/components/dashboard/GamificationWidget";
 import { Phone, MessageCircle, ListChecks, BarChart3, Target, Banknote, Trophy, TrendingUp } from "lucide-react";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { DEALS, AGENT_GOALS, filterDealsByRange, summarizeDeals, getStreak, type DateRange } from "@/lib/data/performance";
 import { TASKS } from "@/lib/data/leads";
 import { formatNumber, formatCurrency } from "@/lib/utils";
@@ -161,23 +162,26 @@ function StatRow({ label, value, status }: { label: string; value: string; statu
 
 function QuickActions() {
   return (
-    <div className="rounded-3xl bg-white border border-bingo-gray-200 bingo-shadow-sm p-5">
-      <h3 className="text-sm font-extrabold text-bingo-black mb-3">קיצורי דרך</h3>
-      <div className="grid grid-cols-2 gap-2">
-        <ActionBtn href="/dialer" icon={<Phone className="size-4" />} label="תותח שיחות" />
-        <ActionBtn href="/leads?status=u-callback" icon={<MessageCircle className="size-4" />} label="פולואפים" />
-        <ActionBtn href="/leads?status=g-approved-final" icon={<MessageCircle className="size-4" />} label="שיחות סגירה" />
-        <ActionBtn href="/tasks" icon={<ListChecks className="size-4" />} label="המשימות שלי" />
+    <div className="rounded-2xl bg-white border border-bingo-gray-200 bingo-shadow-sm p-5">
+      <h3 className="text-sm font-extrabold text-bingo-black mb-3 inline-flex items-center gap-2">
+        <span className="size-1.5 rounded-full bg-bingo-green dot-pulse" />
+        קיצורי דרך
+      </h3>
+      <div className="grid grid-cols-2 gap-2.5">
+        <ActionBtn href="/dialer" icon={<Phone className="size-4" />} label="תותח שיחות" tone="bingo" />
+        <ActionBtn href="/leads?status=u-callback" icon={<MessageCircle className="size-4" />} label="פולואפים" tone="orange" />
+        <ActionBtn href="/leads?status=g-approved-final" icon={<MessageCircle className="size-4" />} label="שיחות סגירה" tone="blue" />
+        <ActionBtn href="/tasks" icon={<ListChecks className="size-4" />} label="המשימות שלי" tone="pink" />
       </div>
     </div>
   );
 }
 
-function ActionBtn({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+function ActionBtn({ href, icon, label, tone }: { href: string; icon: React.ReactNode; label: string; tone: "bingo" | "orange" | "blue" | "pink" }) {
   return (
-    <Link href={href} className="inline-flex items-center gap-1.5 h-10 px-3 rounded-xl bg-bingo-gray-100 hover:bg-bingo-green hover:text-bingo-black text-bingo-charcoal text-[12px] font-bold transition">
-      {icon}
-      <span className="truncate">{label}</span>
+    <Link href={href} className="group flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border border-bingo-gray-200 hover:border-bingo-green hover:shadow-md hover:shadow-bingo-green/15 transition">
+      <Icon3D icon={icon} tone={tone} size={32} />
+      <span className="text-[12px] font-bold text-bingo-charcoal truncate group-hover:text-bingo-black">{label}</span>
     </Link>
   );
 }
