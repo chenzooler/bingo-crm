@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { Zap, Plus, Pencil, Power, Trash2, ArrowLeft, MessageCircle, Mail, Phone, Tag, Clock, AlertTriangle, Repeat } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -105,20 +106,23 @@ export default function AutomationsPage() {
 
   return (
     <div className="max-w-[1400px] space-y-4">
-      <div className="flex items-end justify-between gap-3 flex-wrap">
-        <div>
-          <div className="text-[11px] font-bold uppercase tracking-wider text-bingo-gray-500 inline-flex items-center gap-1 mb-1">
-            <Zap className="size-3" /> אוטומציות
+      <div className="relative rounded-3xl bg-white border border-bingo-gray-200 p-5 overflow-hidden" style={{ boxShadow: "0 2px 4px -1px rgba(0,0,0,0.03), 0 8px 24px -6px rgba(46, 161, 13, 0.10)" }}>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-4">
+            <Icon3D icon={<Zap className="size-6" />} tone="yellow" size={56} />
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">אוטומציות וזרימות</div>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none flex items-center gap-2">
+                <span className="text-bingo-black">No-Code Workflows</span>
+                <span className="text-[12px] font-black tabular-nums px-2 py-0.5 rounded-lg text-gradient-bingo bg-bingo-green/10 border border-bingo-green/25">{AUTOMATIONS.length} זרימות</span>
+              </h1>
+              <p className="text-[12px] text-bingo-gray-600 mt-1.5">תהליכים אוטומטיים שחוסכים שעות עבודה - בלי שורת קוד</p>
+            </div>
           </div>
-          <h1 className="text-3xl sm:text-[34px] font-black tracking-tight text-bingo-black leading-none">
-            No-Code Workflows
-            <span className="inline-block size-3 rounded-full bg-bingo-green ml-2 align-middle" />
-          </h1>
-          <p className="text-sm text-bingo-gray-600 mt-1.5">תהליכים אוטומטיים שחוסכים שעות עבודה - בלי שורת קוד</p>
+          <button className="h-10 px-4 rounded-xl bg-bingo-black text-white text-sm font-bold inline-flex items-center gap-1.5 hover:bg-bingo-charcoal">
+            <Plus className="size-4" /> אוטומציה חדשה
+          </button>
         </div>
-        <button className="h-10 px-4 rounded-xl bg-bingo-black text-white text-sm font-bold inline-flex items-center gap-1.5 hover:bg-bingo-charcoal">
-          <Plus className="size-4" /> אוטומציה חדשה
-        </button>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
