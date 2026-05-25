@@ -555,6 +555,18 @@ html.dark {
   }
   .float-rotate { animation: float-rotate 4s ease-in-out infinite; }
 
+  /* Confetti burst */
+  @keyframes confetti-burst {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
+    15%  { opacity: 1; transform: translate(var(--x, 0px), -100px) scale(1) rotate(calc(var(--rotation, 0deg) * 0.2)); }
+    100% { opacity: 0; transform: translate(var(--x, 0px), 600px) scale(0.8) rotate(var(--rotation, 0deg)); }
+  }
+  .confetti-piece {
+    animation-name: confetti-burst;
+    animation-timing-function: cubic-bezier(0.2, 0.6, 0.3, 1);
+    animation-fill-mode: forwards;
+  }
+
   .glass {
     background: color-mix(in oklab, var(--color-bingo-cream) 85%, transparent);
     backdrop-filter: saturate(180%) blur(20px);

@@ -12,6 +12,10 @@ import {
 import type { Lead } from "@/lib/types";
 import { Avatar } from "@/components/ui/Avatar";
 import { Icon3D } from "@/components/ui/Icon3D";
+import { Confetti } from "@/components/ui/Confetti";
+import { HotLeadBadge } from "@/components/ui/HotLeadBadge";
+import { LiveAgentTicker } from "@/components/ui/LiveAgentTicker";
+import { FloatingActionBar } from "@/components/ui/FloatingActionBar";
 import { cn, formatCurrency } from "@/lib/utils";
 
 type Phase = "qualify" | "sign" | "auction" | "close";
@@ -34,50 +38,68 @@ const PHASES: PhaseDef[] = [
 export function LeadJourney({ lead: initial }: { lead: Lead }) {
   const [lead, setLead] = React.useState<Lead>(initial);
   const [phase, setPhase] = React.useState<Phase>(() => derivePhase(initial));
+  const [confettiTrigger, setConfettiTrigger] = React.useState(0);
 
   function set<K extends keyof Lead>(key: K, val: Lead[K]) {
     setLead((l) => ({ ...l, [key]: val }));
+  }
+
+  function advanceTo(next: Phase) {
+    setConfettiTrigger((c) => c + 1);
+    setPhase(next);
   }
 
   const bdiNegative = lead.smileyAuto === "red" || lead.smileyAuto === "yellow" ||
     lead.hadCreditIssues === true || lead.accountRestricted === true ||
     (lead.creditCards?.includes("none")) || lead.cardLimit === "below-5k";
 
+  // Compute "temperature" based on score + signals
+  const score = 88;
+  const temperature: "cold" | "warm" | "hot" | "blazing" =
+    score >= 90 ? "blazing" : score >= 75 ? "hot" : score >= 50 ? "warm" : "cold";
+
   return (
-    <div className="-mx-6 -mt-6 min-h-[calc(100vh-64px)] bg-aurora relative overflow-hidden">
-      {/* Floating orbs */}
-      <div className="orb orb-purple w-[400px] h-[400px] -top-32 -right-32" style={{ animationDelay: "0s" }} />
-      <div className="orb orb-cyan   w-[350px] h-[350px] top-1/3 -left-32" style={{ animationDelay: "3s" }} />
-      <div className="orb orb-pink   w-[300px] h-[300px] bottom-0 right-1/4" style={{ animationDelay: "6s" }} />
+    <>
+      <Confetti trigger={confettiTrigger} count={40} />
 
-      <Toolbar lead={lead} bdiNegative={bdiNegative} />
+      <div className="-mx-6 -mt-6 min-h-[calc(100vh-64px)] bg-aurora relative overflow-hidden pb-24">
+        {/* Floating orbs */}
+        <div className="orb orb-purple w-[400px] h-[400px] -top-32 -right-32" style={{ animationDelay: "0s" }} />
+        <div className="orb orb-cyan   w-[350px] h-[350px] top-1/3 -left-32" style={{ animationDelay: "3s" }} />
+        <div className="orb orb-pink   w-[300px] h-[300px] bottom-0 right-1/4" style={{ animationDelay: "6s" }} />
 
-      <div className="relative max-w-[1400px] mx-auto px-6 py-5">
-        <PhaseRail current={phase} onChange={setPhase} />
+        <Toolbar lead={lead} bdiNegative={bdiNegative} temperature={temperature} score={score} />
 
-        <div className="mt-5 grid grid-cols-12 gap-5">
-          <main className="col-span-9 space-y-4">
-            {phase === "qualify" && <QualifyFull lead={lead} set={set} bdiNegative={bdiNegative} onAdvance={() => setPhase("sign")} />}
-            {phase === "sign"    && <SignFull lead={lead} onAdvance={() => setPhase("auction")} />}
-            {phase === "auction" && <AuctionFull lead={lead} onAdvance={() => setPhase("close")} />}
-            {phase === "close"   && <CloseFull lead={lead} />}
-          </main>
+        <div className="relative max-w-[1400px] mx-auto px-6 py-5">
+          <PhaseRail current={phase} onChange={setPhase} />
 
-          <aside className="col-span-3 space-y-4">
-            <LeadStatsCard lead={lead} />
-            <ActivityRail lead={lead} />
-            <TasksRail />
-          </aside>
+          <div className="mt-5 grid grid-cols-12 gap-5">
+            <main className="col-span-9 space-y-4">
+              {phase === "qualify" && <QualifyFull lead={lead} set={set} bdiNegative={bdiNegative} onAdvance={() => advanceTo("sign")} />}
+              {phase === "sign"    && <SignFull lead={lead} onAdvance={() => advanceTo("auction")} />}
+              {phase === "auction" && <AuctionFull lead={lead} onAdvance={() => advanceTo("close")} />}
+              {phase === "close"   && <CloseFull lead={lead} />}
+            </main>
+
+            <aside className="col-span-3 space-y-4">
+              <LiveAgentTicker />
+              <LeadStatsCard lead={lead} />
+              <ActivityRail lead={lead} />
+              <TasksRail />
+            </aside>
+          </div>
         </div>
+
+        <FloatingActionBar />
       </div>
-    </div>
+    </>
   );
 }
 
 /* ============================================================
    TOOLBAR — translucent with vibrant accents
    ============================================================ */
-function Toolbar({ lead, bdiNegative }: { lead: Lead; bdiNegative: boolean }) {
+function Toolbar({ lead, bdiNegative, temperature, score }: { lead: Lead; bdiNegative: boolean; temperature: "cold" | "warm" | "hot" | "blazing"; score: number }) {
   return (
     <div className="sticky top-0 z-40 backdrop-blur-2xl bg-white/60 border-b border-white/40">
       <div className="max-w-[1400px] mx-auto px-6 py-3">
@@ -93,10 +115,10 @@ function Toolbar({ lead, bdiNegative }: { lead: Lead; bdiNegative: boolean }) {
               <span className="absolute -bottom-0.5 -left-0.5 size-3 rounded-full bg-emerald-500 border-2 border-white" />
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-[17px] font-bold text-slate-900 truncate">{lead.fullName}</h1>
+                <HotLeadBadge temperature={temperature} score={score} />
                 {bdiNegative && <BDIBadge />}
-                <ScoreBadge score={88} />
               </div>
               <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
                 <span>ID: {lead.idNumber || "—"}</span>
