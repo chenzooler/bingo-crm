@@ -14,7 +14,7 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
   return (
     <>
       <CommandPalette />
-      <header className="h-14 sticky top-0 z-40 glass-strong border-b border-bingo-gray-150 flex items-center px-4 lg:px-5 gap-3">
+      <header className="h-12 sticky top-0 z-40 surface-toolbar flex items-center px-4 lg:px-5 gap-3">
         <button
           type="button"
           onClick={onToggleSidebar}

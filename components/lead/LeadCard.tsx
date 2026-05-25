@@ -174,6 +174,14 @@ function CardHeaderBar({ lead }: { lead: Lead }) {
         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 rounded-md px-2 py-1 inline-flex items-center gap-1">
           <Cloud className="size-3" /> נשמר אוטומטית
         </span>
+        <Link
+          href={`/leads/${lead.id}/journey`}
+          className="h-9 px-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white text-[12px] font-bold inline-flex items-center gap-1.5 hover:from-purple-700 hover:to-blue-700 transition bingo-shadow"
+          title="פתח מסע ליד מבוסס פאזות"
+        >
+          <Sparkles className="size-3.5" />
+          <span className="hidden sm:inline">מסע ליד</span>
+        </Link>
         <AICopilotDrawer lead={lead}>
           <button
             className="h-9 px-3 rounded-xl bg-bingo-black text-bingo-green text-[12px] font-bold inline-flex items-center gap-1.5 hover:bg-bingo-charcoal transition bingo-shadow"

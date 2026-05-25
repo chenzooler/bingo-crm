@@ -18,33 +18,34 @@ export function TasksPanel() {
   const urgentCount = TASKS.filter((t) => t.urgent).length;
 
   return (
-    <aside className="w-80 shrink-0 bg-white border-r border-bingo-gray-150 h-[calc(100vh-3.5rem)] sticky top-14 overflow-hidden flex flex-col">
-      <div className="px-4 pt-3.5 pb-3 border-b border-bingo-gray-150">
+    <aside className="w-72 shrink-0 surface-sidebar h-[calc(100vh-3rem)] sticky top-12 overflow-hidden flex flex-col">
+      <div className="px-4 pt-3 pb-2">
         <div className="flex items-center justify-between mb-2.5">
-          <h2 className="text-sm font-extrabold text-bingo-black inline-flex items-center gap-1.5">
-            <ListChecks className="size-4" />
+          <h2 className="text-headline inline-flex items-center gap-1.5">
+            <ListChecks className="size-3.5 text-[var(--color-tinted-text-secondary)]" />
             משימות
             {urgentCount > 0 && (
-              <span className="text-[10px] font-mono tabular-nums font-bold bg-status-red text-white rounded-full px-1.5 py-0.5 animate-pulse-green">
+              <span className="text-[10px] tabular-nums font-semibold bg-red-500 text-white rounded-full px-1.5 py-0.5">
                 {urgentCount}
               </span>
             )}
           </h2>
           <div className="flex items-center gap-1">
-            <button className="size-7 rounded-lg bg-bingo-green hover:bg-bingo-green-bright text-bingo-black inline-flex items-center justify-center transition" title="הוסף משימה">
-              <Plus className="size-3.5" strokeWidth={3} />
+            <button className="size-6 rounded-md text-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] inline-flex items-center justify-center transition" title="הוסף משימה">
+              <Plus className="size-3.5" />
             </button>
-            <button className="size-7 rounded-lg bg-status-orange hover:bg-orange-500 text-white inline-flex items-center justify-center transition" title="משימה מתפרצת">
+            <button className="size-6 rounded-md text-amber-600 hover:bg-amber-50 inline-flex items-center justify-center transition" title="משימה מתפרצת">
               <AlarmClock className="size-3.5" />
             </button>
           </div>
         </div>
-        <div className="flex items-center gap-1 bg-bingo-gray-100 rounded-lg p-0.5">
-          <TabButton active={tab === "incoming"} onClick={() => setTab("incoming")} label="נכנסות" badge={incomingCount} />
-          <TabButton active={tab === "outgoing"} onClick={() => setTab("outgoing")} label="יוצאות" badge={outgoingCount} />
-          <TabButton active={tab === "future"} onClick={() => setTab("future")} label="עתידי" badge={futureCount} />
+        <div className="segmented-apple w-full grid grid-cols-3 gap-0.5">
+          <button data-active={tab === "incoming"} onClick={() => setTab("incoming")}>נכנסות {incomingCount > 0 && <span className="text-[10px] opacity-60">{incomingCount}</span>}</button>
+          <button data-active={tab === "outgoing"} onClick={() => setTab("outgoing")}>יוצאות {outgoingCount > 0 && <span className="text-[10px] opacity-60">{outgoingCount}</span>}</button>
+          <button data-active={tab === "future"} onClick={() => setTab("future")}>עתידי {futureCount > 0 && <span className="text-[10px] opacity-60">{futureCount}</span>}</button>
         </div>
       </div>
+      <div className="divider-apple mx-4" />
 
       <div className="flex-1 overflow-y-auto">
         {filtered.length === 0 && (
@@ -62,36 +63,31 @@ export function TasksPanel() {
             <Link
               key={t.id}
               href={`/leads/${t.leadId}`}
-              className="group block px-4 py-2.5 hover:bg-bingo-cream/70 transition border-b border-bingo-gray-100 relative"
+              className="group flex items-start gap-2.5 px-4 py-2.5 hover:bg-black/[0.02] transition"
             >
-              <div
-                className={cn(
-                  "absolute right-0 top-0 bottom-0 w-1",
-                  t.urgent ? "bg-status-red" : "bg-bingo-green"
-                )}
+              <button
+                className="size-4 rounded-full border border-black/15 hover:border-[var(--color-accent)] mt-0.5 shrink-0 transition"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               />
-              <div className="flex items-start gap-2.5">
-                <Avatar size="sm" name={author?.name || ""} emoji={author?.emoji} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 text-[11px] mb-0.5">
-                    <span className={cn("font-mono tabular-nums font-bold", t.urgent ? "text-status-red" : "text-bingo-green-dark")}>
-                      {formatTime(t.dueAt)}
-                    </span>
-                    <span className="text-bingo-gray-400">·</span>
-                    <span className="font-bold text-bingo-charcoal truncate">{author?.name}</span>
-                  </div>
-                  <div className="text-[12px] font-bold text-bingo-black truncate group-hover:text-bingo-green-dark">{t.leadName}</div>
-                  <div className="text-[12px] text-bingo-gray-700 leading-snug mt-0.5 line-clamp-2">{t.text}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[12px] font-medium text-[var(--color-tinted-text-primary)] truncate">{t.leadName}</div>
+                <div className="text-[11px] text-[var(--color-tinted-text-secondary)] line-clamp-1 mt-0.5">{t.text}</div>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className={cn("inline-block size-1.5 rounded-full", t.urgent ? "bg-red-500" : "bg-emerald-500")} />
+                  <span className="text-[10px] text-[var(--color-tinted-text-tertiary)] tabular-nums">{formatTime(t.dueAt)}</span>
+                  <span className="text-[10px] text-[var(--color-tinted-text-tertiary)]">·</span>
+                  <span className="text-[10px] text-[var(--color-tinted-text-tertiary)] truncate">{author?.name}</span>
                 </div>
               </div>
             </Link>
           );
         })}
       </div>
-      <div className="px-4 py-2.5 border-t border-bingo-gray-150 flex items-center justify-between text-[11px] text-bingo-gray-500">
-        <span>{filtered.length} משימות</span>
-        <Link href="/tasks" className="font-bold text-bingo-green-dark hover:underline">
-          הצג הכל ←
+      <div className="divider-apple mx-4" />
+      <div className="px-4 py-2.5 flex items-center justify-between">
+        <span className="text-[11px] text-[var(--color-tinted-text-tertiary)]">{filtered.length} משימות</span>
+        <Link href="/tasks" className="text-[11px] font-medium text-[var(--color-accent)] hover:underline">
+          הצג הכל
         </Link>
       </div>
     </aside>
