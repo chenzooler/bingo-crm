@@ -8,17 +8,17 @@ interface Action {
   label: string;
   shortcut?: string;
   icon: React.ElementType;
-  tone: "green" | "blue" | "purple" | "orange" | "cyan" | "pink";
+  tone: "green" | "blue" | "purple" | "orange" | "cyan" | "pink" | "bingo";
   onClick?: () => void;
 }
 
 const ACTIONS: Action[] = [
-  { key: "call",     label: "חיוג",        shortcut: "C", icon: Phone,         tone: "green"  },
+  { key: "call",     label: "חיוג",        shortcut: "C", icon: Phone,         tone: "bingo"  },
   { key: "whatsapp", label: "WhatsApp",   shortcut: "W", icon: MessageCircle, tone: "green"  },
   { key: "sms",      label: "SMS",        shortcut: "S", icon: Mail,          tone: "blue"   },
-  { key: "note",     label: "הערה",        shortcut: "N", icon: FileText,      tone: "purple" },
+  { key: "note",     label: "הערה",        shortcut: "N", icon: FileText,      tone: "orange" },
   { key: "voice",    label: "הקלטה",       shortcut: "R", icon: Mic,           tone: "pink"   },
-  { key: "ai",       label: "AI עוזר",     shortcut: "J", icon: Sparkles,      tone: "purple" },
+  { key: "ai",       label: "AI עוזר",     shortcut: "J", icon: Sparkles,      tone: "bingo"  },
 ];
 
 export function FloatingActionBar() {
@@ -26,7 +26,7 @@ export function FloatingActionBar() {
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="flex items-center gap-1.5 p-2 rounded-2xl bg-slate-900/85 backdrop-blur-xl border border-white/10 shadow-2xl shadow-indigo-900/40">
+      <div className="flex items-center gap-1.5 p-2 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-white/10 shadow-2xl shadow-green-900/40 ring-1 ring-bingo-green/20">
         {ACTIONS.map((a) => {
           const Icon = a.icon;
           const isHovered = hover === a.key;

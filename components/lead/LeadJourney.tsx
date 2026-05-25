@@ -25,14 +25,14 @@ interface PhaseDef {
   label: string;
   sublabel: string;
   icon: React.ElementType;
-  tone: "blue" | "purple" | "orange" | "green";
+  tone: "blue" | "purple" | "orange" | "green" | "indigo" | "bingo";
 }
 
 const PHASES: PhaseDef[] = [
-  { key: "qualify", label: "שאלון", sublabel: "סינון", icon: Target,       tone: "blue" },
-  { key: "sign",    label: "חתימה", sublabel: "חוזה",   icon: FileSignature, tone: "purple" },
-  { key: "auction", label: "מכרז",   sublabel: "12 גופים", icon: Trophy,    tone: "orange" },
-  { key: "close",   label: "סגירה",   sublabel: "אישור", icon: Rocket,      tone: "green" },
+  { key: "qualify", label: "שאלון", sublabel: "סינון",     icon: Target,        tone: "blue" },
+  { key: "sign",    label: "חתימה", sublabel: "חוזה",       icon: FileSignature, tone: "indigo" },
+  { key: "auction", label: "מכרז",   sublabel: "12 גופים",  icon: Trophy,        tone: "orange" },
+  { key: "close",   label: "סגירה",   sublabel: "אישור",     icon: Rocket,        tone: "bingo" },
 ];
 
 export function LeadJourney({ lead: initial }: { lead: Lead }) {
@@ -105,7 +105,7 @@ function Toolbar({ lead, bdiNegative, temperature, score }: { lead: Lead; bdiNeg
       <div className="max-w-[1400px] mx-auto px-6 py-3">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <Link href="/leads" className="text-[12px] font-medium text-slate-600 hover:text-indigo-600 flex items-center gap-1 transition">
+            <Link href="/leads" className="text-[12px] font-medium text-slate-600 hover:text-bingo-green-dark flex items-center gap-1 transition">
               <ChevronRight className="size-3.5" />
               <span>לידים</span>
             </Link>
@@ -127,7 +127,7 @@ function Toolbar({ lead, bdiNegative, temperature, score }: { lead: Lead; bdiNeg
                 {lead.amountRequested && (
                   <>
                     <span className="opacity-40">·</span>
-                    <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 tabular-nums">
+                    <span className="font-black text-gradient-bingo tabular-nums">
                       {formatCurrency(lead.amountRequested)}
                     </span>
                   </>
@@ -196,8 +196,8 @@ function PhaseRail({ current, onChange }: { current: Phase; onChange: (p: Phase)
           className="absolute top-1/2 left-8 h-1 rounded-full -translate-y-1/2 transition-all duration-700"
           style={{
             width: `calc(${(idx / (PHASES.length - 1)) * 100}% - ${(idx / (PHASES.length - 1)) * 16}px)`,
-            background: "linear-gradient(90deg, #3B82F6, #A855F7, #F59E0B, #10B981)",
-            boxShadow: "0 0 16px rgba(168, 85, 247, 0.4)",
+            background: "linear-gradient(90deg, #3B82F6, #4F46E5, #F59E0B, #50FF0A)",
+            boxShadow: "0 0 18px rgba(80, 255, 10, 0.45)",
           }}
         />
         {PHASES.map((p, i) => {
@@ -262,7 +262,7 @@ function QualifyFull({ lead, set, bdiNegative, onAdvance }: {
             </div>
             <h2 className="text-[28px] font-black tracking-tight leading-tight">
               <span className="text-slate-900">בואו נכיר את </span>
-              <span className="text-gradient-purple">{lead.firstName || lead.fullName}</span>
+              <span className="text-gradient-bingo">{lead.firstName || lead.fullName}</span>
             </h2>
             <p className="text-[13px] text-slate-600 mt-2 max-w-md">
               מלא את כל הסעיפים. הניתוב לחבילה (כל מטרה / רכב) נקבע אוטומטית.
@@ -374,7 +374,7 @@ function QualifyFull({ lead, set, bdiNegative, onAdvance }: {
       {/* Sticky CTA footer */}
       <div className="card-vibrant p-4 flex items-center justify-between sticky bottom-4 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="size-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 dot-pulse" />
+          <div className="size-2 rounded-full bg-gradient-to-r from-lime-400 to-green-500 dot-pulse" />
           <span className="text-[13px] font-semibold text-slate-700">
             {completion === 100 ? "השאלון מלא — מוכן לחתימה" : `${Math.round(completion)}% הושלמו`}
           </span>
@@ -526,11 +526,11 @@ function PurposeControl({ value, onChange }: { value?: string; onChange: (v: str
             onClick={() => onChange(p.v)}
             className={cn(
               "flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-right transition",
-              sel ? "border-indigo-400 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-md" : "bg-white border-slate-200 hover:border-slate-300"
+              sel ? "border-lime-400 bg-gradient-to-br from-lime-50 to-green-50 shadow-md shadow-green-500/20" : "bg-white border-slate-200 hover:border-slate-300"
             )}
           >
             <Icon3D icon={<Icon className="size-3.5" />} tone={p.tone} size={28} />
-            <span className={cn("text-[12px] font-semibold", sel ? "text-indigo-900" : "text-slate-700")}>{p.label}</span>
+            <span className={cn("text-[12px] font-semibold", sel ? "text-green-900" : "text-slate-700")}>{p.label}</span>
           </button>
         );
       })}
@@ -550,7 +550,7 @@ function AmountControl({ value, onChange }: { value?: number; onChange: (v: numb
             className={cn(
               "py-2.5 text-[12px] font-bold rounded-lg border tabular-nums transition",
               value === p
-                ? "bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-transparent shadow-md shadow-indigo-500/30"
+                ? "bg-gradient-to-br from-lime-400 via-green-500 to-emerald-600 text-white border-transparent shadow-md shadow-green-500/40"
                 : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
             )}
           >
@@ -563,7 +563,7 @@ function AmountControl({ value, onChange }: { value?: number; onChange: (v: numb
         value={value || ""}
         onChange={(e) => onChange(Number(e.target.value))}
         placeholder="או הזן סכום ידני"
-        className="w-full h-10 px-3 rounded-lg border border-slate-200 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition tabular-nums"
+        className="w-full h-10 px-3 rounded-lg border border-slate-200 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/25 outline-none transition tabular-nums"
       />
     </div>
   );
@@ -595,7 +595,7 @@ function CardsControl({ value, onChange }: { value?: string[]; onChange: (v: str
               sel
                 ? o.neg
                   ? "bg-gradient-to-r from-rose-500 to-red-600 text-white border-transparent shadow-md"
-                  : "bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-transparent shadow-md"
+                  : "bg-gradient-to-br from-lime-400 via-green-500 to-emerald-600 text-white border-transparent shadow-md"
                 : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
             )}
           >
@@ -661,7 +661,7 @@ function EmploymentControl({ value, onChange }: { value?: string; onChange: (v: 
             onClick={() => onChange(o.v)}
             className={cn(
               "flex flex-col items-center gap-1.5 py-3 rounded-xl border text-[11px] font-semibold transition",
-              sel ? "border-indigo-400 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-md text-indigo-900" : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
+              sel ? "border-lime-400 bg-gradient-to-br from-lime-50 to-green-50 shadow-md shadow-green-500/20 text-green-900" : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
             )}
           >
             <Icon3D icon={<Icon className="size-4" />} tone={o.tone} size={32} />
@@ -687,7 +687,7 @@ function PropertyControl({ value, onChange }: { value?: string; onChange: (v: st
           onClick={() => onChange(o.v)}
           className={cn(
             "px-4 py-2 text-[12px] font-bold rounded-lg transition",
-            value === o.v ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-900"
+            value === o.v ? "bg-gradient-to-br from-lime-400 via-green-500 to-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-900"
           )}
         >
           {o.label}
@@ -705,7 +705,7 @@ function NumberInput({ value, onChange, placeholder, suffix }: { value?: number;
         value={value || ""}
         onChange={(e) => onChange(Number(e.target.value))}
         placeholder={placeholder}
-        className="w-full h-10 px-3 rounded-lg border border-slate-200 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition tabular-nums"
+        className="w-full h-10 px-3 rounded-lg border border-slate-200 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/25 outline-none transition tabular-nums"
       />
       {suffix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-medium text-slate-400">{suffix}</span>}
     </div>
@@ -719,7 +719,7 @@ function TextInput({ value, onChange, placeholder }: { value?: string; onChange:
       value={value || ""}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full h-10 px-3 rounded-lg border border-slate-200 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+      className="w-full h-10 px-3 rounded-lg border border-slate-200 text-[13px] text-slate-900 placeholder:text-slate-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/25 outline-none transition"
     />
   );
 }
@@ -740,15 +740,15 @@ function SignFull({ lead, onAdvance }: { lead: Lead; onAdvance: () => void }) {
   return (
     <div className="card-vibrant p-6 relative">
       <div className="absolute top-6 left-6">
-        <Icon3D icon={<FileSignature className="size-6" />} tone="purple" size={56} className="float-rotate" />
+        <Icon3D icon={<FileSignature className="size-6" />} tone="bingo" size={56} className="float-rotate" />
       </div>
 
-      <div className="inline-flex items-center gap-2 text-[10px] font-bold px-2 py-1 rounded-md bg-purple-100 text-purple-700 mb-3">
+      <div className="inline-flex items-center gap-2 text-[10px] font-bold px-2 py-1 rounded-md bg-bingo-green/15 text-bingo-green-deep mb-3">
         <Zap className="size-3" />
         שלב 2 מתוך 4 · חתימה דיגיטלית
       </div>
       <h2 className="text-[26px] font-black tracking-tight">
-        <span className="text-gradient-purple">חתימה</span>
+        <span className="text-gradient-bingo">חתימה</span>
         <span className="text-slate-900"> ב-30 שניות</span>
       </h2>
       <p className="text-[13px] text-slate-600 mb-6 mt-1">שלח חוזה בערוץ המתאים והלקוח חותם מהמכשיר שלו.</p>
@@ -758,14 +758,14 @@ function SignFull({ lead, onAdvance }: { lead: Lead; onAdvance: () => void }) {
         <ChannelCard icon={Mail}          tone="blue"  label="SMS"      sub="חלופה — ללא WhatsApp" active={channel === "sms"} onClick={() => setChannel("sms")} />
       </div>
 
-      <div className="card-glow-purple p-4 mb-4">
-        <div className="text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-2">תצוגה מקדימה של ההודעה</div>
+      <div className="card-glow-bingo p-4 mb-4">
+        <div className="text-[10px] font-bold text-bingo-green-dark uppercase tracking-wider mb-2">תצוגה מקדימה של ההודעה</div>
         <div className="text-[13px] leading-relaxed text-slate-700">
           שלום {lead.firstName || lead.fullName} 👋<br />
           להלן קישור לחתימה דיגיטלית על חוזה הלוואה לסך{" "}
-          <span className="font-bold text-purple-700 tabular-nums">{formatCurrency(lead.amountRequested || 50000)}</span>.<br />
+          <span className="font-bold text-bingo-green-dark tabular-nums">{formatCurrency(lead.amountRequested || 50000)}</span>.<br />
           ⏱ חתימה לוקחת 30 שניות.<br />
-          <span className="text-indigo-600 underline">https://bingo.app/sign/{lead.id}</span>
+          <span className="text-bingo-green-dark underline">https://bingo.app/sign/{lead.id}</span>
         </div>
       </div>
 
@@ -776,7 +776,7 @@ function SignFull({ lead, onAdvance }: { lead: Lead; onAdvance: () => void }) {
         </button>
       ) : !signed ? (
         <div className="flex items-center justify-center gap-2.5 py-4 text-[14px] font-semibold text-slate-600">
-          <Clock className="size-5 animate-spin text-purple-500" />
+          <Clock className="size-5 animate-spin text-bingo-green-dark" />
           ממתין לחתימת הלקוח...
         </div>
       ) : (
@@ -808,7 +808,7 @@ function ChannelCard({ icon: Icon, tone, label, sub, active, onClick }: {
       onClick={onClick}
       className={cn(
         "p-4 rounded-xl border text-right transition",
-        active ? "border-indigo-400 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg" : "bg-white border-slate-200 hover:border-slate-300"
+        active ? "border-lime-400 bg-gradient-to-br from-lime-50 to-green-50 shadow-lg shadow-green-500/20" : "bg-white border-slate-200 hover:border-slate-300"
       )}
     >
       <div className="flex items-center gap-3">
@@ -1067,7 +1067,7 @@ function ActivityRail({ lead }: { lead: Lead }) {
           <Icon3D icon={<ActivityIcon className="size-3" />} tone="purple" size={24} />
           <span className="text-[13px] font-bold text-slate-900">פעילות</span>
         </div>
-        <button className="text-[11px] text-indigo-600 font-semibold hover:underline">הצג הכל</button>
+        <button className="text-[11px] text-bingo-green-dark font-semibold hover:underline">הצג הכל</button>
       </div>
       <div className="divide-y divide-slate-100/70 max-h-72 overflow-y-auto">
         {recent.length === 0 ? (
@@ -1121,7 +1121,7 @@ function TasksRail() {
           <span className="text-[13px] font-bold text-slate-900">משימות</span>
           <span className="text-[10px] font-bold text-white bg-gradient-to-r from-orange-500 to-pink-500 rounded-full px-1.5 py-0.5">{tasks.length}</span>
         </div>
-        <button className="size-6 rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 text-white inline-flex items-center justify-center shadow-sm shadow-indigo-500/30 hover:scale-110 transition">
+        <button className="size-6 rounded-md bg-gradient-to-br from-lime-400 via-green-500 to-emerald-600 text-white inline-flex items-center justify-center shadow-sm shadow-green-500/40 hover:scale-110 transition">
           <Plus className="size-3" />
         </button>
       </div>
@@ -1136,7 +1136,7 @@ function TaskItem({ task }: { task: any }) {
   const pri = { high: "bg-rose-500", med: "bg-amber-500", low: "bg-emerald-500" };
   return (
     <div className="px-4 py-2.5 flex items-start gap-2.5 hover:bg-white/40 transition">
-      <button className="size-4 rounded-full border-2 border-slate-300 hover:border-indigo-500 mt-0.5 shrink-0 transition" />
+      <button className="size-4 rounded-full border-2 border-slate-300 hover:border-bingo-green mt-0.5 shrink-0 transition" />
       <div className="flex-1 min-w-0">
         <div className="text-[12px] font-semibold text-slate-800">{task.title}</div>
         <div className="flex items-center gap-1.5 mt-0.5">
@@ -1153,11 +1153,11 @@ function TaskItem({ task }: { task: any }) {
    ============================================================ */
 function CompletionRing({ pct }: { pct: number }) {
   return (
-    <div className="relative size-20">
+    <div className="relative size-20" style={{ filter: "drop-shadow(0 0 12px rgba(80,255,10,0.35))" }}>
       <div
         className="absolute inset-0 rounded-full"
         style={{
-          background: `conic-gradient(from -90deg, #A855F7 0deg, #6366F1 ${pct * 1.8}deg, rgba(0,0,0,0.06) ${pct * 1.8}deg)`,
+          background: `conic-gradient(from -90deg, #7DFF40 0deg, #50FF0A ${pct * 0.9}deg, #2EA10D ${pct * 1.8}deg, rgba(0,0,0,0.06) ${pct * 1.8}deg)`,
         }}
       />
       <div className="absolute inset-1.5 rounded-full bg-white flex flex-col items-center justify-center">

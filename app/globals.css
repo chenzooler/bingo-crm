@@ -44,8 +44,8 @@
   --color-status-cyan: #06B6D4;
   --color-status-cyan-soft: #CFFAFE;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Heebo", "Inter", "Segoe UI", system-ui, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Heebo", "Inter", system-ui, sans-serif;
+  --font-sans: "Heebo", "Assistant", "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-display: "Heebo", "Assistant", "Rubik", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
 
   /* Apple HIG-inspired radii — refined */
@@ -58,11 +58,12 @@
   --radius-2xl: 1.25rem;
   --radius-3xl: 1.5rem;
 
-  /* Apple-inspired accent system (SF system blue + complementary) */
-  --color-accent: #007AFF;
-  --color-accent-hover: #0A6FE5;
-  --color-accent-soft: #E5F0FF;
-  --color-accent-dim: #4DA0FF;
+  /* Bingo brand accent system — neon green from the logo */
+  --color-accent: #2EA10D;          /* readable green for text/borders */
+  --color-accent-hover: #1E6F08;
+  --color-accent-soft: #ECFFD9;
+  --color-accent-dim: #7DFF40;
+  --color-accent-neon: #50FF0A;     /* the actual logo neon for glows */
 
   /* Tinted greys — closer to macOS sidebar tones */
   --color-tinted-bg: #F5F5F7;
@@ -437,29 +438,31 @@ html.dark {
     border-radius: 20px;
   }
 
-  /* Vibrant pill buttons (Stripe-style with gradient + glow) */
+  /* Vibrant pill buttons — Bingo neon green primary */
   .btn-vibrant {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 10px 18px;
     font-size: 13px;
-    font-weight: 600;
-    color: white;
+    font-weight: 700;
+    color: #0F2A04;
     border-radius: 11px;
-    background: linear-gradient(180deg, #818CF8 0%, #6366F1 50%, #4F46E5 100%);
+    background: linear-gradient(180deg, #B5FF8C 0%, #50FF0A 45%, #2EA10D 100%);
     box-shadow:
-      inset 0 1px 0 0 rgba(255,255,255,0.30),
-      0 1px 2px 0 rgba(79,70,229,0.30),
-      0 4px 12px -2px rgba(79,70,229,0.35);
+      inset 0 1px 0 0 rgba(255,255,255,0.55),
+      inset 0 -1px 0 0 rgba(30, 111, 8, 0.4),
+      0 1px 2px 0 rgba(46, 161, 13, 0.35),
+      0 4px 14px -2px rgba(80, 255, 10, 0.45);
     transition: transform 120ms ease, box-shadow 120ms ease;
   }
   .btn-vibrant:hover {
     transform: translateY(-1px);
     box-shadow:
-      inset 0 1px 0 0 rgba(255,255,255,0.30),
-      0 2px 4px 0 rgba(79,70,229,0.35),
-      0 8px 24px -4px rgba(79,70,229,0.45);
+      inset 0 1px 0 0 rgba(255,255,255,0.55),
+      inset 0 -1px 0 0 rgba(30, 111, 8, 0.4),
+      0 2px 4px 0 rgba(46, 161, 13, 0.40),
+      0 10px 28px -4px rgba(80, 255, 10, 0.60);
   }
   .btn-vibrant:active { transform: translateY(0); }
   .btn-vibrant-green {
@@ -501,6 +504,14 @@ html.dark {
     pointer-events: none;
   }
 
+  /* Bingo brand glow card */
+  .card-glow-bingo {
+    background: linear-gradient(180deg, rgba(80,255,10,0.06), transparent 40%), white;
+    border: 1px solid rgba(46, 161, 13, 0.22);
+    box-shadow: 0 0 0 1px rgba(80,255,10,0.05), 0 8px 32px -8px rgba(80,255,10,0.30);
+    border-radius: 20px;
+  }
+
   /* Gradient text */
   .text-gradient-purple {
     background: linear-gradient(135deg, #A855F7, #6366F1);
@@ -521,10 +532,11 @@ html.dark {
     color: transparent;
   }
   .text-gradient-bingo {
-    background: linear-gradient(135deg, #50FF0A, #2EA10D);
+    background: linear-gradient(135deg, #7DFF40 0%, #50FF0A 40%, #2EA10D 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    text-shadow: 0 0 18px rgba(80, 255, 10, 0.25);
   }
 
   /* Pulsing dot indicator */
