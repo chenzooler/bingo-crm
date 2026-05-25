@@ -3,6 +3,7 @@ import * as React from "react";
 import { Brain, TrendingUp, AlertTriangle, Target, Users, Sparkles, ChevronLeft } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { LEADS } from "@/lib/data/leads";
+import { Icon3D } from "@/components/ui/Icon3D";
 import Link from "next/link";
 import { cn, formatCurrency } from "@/lib/utils";
 
@@ -12,15 +13,18 @@ export default function InsightsPage() {
 
   return (
     <div className="max-w-[1500px] space-y-4">
-      <div>
-        <div className="text-[11px] font-bold uppercase tracking-wider text-status-purple inline-flex items-center gap-1 mb-1">
-          <Brain className="size-3" /> AI Insights · Predictive Analytics
+      <div className="relative rounded-3xl bg-white border border-bingo-gray-200 p-5 overflow-hidden" style={{ boxShadow: "0 2px 4px -1px rgba(0,0,0,0.03), 0 8px 24px -6px rgba(46, 161, 13, 0.10)" }}>
+        <div className="flex items-center gap-4">
+          <Icon3D icon={<Brain className="size-6" />} tone="purple" size={56} />
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">AI Insights · Predictive Analytics</div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none flex items-center gap-2">
+              <span className="text-bingo-black">תובנות חכמות</span>
+              <span className="text-[12px] font-black tabular-nums px-2 py-0.5 rounded-lg text-gradient-bingo bg-bingo-green/10 border border-bingo-green/25">{hotLeads.length + atRisk.length} תובנות</span>
+            </h1>
+            <p className="text-[12px] text-bingo-gray-600 mt-1.5">ML מנבא איזה לידים יסגרו, אילו לקוחות בסיכון נטישה, ומה צפוי לקרות החודש</p>
+          </div>
         </div>
-        <h1 className="text-3xl sm:text-[34px] font-black tracking-tight text-bingo-black leading-none">
-          תובנות חכמות
-          <span className="inline-block size-3 rounded-full bg-bingo-green ml-2 align-middle" />
-        </h1>
-        <p className="text-sm text-bingo-gray-600 mt-1.5">ML מנבא איזה לידים יסגרו, אילו לקוחות בסיכון נטישה, ומה צפוי לקרות החודש</p>
       </div>
 
       {/* Forecast */}

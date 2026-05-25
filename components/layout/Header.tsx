@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { Search, Bell, Settings, FileText, ChevronDown, HelpCircle, Plus, BarChart3, Phone, MessageCircle, ShieldCheck, ListChecks, Home, Radar, Tv } from "lucide-react";
+import { Search, Bell, Settings, FileText, ChevronDown, HelpCircle, Plus, BarChart3, Phone, MessageCircle, ShieldCheck, ListChecks, Home, Radar, Tv, Sparkles } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { CommandPalette } from "@/components/ui/CommandPalette";
@@ -33,7 +33,8 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
         <SearchTrigger />
 
         <div className="ml-auto flex items-center gap-1">
-          <HeaderLink href="/command-center" icon={<Radar className="size-4" />} label="Command" highlight />
+          <HeaderLink href="/briefing" icon={<Sparkles className="size-4" />} label="בריפינג" highlight />
+          <HeaderLink href="/command-center" icon={<Radar className="size-4" />} label="Command" />
           <HeaderLink href="/dashboard" icon={<Home className="size-4" />} label="הבית" />
           <HeaderLink href="/leads" icon={<FileText className="size-4" />} label="לידים" />
           <HeaderLink href="/inbox" icon={<MessageCircle className="size-4" />} label="הודעות" />
