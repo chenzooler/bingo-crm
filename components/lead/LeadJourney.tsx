@@ -63,6 +63,7 @@ export function LeadJourney({ lead: initial }: { lead: Lead }) {
       <Confetti trigger={confettiTrigger} count={40} />
 
       <div className="-mx-6 -mt-6 min-h-[calc(100vh-64px)] relative pb-24" style={{ background: "#F5F5F7" }}>
+        <LiveCallBanner />
         <Toolbar lead={lead} bdiNegative={bdiNegative} temperature={temperature} score={score} />
 
         <div className="relative max-w-[1400px] mx-auto px-6 py-5">
@@ -94,26 +95,28 @@ export function LeadJourney({ lead: initial }: { lead: Lead }) {
 /* ============================================================
    TOOLBAR — translucent with vibrant accents
    ============================================================ */
-function Toolbar({ lead, bdiNegative, temperature, score }: { lead: Lead; bdiNegative: boolean; temperature: "cold" | "warm" | "hot" | "blazing"; score: number }) {
+function LiveCallBanner() {
   const [fromCockpit, setFromCockpit] = React.useState(false);
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       setFromCockpit(new URLSearchParams(window.location.search).get("from") === "cockpit");
     }
   }, []);
+  if (!fromCockpit) return null;
   return (
-    <>
-      {/* Live-call banner when arrived from cockpit */}
-      {fromCockpit && (
-        <div className="bg-gradient-to-r from-bingo-green via-emerald-500 to-bingo-green-dark text-white px-6 py-2 flex items-center justify-center gap-3 shadow-lg shadow-green-500/30 animate-in slide-in-from-top duration-500">
-          <span className="size-2 rounded-full bg-white dot-pulse" />
-          <span className="text-[12px] font-black uppercase tracking-widest">שיחה חיה · נציג מחובר עם הלקוח</span>
-          <span className="opacity-70">·</span>
-          <Link href="/dialer/cockpit" className="text-[11px] font-bold underline hover:no-underline">
-            ← חזור לתותח
-          </Link>
-        </div>
-      )}
+    <div className="sticky top-0 z-50 bg-gradient-to-r from-bingo-green via-emerald-500 to-bingo-green-dark text-white px-6 py-2 flex items-center justify-center gap-3 shadow-lg shadow-green-500/30 animate-in slide-in-from-top duration-500">
+      <span className="size-2 rounded-full bg-white dot-pulse" />
+      <span className="text-[12px] font-black uppercase tracking-widest">שיחה חיה · נציג מחובר עם הלקוח</span>
+      <span className="opacity-70">·</span>
+      <Link href="/dialer/cockpit" className="text-[11px] font-bold underline hover:no-underline">
+        ← חזור לתותח
+      </Link>
+    </div>
+  );
+}
+
+function Toolbar({ lead, bdiNegative, temperature, score }: { lead: Lead; bdiNegative: boolean; temperature: "cold" | "warm" | "hot" | "blazing"; score: number }) {
+  return (
     <div className="sticky top-0 z-40 backdrop-blur-2xl bg-white/60 border-b border-white/40">
       <div className="max-w-[1400px] mx-auto px-6 py-3">
         <div className="flex items-center justify-between gap-4">
@@ -161,7 +164,6 @@ function Toolbar({ lead, bdiNegative, temperature, score }: { lead: Lead; bdiNeg
         </div>
       </div>
     </div>
-    </>
   );
 }
 
