@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Play, Pause, Phone, PhoneOff, SkipForward, Volume2, Mic, MicOff,
   Sparkles, Flame, Zap, Target, TrendingUp, Radio, ChevronDown, X,
@@ -24,16 +25,19 @@ interface QueuedLead {
   avatar?: string;
 }
 
+// MOCK_QUEUE uses REAL lead IDs so that when customer answers, we can
+// navigate directly to the lead's journey card
 const MOCK_QUEUE: QueuedLead[] = [
-  { id: "q1", name: "דניאל כהן",   phone: "0501234567", amount: 120000, score: 88, source: "Facebook", category: "general" },
-  { id: "q2", name: "רותם בן-דוד",  phone: "0529876543", amount: 250000, score: 91, source: "Google",   category: "vehicle" },
-  { id: "q3", name: "עידן גולדברג",  phone: "0547654321", amount:  80000, score: 72, source: "WATI",     category: "general" },
-  { id: "q4", name: "תמר רוזן",     phone: "0531112233", amount: 180000, score: 85, source: "Landing",  category: "vehicle" },
-  { id: "q5", name: "אורי שמואלי",  phone: "0556667788", amount:  65000, score: 68, source: "Facebook", category: "general" },
-  { id: "q6", name: "מיכל זהבי",   phone: "0524445566", amount: 200000, score: 94, source: "Referral", category: "general" },
+  { id: "3035035", name: "דוד קדוש",      phone: "0505251877", amount: 120000, score: 88, source: "Facebook", category: "general" },
+  { id: "2",       name: "מאג'ד אל' חואסה", phone: "0524000001", amount: 250000, score: 91, source: "Google",   category: "vehicle" },
+  { id: "3",       name: "אנגד נאצר",     phone: "0547654321", amount:  80000, score: 72, source: "WATI",     category: "general" },
+  { id: "4",       name: "עידן דגני",     phone: "0531112233", amount: 180000, score: 85, source: "Landing",  category: "vehicle" },
+  { id: "5",       name: "מוחמד עוזד",    phone: "0556667788", amount:  65000, score: 68, source: "Facebook", category: "general" },
+  { id: "6",       name: "אירנה ברינרונקו", phone: "0524445566", amount: 200000, score: 94, source: "Referral", category: "general" },
 ];
 
 export default function DialerCockpitPage() {
+  const router = useRouter();
   const [mode, setMode] = React.useState<CockpitMode>("idle");
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [muted, setMuted] = React.useState(false);
@@ -44,6 +48,7 @@ export default function DialerCockpitPage() {
   const [parallelDialing, setParallelDialing] = React.useState<string[]>([]);
   const [confettiTrigger, setConfettiTrigger] = React.useState(0);
   const [achievement, setAchievement] = React.useState<string | null>(null);
+  const [openingLead, setOpeningLead] = React.useState(false);
 
   // Rotating digits for "the spinning numbers wheel"
   const [rotatingDigits, setRotatingDigits] = React.useState<string[]>(Array(10).fill("0"));
@@ -105,8 +110,9 @@ export default function DialerCockpitPage() {
         if (Math.random() > 0.4) {
           setMode("connected");
           setStats((s) => ({ ...s, dialed: s.dialed + 1, connected: s.connected + 1 }));
-          // Trigger achievement
-          setAchievement("📞 ענה לי!");
+          // Trigger achievement + confetti when customer answers
+          setAchievement("📞 ענה! פותח כרטיס...");
+          setConfettiTrigger((c) => c + 1);
           setTimeout(() => setAchievement(null), 2200);
         } else {
           setStats((s) => ({ ...s, dialed: s.dialed + 1 }));
@@ -117,6 +123,18 @@ export default function DialerCockpitPage() {
       return () => clearTimeout(t);
     }
   }, [isPlaying, mode]);
+
+  // === AUTO-OPEN LEAD CARD WHEN CUSTOMER ANSWERS ===
+  // Brief 1.6s pause to show the "connected" celebration, then navigate
+  // to the lead's journey page so the agent can work with the customer.
+  React.useEffect(() => {
+    if (mode !== "connected" || openingLead) return;
+    setOpeningLead(true);
+    const t = setTimeout(() => {
+      router.push(`/leads/${MOCK_QUEUE[currentIdx].id}?from=cockpit`);
+    }, 1600);
+    return () => clearTimeout(t);
+  }, [mode, currentIdx, router, openingLead]);
 
   const current = MOCK_QUEUE[currentIdx];
 
