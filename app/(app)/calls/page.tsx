@@ -6,6 +6,7 @@ import type { CallRecord } from "@/lib/data/calls-mock";
 import { Avatar } from "@/components/ui/Avatar";
 import { Phone, PhoneIncoming, PhoneOutgoing, PhoneMissed, Voicemail, Play, Pause, MessageCircle, FileText, AlertTriangle, ChevronLeft, Clock, TrendingUp, Mic } from "lucide-react";
 import { cn, formatDate, formatTime } from "@/lib/utils";
+import { Icon3D } from "@/components/ui/Icon3D";
 
 type Filter = "all" | "answered" | "no-answer" | "today";
 
@@ -27,18 +28,17 @@ export default function CallsPage() {
 
   return (
     <div className="max-w-[1500px] space-y-4">
-      <div className="flex items-end justify-between gap-3 flex-wrap">
-        <div>
-          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">
-            <Phone className="size-3" /> היסטוריית שיחות
+      <div className="relative rounded-3xl bg-white border border-bingo-gray-200 p-5 overflow-hidden" style={{ boxShadow: "0 2px 4px -1px rgba(0,0,0,0.03), 0 8px 24px -6px rgba(46, 161, 13, 0.10)" }}>
+        <div className="flex items-center gap-4">
+          <Icon3D icon={<Phone className="size-6" />} tone="bingo" size={56} />
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">היסטוריית שיחות</div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none flex items-center gap-2">
+              <span className="text-bingo-black">שיחות והקלטות</span>
+              <span className="text-[12px] font-black tabular-nums px-2 py-0.5 rounded-lg text-gradient-bingo bg-bingo-green/10 border border-bingo-green/25">{CALL_STATS.todayCount} היום</span>
+            </h1>
+            <p className="text-[12px] text-bingo-gray-600 mt-1.5">הקלטות + תעתוק AI + ניתוח חכם של כל שיחה</p>
           </div>
-          <h1 className="text-3xl sm:text-[34px] font-black tracking-tight text-bingo-black leading-none">
-            שיחות והקלטות
-            <span className="inline-block size-3 rounded-full bg-bingo-green ml-2 align-middle" />
-          </h1>
-          <p className="text-sm text-bingo-gray-600 mt-1.5">
-            הקלטות + תעתוק AI + ניתוח חכם של כל שיחה
-          </p>
         </div>
       </div>
 
