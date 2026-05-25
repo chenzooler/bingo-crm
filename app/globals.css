@@ -568,6 +568,14 @@ html.dark {
   }
   .float-rotate { animation: float-rotate 4s ease-in-out infinite; }
 
+  /* Cockpit scanline */
+  @keyframes cockpit-scanline {
+    0%   { transform: translateY(-50vh); opacity: 0; }
+    50%  { opacity: 1; }
+    100% { transform: translateY(50vh); opacity: 0; }
+  }
+  .cockpit-scanline { animation: cockpit-scanline 6s linear infinite; }
+
   /* Confetti burst */
   @keyframes confetti-burst {
     0%   { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
