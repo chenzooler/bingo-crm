@@ -1,16 +1,18 @@
 import { Field } from "@/components/ui/Field";
 import { Settings as SettingsIcon } from "lucide-react";
+import { Icon3D } from "@/components/ui/Icon3D";
 
 export default function GeneralSettingsPage() {
   return (
-    <div className="bg-white rounded-3xl border border-bingo-gray-200 bingo-shadow-sm p-6">
-      <div className="flex items-center gap-3 mb-5 pb-5 border-b border-bingo-gray-100">
-        <div className="size-12 rounded-2xl bg-gradient-to-bl from-bingo-green/15 to-bingo-green/5 border border-bingo-green/30 inline-flex items-center justify-center">
-          <SettingsIcon className="size-5 text-bingo-green-dark" />
-        </div>
+    <div className="bg-white rounded-3xl border border-bingo-gray-200 p-6" style={{ boxShadow: "0 2px 4px -1px rgba(0,0,0,0.03), 0 8px 24px -6px rgba(46, 161, 13, 0.10)" }}>
+      <div className="flex items-center gap-4 mb-5 pb-5 border-b border-bingo-gray-100">
+        <Icon3D icon={<SettingsIcon className="size-6" />} tone="bingo" size={56} />
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500">ארגון</div>
-          <h2 className="text-xl font-extrabold text-bingo-black">הגדרות כלליות</h2>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">ארגון</div>
+          <h2 className="text-2xl font-black tracking-tight text-bingo-black flex items-center gap-2">
+            <span>הגדרות כלליות</span>
+            <span className="text-[12px] font-black px-2 py-0.5 rounded-lg text-gradient-bingo bg-bingo-green/10 border border-bingo-green/25">בינגו ישראל</span>
+          </h2>
         </div>
       </div>
 
@@ -35,7 +37,7 @@ export default function GeneralSettingsPage() {
           <button className="h-10 px-4 rounded-xl bg-bingo-gray-100 text-bingo-charcoal text-sm font-bold hover:bg-bingo-gray-200">
             ביטול
           </button>
-          <button className="h-10 px-5 rounded-xl bg-bingo-black text-white text-sm font-bold hover:bg-bingo-charcoal bingo-shadow">
+          <button className="btn-vibrant">
             שמור שינויים
           </button>
         </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Bell, MessageCircle, Phone, Pen, ShieldCheck, AlertTriangle, CheckCircle2, Star, Users, Building2, Clock } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { cn, formatTime, formatDate, relativeTime } from "@/lib/utils";
+import { Icon3D } from "@/components/ui/Icon3D";
 
 interface Notification {
   id: string;
@@ -61,26 +62,23 @@ export default function NotificationsPage() {
 
   return (
     <div className="max-w-[1100px] space-y-4">
-      <div className="flex items-end justify-between gap-3 flex-wrap">
-        <div>
-          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">
-            <Bell className="size-3" /> מרכז התראות
+      <div className="relative rounded-3xl bg-white border border-bingo-gray-200 p-5 overflow-hidden flex items-center justify-between gap-3 flex-wrap" style={{ boxShadow: "0 2px 4px -1px rgba(0,0,0,0.03), 0 8px 24px -6px rgba(46, 161, 13, 0.10)" }}>
+        <div className="flex items-center gap-4">
+          <Icon3D icon={<Bell className="size-6" />} tone="orange" size={56} />
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">מרכז התראות</div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none flex items-center gap-2">
+              <span className="text-bingo-black">התראות</span>
+              <span className="text-[12px] font-black tabular-nums px-2 py-0.5 rounded-lg text-gradient-bingo bg-bingo-green/10 border border-bingo-green/25">{unread} חדשות</span>
+            </h1>
+            <p className="text-[12px] text-bingo-gray-600 mt-1.5">{unread} התראות חדשות · {NOTIFICATIONS.length} סה"כ</p>
           </div>
-          <h1 className="text-3xl sm:text-[34px] font-black tracking-tight text-bingo-black leading-none">
-            התראות
-            <span className="inline-block size-3 rounded-full bg-bingo-green ml-2 align-middle" />
-          </h1>
-          <p className="text-sm text-bingo-gray-600 mt-1.5">
-            {unread} התראות חדשות · {NOTIFICATIONS.length} סה"כ
-          </p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="h-9 px-3 rounded-xl bg-white border border-bingo-gray-200 text-xs font-bold inline-flex items-center gap-1.5 hover:bg-bingo-gray-100">
+          <button className="h-10 px-3.5 rounded-xl bg-white border border-bingo-gray-200 text-[12px] font-bold inline-flex items-center gap-1.5 hover:bg-bingo-gray-100">
             סמן הכל כנקרא
           </button>
-          <button className="h-9 px-3 rounded-xl bg-bingo-black text-white text-xs font-bold inline-flex items-center gap-1.5 hover:bg-bingo-charcoal">
-            הגדרות התראות
-          </button>
+          <button className="btn-vibrant">הגדרות התראות</button>
         </div>
       </div>
 

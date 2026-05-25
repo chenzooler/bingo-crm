@@ -2,14 +2,27 @@ import { TASKS } from "@/lib/data/leads";
 import { getUser } from "@/lib/data/static";
 import { Avatar } from "@/components/ui/Avatar";
 import { formatDate, formatTime } from "@/lib/utils";
+import { Icon3D } from "@/components/ui/Icon3D";
+import { ListChecks } from "lucide-react";
 import Link from "next/link";
 
 export default function TasksPage() {
+  const urgent = TASKS.filter((t) => t.urgent).length;
   return (
     <div className="space-y-5 max-w-[1100px]">
-      <div>
-        <h1 className="text-3xl font-black text-bingo-black">משימות</h1>
-        <p className="text-sm text-bingo-gray-500 mt-1">{TASKS.length} משימות · {TASKS.filter((t) => t.urgent).length} דחופות</p>
+      <div className="relative rounded-3xl bg-white border border-bingo-gray-200 p-5 overflow-hidden" style={{ boxShadow: "0 2px 4px -1px rgba(0,0,0,0.03), 0 8px 24px -6px rgba(46, 161, 13, 0.10)" }}>
+        <div className="flex items-center gap-4">
+          <Icon3D icon={<ListChecks className="size-6" />} tone="bingo" size={56} />
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">לוח משימות</div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none flex items-center gap-2">
+              <span className="text-bingo-black">משימות</span>
+              <span className="text-[12px] font-black tabular-nums px-2 py-0.5 rounded-lg text-gradient-bingo bg-bingo-green/10 border border-bingo-green/25">{TASKS.length}</span>
+              {urgent > 0 && <span className="text-[11px] font-bold text-white bg-gradient-to-r from-rose-500 to-red-600 rounded-md px-2 py-0.5 shadow-md shadow-red-500/30 animate-pulse">{urgent} דחופות</span>}
+            </h1>
+            <p className="text-[12px] text-bingo-gray-600 mt-1.5">{TASKS.length} משימות פתוחות · {urgent} דחופות לטיפול מיידי</p>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-2xl bg-white border border-bingo-gray-200 bingo-shadow-sm divide-y divide-bingo-gray-100">

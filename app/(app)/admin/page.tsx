@@ -2,7 +2,8 @@ import { AGENT_PERFORMANCE, SIGNATURE_SERIES, BDI_SERIES, CONTRACT_SERIES, LENDE
 import { PIPELINES, STATUSES } from "@/lib/data/static";
 import { MiniChart, BarChart } from "@/components/admin/MiniChart";
 import { formatNumber, formatCurrency } from "@/lib/utils";
-import { TrendingUp, TrendingDown, Pen, ShieldCheck, Phone, FileSignature, Building2, Users } from "lucide-react";
+import { TrendingUp, TrendingDown, Pen, ShieldCheck, Phone, FileSignature, Building2, Users, Crown } from "lucide-react";
+import { Icon3D } from "@/components/ui/Icon3D";
 import Link from "next/link";
 
 export default function AdminOverviewPage() {
@@ -16,6 +17,21 @@ export default function AdminOverviewPage() {
 
   return (
     <div className="space-y-4">
+      {/* Hero header */}
+      <div className="relative rounded-3xl bg-white border border-bingo-gray-200 p-5 overflow-hidden" style={{ boxShadow: "0 2px 4px -1px rgba(0,0,0,0.03), 0 8px 24px -6px rgba(46, 161, 13, 0.10)" }}>
+        <div className="flex items-center gap-4">
+          <Icon3D icon={<Crown className="size-6" />} tone="yellow" size={56} />
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">פאנל ניהול</div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none flex items-center gap-2">
+              <span className="text-bingo-black">מבט-על מנהל</span>
+              <span className="text-[12px] font-black tabular-nums px-2 py-0.5 rounded-lg text-gradient-bingo bg-bingo-green/10 border border-bingo-green/25">{AGENT_PERFORMANCE.length} נציגים</span>
+            </h1>
+            <p className="text-[12px] text-bingo-gray-600 mt-1.5">ביצועי צוות, חתימות, BDI ומדדים חיים — הכל במקום אחד</p>
+          </div>
+        </div>
+      </div>
+
       {/* KPI row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard

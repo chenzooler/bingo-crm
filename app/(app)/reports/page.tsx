@@ -1,16 +1,25 @@
 import { LEADS } from "@/lib/data/leads";
 import { PIPELINES, STATUSES, SOURCES } from "@/lib/data/static";
 import { formatNumber } from "@/lib/utils";
+import { Icon3D } from "@/components/ui/Icon3D";
+import { BarChart3 } from "lucide-react";
 
 export default function ReportsPage() {
   const total = PIPELINES.reduce((sum, p) => sum + p.count, 0);
   return (
     <div className="space-y-6 max-w-[1400px]">
-      <div>
-        <h1 className="text-3xl font-black text-bingo-black">תצוגת דוח</h1>
-        <p className="text-sm text-bingo-gray-500 mt-1">
-          סה"כ {formatNumber(total)} לידים במערכת · עדכון אחרון: עכשיו
-        </p>
+      <div className="relative rounded-3xl bg-white border border-bingo-gray-200 p-5 overflow-hidden" style={{ boxShadow: "0 2px 4px -1px rgba(0,0,0,0.03), 0 8px 24px -6px rgba(46, 161, 13, 0.10)" }}>
+        <div className="flex items-center gap-4">
+          <Icon3D icon={<BarChart3 className="size-6" />} tone="indigo" size={56} />
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">דוחות וניתוחים</div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none flex items-center gap-2">
+              <span className="text-bingo-black">תצוגת דוח</span>
+              <span className="text-[12px] font-black tabular-nums px-2 py-0.5 rounded-lg text-gradient-bingo bg-bingo-green/10 border border-bingo-green/25">{formatNumber(total)}</span>
+            </h1>
+            <p className="text-[12px] text-bingo-gray-600 mt-1.5">סה"כ {formatNumber(total)} לידים במערכת · עדכון אחרון: עכשיו</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
