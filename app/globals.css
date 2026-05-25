@@ -314,13 +314,13 @@ html.dark {
      ============================================================ */
 
   .bg-aurora {
-    background-color: #FAFAFC;
+    background-color: #FAFFF7;
     background-image:
-      radial-gradient(at 14% 12%,  hsla(280, 100%, 74%, 0.18) 0px, transparent 50%),
-      radial-gradient(at 87% 8%,   hsla(189, 100%, 56%, 0.16) 0px, transparent 50%),
-      radial-gradient(at 22% 88%,  hsla(140, 100%, 70%, 0.14) 0px, transparent 50%),
-      radial-gradient(at 78% 92%,  hsla(28,  100%, 70%, 0.16) 0px, transparent 50%),
-      radial-gradient(at 50% 50%,  hsla(225, 100%, 70%, 0.10) 0px, transparent 50%);
+      radial-gradient(at 14% 12%,  hsla(95,  100%, 60%, 0.22) 0px, transparent 50%),  /* bingo lime top-right */
+      radial-gradient(at 87% 8%,   hsla(140, 100%, 55%, 0.18) 0px, transparent 50%),  /* emerald top-left */
+      radial-gradient(at 22% 88%,  hsla(80,  100%, 50%, 0.20) 0px, transparent 50%),  /* lime bottom-right */
+      radial-gradient(at 78% 92%,  hsla(120, 100%, 55%, 0.16) 0px, transparent 50%),  /* green bottom-left */
+      radial-gradient(at 50% 50%,  hsla(100, 100%, 60%, 0.10) 0px, transparent 50%);  /* center lime */
     background-attachment: fixed;
   }
 
@@ -341,6 +341,9 @@ html.dark {
   .orb-cyan   { background: radial-gradient(circle, #06B6D4 0%, transparent 70%); }
   .orb-green  { background: radial-gradient(circle, #10B981 0%, transparent 70%); }
   .orb-orange { background: radial-gradient(circle, #F59E0B 0%, transparent 70%); }
+  .orb-lime   { background: radial-gradient(circle, #84CC16 0%, transparent 70%); }
+  .orb-bingo  { background: radial-gradient(circle, #50FF0A 0%, transparent 70%); }
+  .orb-emerald{ background: radial-gradient(circle, #34D399 0%, transparent 70%); }
 
   /* 3D iOS-style icon squircle */
   .icon-3d {

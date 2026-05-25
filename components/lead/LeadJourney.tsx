@@ -63,10 +63,10 @@ export function LeadJourney({ lead: initial }: { lead: Lead }) {
       <Confetti trigger={confettiTrigger} count={40} />
 
       <div className="-mx-6 -mt-6 min-h-[calc(100vh-64px)] bg-aurora relative overflow-hidden pb-24">
-        {/* Floating orbs */}
-        <div className="orb orb-purple w-[400px] h-[400px] -top-32 -right-32" style={{ animationDelay: "0s" }} />
-        <div className="orb orb-cyan   w-[350px] h-[350px] top-1/3 -left-32" style={{ animationDelay: "3s" }} />
-        <div className="orb orb-pink   w-[300px] h-[300px] bottom-0 right-1/4" style={{ animationDelay: "6s" }} />
+        {/* Floating orbs — bingo brand green */}
+        <div className="orb orb-bingo   w-[400px] h-[400px] -top-32 -right-32" style={{ animationDelay: "0s" }} />
+        <div className="orb orb-emerald w-[350px] h-[350px] top-1/3 -left-32"   style={{ animationDelay: "3s" }} />
+        <div className="orb orb-lime    w-[300px] h-[300px] bottom-0 right-1/4" style={{ animationDelay: "6s" }} />
 
         <Toolbar lead={lead} bdiNegative={bdiNegative} temperature={temperature} score={score} />
 
