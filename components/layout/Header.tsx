@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { Search, Bell, Settings, FileText, ChevronDown, HelpCircle, Plus, BarChart3, Phone, MessageCircle, ShieldCheck, ListChecks, Home, Radar } from "lucide-react";
+import { Search, Bell, Settings, FileText, ChevronDown, HelpCircle, Plus, BarChart3, Phone, MessageCircle, ShieldCheck, ListChecks, Home, Radar, Tv } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { CommandPalette } from "@/components/ui/CommandPalette";
@@ -40,6 +40,7 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
           <HeaderLink href="/calls" icon={<Phone className="size-4" />} label="שיחות" />
           <HeaderLink href="/dialer" icon={<Phone className="size-4" />} label="תותח" />
           <HeaderLink href="/call-center" icon={<Phone className="size-4" />} label="Live" />
+          <HeaderLink href="/wallboard" icon={<Tv className="size-4" />} label="WallBoard" highlight />
           <HeaderLink href="/calendar" icon={<Home className="size-4" />} label="יומן" />
           <HeaderLink href="/admin" icon={<ShieldCheck className="size-4" />} label="מנהל" />
           <HeaderLink href="/settings" icon={<Settings className="size-4" />} label="הגדרות" />
