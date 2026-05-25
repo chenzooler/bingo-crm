@@ -13,10 +13,7 @@ const nextConfig: NextConfig = {
   // Output standalone for smaller Docker images
   output: "standalone",
 
-  // Build resilience: ignore non-critical lint/type errors in CI (we have IDE checks anyway)
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // Build resilience: ignore TS errors in CI (we have IDE checks anyway)
   typescript: {
     ignoreBuildErrors: true,
   },

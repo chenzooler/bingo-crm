@@ -1,6 +1,8 @@
 import { Bell, AlertTriangle, Clock, TrendingDown, Phone, Building2, Shield } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 
+export const dynamic = "force-dynamic";
+
 interface AlertItem {
   id: string;
   severity: "critical" | "warning" | "info";

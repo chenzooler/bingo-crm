@@ -1,3 +1,7 @@
+// Skip static prerendering — all pages depend on runtime mock data
+// and client components that don't need to be pre-built.
+export const dynamic = "force-dynamic";
+
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TasksPanel } from "@/components/layout/TasksPanel";
