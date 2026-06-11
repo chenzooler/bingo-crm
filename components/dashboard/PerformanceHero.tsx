@@ -41,9 +41,12 @@ export function PerformanceHero({
     calm: "from-bingo-gray-100 to-white border-bingo-gray-200 text-bingo-charcoal",
   }[msg.tone];
 
-  const now = new Date();
-  const greeting =
-    now.getHours() < 12 ? "בוקר טוב" : now.getHours() < 17 ? "צהריים טובים" : "ערב טוב";
+  // Compute greeting on the client only — avoids SSR/client hour mismatch
+  const [greeting, setGreeting] = React.useState("שלום");
+  React.useEffect(() => {
+    const h = new Date().getHours();
+    setGreeting(h < 12 ? "בוקר טוב" : h < 17 ? "צהריים טובים" : "ערב טוב");
+  }, []);
 
   return (
     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-bl from-bingo-onyx via-bingo-charcoal to-[#0E1A0E] text-white p-5 sm:p-8 bingo-shadow-lg">

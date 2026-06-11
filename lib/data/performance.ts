@@ -50,10 +50,27 @@ const D = (offsetDays: number, h = 12, m = 0) => {
 
 const LENDERS_LIST = ["cal", "max", "isracard", "phoenix", "blender", "jerusalem-bank", "fama", "direct-finance"];
 
-/** Generate realistic deal history for current month */
+/**
+ * Seeded deterministic PRNG (mulberry32). Replaces Math.random() so the
+ * generated dataset is IDENTICAL on the server and the client — preventing
+ * React hydration mismatches on the dashboard.
+ */
+function makeRng(seed: number) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Generate realistic deal history for current month (deterministic per agent) */
 function generateDeals(agentId: number, daysBack: number, dealsPerDay: number): Deal[] {
   const deals: Deal[] = [];
   let counter = 1;
+  const rng = makeRng(agentId * 2654435761); // stable seed derived from agent id
   for (let day = 0; day < daysBack; day++) {
     // Skip Fridays / Saturdays
     const date = new Date(today);
@@ -61,17 +78,17 @@ function generateDeals(agentId: number, daysBack: number, dealsPerDay: number): 
     const dow = date.getDay();
     if (dow === 5 || dow === 6) continue;
 
-    const dealsThisDay = Math.max(0, Math.round(dealsPerDay + (Math.random() - 0.4) * 2));
+    const dealsThisDay = Math.max(0, Math.round(dealsPerDay + (rng() - 0.4) * 2));
     for (let i = 0; i < dealsThisDay; i++) {
-      const loanAmount = Math.round((20000 + Math.random() * 130000) / 1000) * 1000;
-      const feeRate = 0.02 + Math.random() * 0.04; // 2-6%
+      const loanAmount = Math.round((20000 + rng() * 130000) / 1000) * 1000;
+      const feeRate = 0.02 + rng() * 0.04; // 2-6%
       const fee = Math.round(loanAmount * feeRate / 100) * 100;
       const commission = Math.round(fee * 0.30);
       deals.push({
         id: `d-${agentId}-${counter++}`,
         leadId: `lead-${agentId}-${counter}`,
         leadName: HEBREW_NAMES[counter % HEBREW_NAMES.length],
-        closedAt: D(day, 9 + (i * 2), Math.floor(Math.random() * 60)),
+        closedAt: D(day, 9 + (i * 2), Math.floor(rng() * 60)),
         loanAmount,
         fee,
         commission,
