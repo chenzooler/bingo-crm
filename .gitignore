@@ -48,3 +48,9 @@ next-env.d.ts
 
 # Temporary
 /tmp
+
+# SQLite local db
+prisma/dev.db
+prisma/dev.db-journal
+*.db-wal
+*.db-shm

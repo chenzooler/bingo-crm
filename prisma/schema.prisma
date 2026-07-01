@@ -1,0 +1,222 @@
+// ============================================================
+// BINGO CRM — Real Data Model
+// Replaces Yoatsim (app.yoatsim.co.il) — gradual full migration.
+// Field coverage matches the Chrome-extension CRM reader mapping
+// (a88=firstName, n4=monthlyIncome, s5=maritalStatus, ...).
+// SQLite for v1 (zero-infra, handles 22 users easily).
+// Documented upgrade path to Postgres when scale demands.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ============ USERS — 17 agents + 5 admins ============
+model User {
+  id         Int      @id @default(autoincrement())
+  externalId String?  @unique // Yoatsim user id if known
+  name       String
+  email      String?  @unique
+  phone      String?
+  emoji      String?
+  role       String   @default("agent") // owner | manager | agent | underwriter | bot | marketing
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  leads      Lead[]     @relation("LeadOwner")
+  activities Activity[]
+  imports    ImportBatch[]
+}
+
+// ============ LEAD PROVIDERS — ספקי לידים ============
+model LeadProvider {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  contactName String?
+  phone       String?
+  email       String?
+  costPerLead Float? // עלות פר ליד בש"ח
+  monthlyBudget Float?
+  active      Boolean  @default(true)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  leads Lead[]
+}
+
+// ============ LENDERS — גופי מימון ============
+model Lender {
+  id       Int     @id @default(autoincrement())
+  key      String  @unique // jerusalem | cal | isracard | max | phoenix | ...
+  name     String
+  type     String  @default("bank") // bank | credit-card | insurance | private
+  active   Boolean @default(true)
+  botSupported Boolean @default(false) // האם הבוט יודע למלא אצלם
+  avgApprovalRate Float?
+  notes    String?
+
+  checks LenderCheck[]
+}
+
+// ============ LEADS — הליבה ============
+model Lead {
+  id         Int      @id @default(autoincrement())
+  externalId String?  @unique // Yoatsim lead id — dedup key for sync
+
+  // --- זהות ---
+  fullName  String
+  firstName String?
+  lastName  String?
+  idNumber  String? // ת.ז — validated Israeli ID
+  phone     String? // normalized 05XXXXXXXX
+  phone2    String?
+  email     String?
+  birthDate DateTime?
+  gender    String? // male | female
+  maritalStatus String? // married | single | divorced | widowed | common-law
+
+  // --- כתובת ---
+  city        String?
+  address     String?
+  houseNumber String?
+  zip         String?
+
+  // --- תעסוקה והכנסה ---
+  employmentStatus String? // employee | self-employed | stipend | unemployed | retired
+  employerName     String?
+  monthlyIncome    Float?
+  seniorityMonths  Int?
+  spouseIncome     Float?
+  additionalIncome Float?
+  numberOfChildren Int?
+  housing          String? // rent | owned | with-family
+  monthlyHousingPayment Float?
+
+  // --- בנק ---
+  bankName    String?
+  bankCode    String?
+  bankBranch  String?
+  bankAccount String?
+
+  // --- הלוואה מבוקשת ---
+  amountRequested    Float?
+  loanPurpose        String?
+  existingLoansJson  String? // JSON [{provider, balance, monthly, interest}]
+  monthlyObligations Float?
+
+  // --- אשראי / סינון ---
+  smiley            String? // green | yellow | red
+  bdiApproved       Boolean?
+  hadCreditIssues   Boolean?
+  accountRestricted Boolean?
+  hadEnforcement    Boolean? // הוצאה לפועל
+  creditCardsJson   String? // JSON ["isracard","cal",...]
+  cardLimit         String? // above-5k | below-5k
+
+  // --- נכסים ---
+  hasProperty String? // yes | yes-charged | no
+  hasVehicle  Boolean?
+  vehicleYear Int?
+  vehicleMake String?
+
+  // --- זרימה במשפך ---
+  stage      String  @default("NEW") // NEW → FIRST_CALL → SCREENING → AGREEMENT → BDI → AUCTION → OFFER → DOCS → RELEASE → PAID | EXIT
+  category   String? // general | vehicle | property | consolidation
+  statusKey  String? // legacy Yoatsim status key
+  pipelineKey String? // legacy Yoatsim pipeline
+  exitReason String? // not-interested | no-answer-14 | spam | ...
+  attemptsCount Int  @default(0) // ניסיונות חיוג
+
+  // --- שיוך ---
+  ownerId    Int?
+  owner      User?         @relation("LeadOwner", fields: [ownerId], references: [id])
+  providerId Int?
+  provider   LeadProvider? @relation(fields: [providerId], references: [id])
+  source     String? // facebook | tiktok | google | landing-page | wati | ...
+  sourceText String?
+
+  // --- עסקה סופית ---
+  finalLenderKey      String?
+  finalApprovedAmount Float?
+  finalInterest       Float?
+  finalMonths         Int?
+  feeAmount           Float?
+  feePaid             Boolean @default(false)
+
+  // --- מטא ---
+  intakeDate     DateTime  @default(now())
+  stageChangedAt DateTime?
+  syncSource     String    @default("manual") // manual | import | extension | api
+  importBatchId  Int?
+  importBatch    ImportBatch? @relation(fields: [importBatchId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  activities Activity[]
+  checks     LenderCheck[]
+
+  @@index([stage])
+  @@index([ownerId])
+  @@index([phone])
+  @@index([idNumber])
+  @@index([intakeDate])
+}
+
+// ============ ACTIVITIES — היסטוריה ופעילות ============
+model Activity {
+  id        Int      @id @default(autoincrement())
+  leadId    Int
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  type      String // note | call | status-change | sms | whatsapp | email | system | bot
+  text      String
+  metaJson  String? // JSON extras (duration, recordingUrl, fromStatus, toStatus...)
+  createdAt DateTime @default(now())
+
+  @@index([leadId, createdAt])
+}
+
+// ============ LENDER CHECKS — תוצאות בדיקות מימון ============
+model LenderCheck {
+  id             Int      @id @default(autoincrement())
+  leadId         Int
+  lead           Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  lenderId       Int
+  lender         Lender   @relation(fields: [lenderId], references: [id])
+  status         String // pending | running | approved-principal | approved-final | rejected | error | needs-account
+  approvedAmount Float?
+  interestRate   Float?
+  months         Int?
+  monthlyPayment Float?
+  errorText      String?
+  botRunId       String? // telemetry run id from the extension bot
+  checkedAt      DateTime @default(now())
+  rawJson        String? // full raw result
+
+  @@index([leadId])
+  @@index([lenderId, checkedAt])
+}
+
+// ============ IMPORT BATCHES — תיעוד ייבוא מ-Yoatsim ============
+model ImportBatch {
+  id          Int      @id @default(autoincrement())
+  filename    String
+  totalRows   Int      @default(0)
+  imported    Int      @default(0)
+  updated     Int      @default(0)
+  skipped     Int      @default(0)
+  errorsJson  String? // JSON [{row, field, message}]
+  mappingJson String? // column mapping used
+  createdById Int?
+  createdBy   User?    @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+
+  leads Lead[]
+}
