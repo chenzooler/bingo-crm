@@ -18,7 +18,7 @@ export function TasksPanel() {
   const urgentCount = TASKS.filter((t) => t.urgent).length;
 
   return (
-    <aside className="w-72 shrink-0 surface-sidebar h-[calc(100vh-3rem)] sticky top-12 overflow-hidden flex flex-col">
+    <aside className="w-72 shrink-0 surface-sidebar h-[calc(100vh-60px)] sticky top-[60px] overflow-hidden flex flex-col border-r border-bingo-gray-150">
       <div className="px-4 pt-3 pb-2">
         <div className="flex items-center justify-between mb-2.5">
           <h2 className="text-headline inline-flex items-center gap-1.5">
