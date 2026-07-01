@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { LEADS } from "@/lib/data/leads";
-import { LeadJourney } from "@/components/lead/LeadJourney";
+import { LeadCardV3 } from "@/components/lead/LeadCardV3";
 
 export const dynamic = "force-dynamic";
 
@@ -8,5 +8,5 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const lead = LEADS.find((l) => l.id === id);
   if (!lead) notFound();
-  return <LeadJourney lead={lead} />;
+  return <LeadCardV3 lead={lead} />;
 }
