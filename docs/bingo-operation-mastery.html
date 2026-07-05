@@ -1,0 +1,619 @@
+<style>
+  :root{
+    --ink:#161b26;--ink-soft:#252c3a;--paper:#f6f7f9;--paper-2:#eef0f4;
+    --slate:#5b6472;--slate-soft:#8a92a1;--line:#d9dde4;--line-soft:#e6e9ee;
+    --signal:#c8102e;--signal-deep:#98122a;--signal-wash:#fbe9ec;
+    --ok:#1f8a5b;--ok-wash:#e6f4ec;--warn:#b26a00;--warn-wash:#fbefdc;
+    --stuck:#6b45c9;--stuck-wash:#efe9fb;--otp:#0a5fb3;--otp-wash:#e5eff8;
+    --card:#ffffff;
+    --mono:"SF Mono",ui-monospace,"Menlo","Consolas",monospace;
+    --sans:"Heebo","Assistant","Segoe UI","Arial Hebrew","Arial",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans);line-height:1.7;font-size:17px;
+    font-feature-settings:"kern" 1;}
+  .wrap{direction:rtl;text-align:right;}
+
+  /* ---------- layout shell ---------- */
+  .shell{display:grid;grid-template-columns:1fr 250px;gap:0;
+    max-width:1180px;margin:0 auto;align-items:start;}
+  main{min-width:0;padding:0 clamp(20px,4vw,64px) 120px;}
+  nav.toc{position:sticky;top:0;height:100vh;overflow-y:auto;
+    padding:40px 24px 40px 8px;border-inline-start:1px solid var(--line);
+    font-size:13.5px;background:linear-gradient(180deg,var(--paper) 0%,var(--paper-2) 100%);}
+  nav.toc .toc-h{font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--slate-soft);font-weight:700;margin:0 0 14px;}
+  nav.toc a{display:block;color:var(--slate);text-decoration:none;
+    padding:6px 10px;border-radius:6px;line-height:1.45;
+    border-inline-start:2px solid transparent;margin-bottom:2px;transition:.15s;}
+  nav.toc a:hover{color:var(--ink);background:var(--card);border-inline-start-color:var(--signal);}
+  nav.toc a .n{font-family:var(--mono);font-size:11px;color:var(--slate-soft);margin-inline-start:8px;}
+  @media(max-width:900px){.shell{grid-template-columns:1fr}nav.toc{display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 40px;border-bottom:3px solid var(--ink);margin-bottom:8px;}
+  .hero .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--signal);font-weight:600;margin-bottom:20px;
+    display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .hero .eyebrow .dot{width:7px;height:7px;background:var(--signal);border-radius:50%;
+    box-shadow:0 0 0 4px var(--signal-wash);}
+  .hero h1{font-size:clamp(34px,6vw,60px);line-height:1.04;margin:0 0 20px;
+    font-weight:800;letter-spacing:-.01em;text-wrap:balance;color:var(--ink);}
+  .hero h1 .red{color:var(--signal);}
+  .hero .lede{font-size:clamp(17px,2.2vw,21px);color:var(--slate);max-width:60ch;
+    line-height:1.6;margin:0;}
+  .hero .meta{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:32px;}
+  .hero .meta .pill{font-family:var(--mono);font-size:12px;padding:6px 12px;
+    background:var(--card);border:1px solid var(--line);border-radius:999px;color:var(--ink-soft);}
+
+  /* ---------- sections ---------- */
+  section{padding-top:56px;scroll-margin-top:24px;}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;
+    border-bottom:1px solid var(--line);padding-bottom:14px;}
+  .sec-head .num{font-family:var(--mono);font-size:14px;font-weight:700;
+    color:var(--signal);flex:none;padding-top:6px;}
+  .sec-head h2{font-size:clamp(24px,3.4vw,34px);margin:0;font-weight:800;
+    letter-spacing:-.01em;line-height:1.15;text-wrap:balance;}
+  h3{font-size:20px;font-weight:700;margin:38px 0 10px;letter-spacing:-.005em;color:var(--ink);}
+  h4{font-size:16px;font-weight:700;margin:26px 0 8px;color:var(--ink-soft);}
+  p{margin:0 0 16px;max-width:68ch;}
+  main a{color:var(--signal-deep);}
+  strong{font-weight:700;color:var(--ink);}
+  ul,ol{max-width:68ch;padding-inline-start:22px;margin:0 0 18px;}
+  li{margin-bottom:9px;}
+  li::marker{color:var(--slate-soft);}
+
+  code,.code{font-family:var(--mono);font-size:.86em;background:var(--paper-2);
+    padding:1.5px 6px;border-radius:5px;color:var(--signal-deep);
+    border:1px solid var(--line-soft);white-space:nowrap;}
+
+  /* ---------- chips ---------- */
+  .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);
+    font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;
+    border:1px solid;white-space:nowrap;line-height:1.6;}
+  .chip.ok{color:var(--ok);background:var(--ok-wash);border-color:#bfe3cf;}
+  .chip.warn{color:var(--warn);background:var(--warn-wash);border-color:#f0d5a0;}
+  .chip.stuck{color:var(--stuck);background:var(--stuck-wash);border-color:#d5c6f2;}
+  .chip.otp{color:var(--otp);background:var(--otp-wash);border-color:#b9d3ee;}
+  .chip.sig{color:var(--signal);background:var(--signal-wash);border-color:#f2c4cd;}
+  .chip.ink{color:var(--ink-soft);background:var(--paper-2);border-color:var(--line);}
+
+  /* ---------- tables ---------- */
+  .twrap{overflow-x:auto;margin:20px 0 26px;border:1px solid var(--line);
+    border-radius:10px;background:var(--card);}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:640px;}
+  thead th{background:var(--ink);color:#eef0f4;font-weight:600;text-align:right;
+    padding:11px 14px;font-size:12.5px;letter-spacing:.02em;position:sticky;top:0;
+    white-space:nowrap;}
+  tbody td{padding:11px 14px;border-top:1px solid var(--line-soft);vertical-align:top;
+    line-height:1.55;}
+  tbody tr:nth-child(even){background:#fafbfc;}
+  tbody td:first-child{font-weight:600;}
+  table .mono{font-family:var(--mono);font-size:13px;color:var(--signal-deep);
+    font-variant-numeric:tabular-nums;white-space:nowrap;}
+
+  /* ---------- callouts ---------- */
+  .box{border-radius:10px;padding:18px 20px 18px 20px;margin:22px 0;
+    border:1px solid var(--line);background:var(--card);
+    border-inline-start:4px solid var(--slate);}
+  .box .box-h{font-weight:700;font-size:14px;margin-bottom:8px;display:flex;gap:9px;align-items:center;}
+  .box .box-h .tag{font-family:var(--mono);font-size:11px;text-transform:uppercase;
+    letter-spacing:.1em;padding:2px 8px;border-radius:5px;}
+  .box p:last-child{margin-bottom:0;}
+  .box.pain{border-inline-start-color:var(--signal);background:linear-gradient(90deg,var(--signal-wash),var(--card) 60%);}
+  .box.pain .tag{background:var(--signal);color:#fff;}
+  .box.rule{border-inline-start-color:var(--otp);background:linear-gradient(90deg,var(--otp-wash),var(--card) 60%);}
+  .box.rule .tag{background:var(--otp);color:#fff;}
+  .box.fix{border-inline-start-color:var(--ok);background:linear-gradient(90deg,var(--ok-wash),var(--card) 60%);}
+  .box.fix .tag{background:var(--ok);color:#fff;}
+  .box.quote{border-inline-start-color:var(--slate);font-style:italic;color:var(--ink-soft);}
+  .box.quote .who{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--slate-soft);display:block;margin-top:8px;}
+
+  /* ---------- architecture schematic ---------- */
+  .arch{background:var(--ink);border-radius:14px;padding:clamp(20px,3vw,34px);
+    margin:28px 0 8px;color:#dfe3ea;overflow-x:auto;}
+  .arch .grid{display:grid;gap:16px;grid-template-columns:repeat(4,minmax(150px,1fr));min-width:680px;}
+  .arch .node{background:#1f2634;border:1px solid #333c4e;border-radius:10px;padding:14px 15px;}
+  .arch .node .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--signal);margin-bottom:7px;}
+  .arch .node .t{font-weight:700;font-size:15px;color:#fff;margin-bottom:5px;}
+  .arch .node .d{font-size:12.5px;color:#9aa3b3;line-height:1.5;}
+  .arch .flowline{font-family:var(--mono);font-size:12px;color:#6f7a8d;
+    text-align:center;margin:16px 0 2px;letter-spacing:.05em;}
+
+  /* ---------- step flow ---------- */
+  .steps{counter-reset:st;margin:24px 0;display:grid;gap:0;}
+  .step{position:relative;padding:16px 46px 16px 8px;border-inline-start:2px solid var(--line);
+    margin-inline-start:16px;}
+  .step:last-child{border-inline-start-color:transparent;}
+  .step::before{counter-increment:st;content:counter(st);position:absolute;
+    inset-inline-start:-17px;top:14px;width:32px;height:32px;border-radius:50%;
+    background:var(--ink);color:#fff;font-family:var(--mono);font-weight:700;font-size:14px;
+    display:grid;place-items:center;border:3px solid var(--paper);}
+  .step .st-t{font-weight:700;font-size:16px;margin-bottom:3px;}
+  .step .st-d{font-size:14.5px;color:var(--slate);max-width:64ch;}
+  .step.crit::before{background:var(--signal);}
+
+  /* ---------- key-value field grid ---------- */
+  .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin:20px 0;}
+  .kv .item{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:12px 14px;}
+  .kv .item .code{background:none;border:none;padding:0;font-size:13px;font-weight:700;color:var(--signal-deep);}
+  .kv .item .arrow{color:var(--slate-soft);margin:0 5px;}
+  .kv .item .mean{font-size:13.5px;color:var(--ink-soft);}
+  .kv .item .sub{display:block;font-size:12px;color:var(--slate-soft);margin-top:3px;}
+
+  hr.div{border:none;border-top:1px solid var(--line);margin:44px 0 0;}
+  .lead-tag{font-family:var(--mono);font-size:12px;color:var(--slate-soft);
+    text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;}
+
+  footer{margin-top:80px;padding-top:28px;border-top:3px solid var(--ink);
+    font-size:13px;color:var(--slate);font-family:var(--mono);}
+</style>
+
+<div class="wrap">
+<div class="shell">
+
+<nav class="toc">
+  <p class="toc-h">תוכן העניינים</p>
+  <a href="#s1"><span class="n">01</span>סקירת המערכת</a>
+  <a href="#s2"><span class="n">02</span>זרימת עבודת הנציג</a>
+  <a href="#s3"><span class="n">03</span>גופי המימון</a>
+  <a href="#s4"><span class="n">04</span>מודל הנתונים</a>
+  <a href="#s5"><span class="n">05</span>כללי העסק</a>
+  <a href="#s6"><span class="n">06</span>אוטומציות</a>
+  <a href="#s7"><span class="n">07</span>הבעיות הכואבות</a>
+  <a href="#s8"><span class="n">08</span>המלצות ל-Bingo CRM</a>
+</nav>
+
+<main>
+
+<header class="hero">
+  <div class="eyebrow"><span class="dot"></span> מסמך שליטה תפעולי · חסוי · Bingo · יולי 2026</div>
+  <h1>איך <span class="red">בינגו</span> באמת עובדת — פירוק מלא של מכונת בדיקות הזכאות</h1>
+  <p class="lede">מדריך המאסטר להבנת מערכת האוטומציה של בינגו: תוסף Chrome שממלא טפסי הלוואות אצל חמישה גופי מימון ישראליים, קורא לידים מ-Yoatsim CRM, ומוליך כל בקשה עד לרגע ה-OTP. המסמך הזה הופך את הקורא למומחה אמיתי לתפעול של בינגו — לפני שבונים מחדש את ה-CRM.</p>
+  <div class="meta">
+    <span class="pill">5 גופי מימון</span>
+    <span class="pill">17 נציגים</span>
+    <span class="pill">agent.js ~9,000 שורות</span>
+    <span class="pill">Engine V4 · server-brain</span>
+    <span class="pill">Voicenter · OTP טלפוני</span>
+    <span class="pill">Fable 5 / Opus AI-fallback</span>
+  </div>
+</header>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <div class="sec-head"><span class="num">01</span><h2>סקירת המערכת — הארכיטקטורה האמיתית</h2></div>
+
+  <p>בינגו היא סוכנות תיווך אשראי מורשה. הנציגים מבצעים <strong>בדיקות זכאות בזמן אמת</strong> מול חמישה גופי מימון ישראליים, על ידי נהיגה אוטומטית בטופס האינטרנטי הציבורי של כל גוף. הלקוח על הקו, נותן OTP אמיתי — ולכן כל בדיקה כושלת שורפת אמון ו-OTP של לקוח אמיתי. זו הנקודה שממנה נובע כל מבנה המערכת.</p>
+
+  <p>בפועל יש כאן <strong>שלושה מוחות שרצים במקביל</strong> על אותו לקוח, ולעיתים על אותו מסך — וזה מקור עיקרי לכאב (ראו §7):</p>
+
+  <div class="arch">
+    <div class="grid">
+      <div class="node">
+        <div class="k">מקור הנתונים</div>
+        <div class="t">Yoatsim CRM</div>
+        <div class="d">ה-CRM התפעולי (app.yoatsim.co.il). הליד יושב ב-Angular scope. הרקע קורא <code style="color:#f2c4cd">client.json[code]</code> ישירות מה-scope (world:MAIN).</div>
+      </div>
+      <div class="node">
+        <div class="k">מתזמר</div>
+        <div class="t">background.js</div>
+        <div class="d">MV3 service-worker. קורא CRM, מנתב ~50 הודעות, מנהל תור OTP טורי, proxy residential, פותח טאב לכל גוף, שער ל-Anthropic.</div>
+      </div>
+      <div class="node">
+        <div class="k">מוח מבצע</div>
+        <div class="t">agent.js + Engine V4</div>
+        <div class="d">content-script שממלא את טופס הגוף. הישן = היוריסטיקות + AI-fallback. החדש (V4 server-brain) = ScreenRunner דטרמיניסטי לפי playbook.</div>
+      </div>
+      <div class="node">
+        <div class="k">ממשק נציג</div>
+        <div class="t">popup / sidepanel</div>
+        <div class="d">הנציג בוחר גופים + סדר עדיפות, מריץ, רואה סטטוס חי לכל גוף, מזין OTP, רואה תוצאות והיסטוריה.</div>
+      </div>
+    </div>
+    <div class="flowline">Yoatsim ⟵ קריאה · background ⟶ פותח טאב לכל גוף · agent/V4 ממלא ⟶ OTP לנציג ⟶ reportResult ⟶ mirror-server + webhook</div>
+    <div class="grid" style="margin-top:16px">
+      <div class="node">
+        <div class="k">מוח שרת</div>
+        <div class="t">mirror-server (v3)</div>
+        <div class="d">Node/Express חד-קבצי. בולע כל אירוע טלמטריה מכל נציג, דשבורד חי, טוען selectors חמים דרך <code style="color:#f2c4cd">/api/config</code>.</div>
+      </div>
+      <div class="node">
+        <div class="k">גשר</div>
+        <div class="t">engine-v4-bridge</div>
+        <div class="d">מריץ את ScreenRunner בכל דף גוף, מציג overlay ממותג של OTP/כרטיס/handoff, מדווח done/stuck/manual.</div>
+      </div>
+      <div class="node">
+        <div class="k">ערוץ OTP</div>
+        <div class="t">Voicenter / טלפוני</div>
+        <div class="d">ה-OTP תמיד לנייד הלקוח. הנציג מבקש בטלפון את 6 הספרות, מדביק ב-overlay שמוזרק לטאב ה-CRM.</div>
+      </div>
+      <div class="node">
+        <div class="k">רשת</div>
+        <div class="t">Proxy residential IL</div>
+        <div class="d">רק דומייני הגופים מנותבים ל-IP ישראלי מסתובב (PAC). IP טרי לכל בדיקה, יציב בתוך בדיקה כדי שה-OTP/session ישרדו.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box rule">
+    <div class="box-h"><span class="tag">עיקרון-על</span> המהלך האסטרטגי של חן</div>
+    <p>להעביר את כל לוגיקת הבוט מ-<code>agent.js</code> השברירי (~9,000 שורות, selectors קשיחים) אל <strong>מוח מרכזי בשרת</strong>. באג בסלקטור היום = 50 נציגים שבורים ויום של ZIPים. אחרי המעבר: תיקון JSON על השרת = 60 שניות לכל 17 הנציגים דרך <code>/api/config</code>. <em>"מהיום והלאה — 0 ZIPים."</em></p>
+  </div>
+
+  <p>שני מנועים חיים זה לצד זה. <code>engineMode</code> קובע מי שולט: ברירת המחדל היא <strong>V4</strong> (המנוע החכם מטפל בכאל/ישראכרט/פניקס, והבוט הישן עוצר אוטומטית עם ההודעה "מנוע חכם מטפל"); <code>engineMode='legacy'</code> הוא כיבוי-חירום ידני שמחזיר הכל לבוט הישן. בנק ירושלים ומקס עדיין נשענים במידה רבה על הבוט הישן.</p>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+  <div class="sec-head"><span class="num">02</span><h2>זרימת העבודה המלאה של הנציג — מהליד ועד התשלום</h2></div>
+
+  <p>כך נראה מסלול חיים של בדיקה בודדת, מהרגע שהנציג פותח לקוח ב-Yoatsim ועד לתוצאה. השלבים באדום הם רגעים קריטיים / התערבות אנושית מכוונת.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="st-t">שאיבת הליד מ-CRM</div>
+      <div class="st-d">הנציג פותח לקוח ב-Yoatsim ולוחץ "קרא מ-CRM" / "שאיבה מ-CRM". ה-background מוצא את טאב <code>app.yoatsim.co.il</code>, מריץ סקריפט ב-world:MAIN, שולף את <code>angular.element('.ng-scope').scope().client</code> וממפה את קודי <code>client.json</code> לאובייקט ליד מנורמל. הסטטוס: "✅ נקרא: &lt;שם&gt;".</div>
+    </div>
+    <div class="step">
+      <div class="st-t">בחירת גופים וסדר עדיפות</div>
+      <div class="st-d">הנציג מסמן גוף אחד או יותר. סדר הבחירה קובע badge עדיפות ממוספר (1,2,3…) שקובע גם את סדר תור ה-OTP. ב-sidepanel אפשר גם גרירה לשינוי סדר.</div>
+    </div>
+    <div class="step">
+      <div class="st-t">Pre-flight — בדיקת שדות לפני הרצה</div>
+      <div class="st-d">ה-sidepanel מריץ <code>preflightMissing()</code> לכל גוף: הכרטיס מציג "✓ מוכן לבדיקה" או "⚠ חסר: &lt;שדות&gt;". לפני הרצה confirm() מפרט מה חסר וממליץ להשלים ב-CRM. <em>מטרה: לא להיתקע באמצע מול לקוח על הקו.</em></div>
+    </div>
+    <div class="step crit">
+      <div class="st-t">הרצה — פתיחת טאב לכל גוף</div>
+      <div class="st-d">חובה לפחות גוף אחד + <code>id_number</code>, אחרת alert. <code>startChecks</code>: מסובב session פרוקסי (IP ישראלי טרי), מאפס תור OTP, פותח טאב לכל גוף בהשהיה מדורגת. הגוף עובר ל-running.</div>
+    </div>
+    <div class="step">
+      <div class="st-t">מילוי אוטומטי של הטופס</div>
+      <div class="st-d">בכל טאב, agent.js הישן או Engine V4 מזהה מסך אחר מסך וממלא: סכום (תמיד מקסימום), מטרה, שאלות רגולציה, כתובת, פרטי בנק. הפאנל מציג "תצוגה חיה" טקסטואלית (אין screenshot אמיתי לטאב-רקע ב-MV3).</div>
+    </div>
+    <div class="step crit">
+      <div class="st-t">OTP — התערבות הנציג</div>
+      <div class="st-d">כשגוף מגיע ל-OTP, נשלח SMS לנייד הלקוח. overlay ממותג מוזרק <strong>לטאב ה-CRM</strong> (שם הנציג מסתכל, לא בטאב-הרקע). תור טורי מבטיח שרק גוף אחד שולח קוד בכל רגע. הנציג מבקש בטלפון את 6 הספרות ומדביק. הקוד מסונן לספרות, חייב ≥4.</div>
+    </div>
+    <div class="step crit">
+      <div class="st-t">מסך כרטיס אשראי — לעולם לא הבוט</div>
+      <div class="st-d">הבוט <strong>לעולם לא מקליד מספרי כרטיס</strong>. overlay מבקש מהנציג למלא כרטיס+תוקף וללחוץ המשך. המנוע ממתין (עד 180 שנ') שה-URL יעזוב את <code>/card</code> וממשיך אוטומטית.</div>
+    </div>
+    <div class="step">
+      <div class="st-t">קליטת תוצאה</div>
+      <div class="st-d"><code>detectResult()</code> מסווג אושר/נדחה מטקסט עברי, ומחלץ סכום/ריבית/חודשי מהמסך. <code>reportResult</code> משמיע צליל (אושר 1200Hz / נדחה 400Hz; stuck/manual שקטים בכוונה), דוחף ל-history, ל-webhook ולדשבורד.</div>
+    </div>
+    <div class="step">
+      <div class="st-t">סיכום, השוואה והמשך תהליך</div>
+      <div class="st-d">טאב התוצאות בונה טבלה חוצת-גופים ומדגיש "🏆 ההצעה הטובה ביותר" (ריבית מאושרת נמוכה ביותר) או "❌ נדחה בכל הגופים". הנציג יכול "העתק סיכום" או "וואטסאפ" (wa.me לנייד הלקוח), ולהזין תוצאה ידנית (agent='ידני'). מכאן ממשיכים למכירה/תשלום מול הלקוח.</div>
+    </div>
+  </div>
+
+  <div class="box quote">
+    "לקוח אמיתי הוא לא QA. תקיעה אצל לקוח = חוויה רעה, גם אם תיקנו רטרואקטיבית."
+    <span class="who">— חן, תובנת היסוד לאסטרטגיית V4</span>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <div class="sec-head"><span class="num">03</span><h2>גופי המימון — הטבלה המלאה</h2></div>
+
+  <p>חמישה גופים, כל אחד עם ארכיטקטורת אתר שונה, מנגנון OTP שונה, וסכום/מטרת הלוואה קבועים. הכותרת של background.js מסכמת: <em>"ירושלים רץ חופשי, כאל מזהה אוטומטית, שאר אחד-אחד."</em></p>
+
+  <div class="twrap">
+  <table>
+    <thead><tr>
+      <th>גוף</th><th>דומיין / טכנולוגיה</th><th>סכום מקס'</th><th>מטרת הלוואה</th><th>OTP</th><th>איך הבדיקה עובדת + מוזרויות</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>בנק ירושלים 🏛️</td>
+        <td class="mono">bankjerusalem.co.il /credit · Angular 13 + Material · partner=kranot</td>
+        <td class="mono">200,000</td>
+        <td>כיסוי חובות / סגירת התחייבויות</td>
+        <td><span class="chip ink">never</span> רץ חופשי, ללא תור</td>
+        <td>6 צעדים (סכום → מטרה → מצב משפחתי+מגורים → תעסוקה+ותק+הכנסה+התחייבויות בסליידרים → פרטים אישיים → כתובת ואז עצירה בכרטיס). כל 5 הטפסים ב-DOM בו-זמנית → צריך לזהות את הטופס הפעיל. סלקטורים לפי <code>aria-label</code> (IDs דינמיים). מסנן בנר "קדימה, ממשיכים" שחוזר אחורה ל-step 1. rate-limit קשיח: >5 שליחות/שנייה → <strong>תקלה 306</strong> → kill-switch <code>_jlmBlocked</code>, צריך incognito חדש. סליידרים מונעים במקלדת (Home/PageUp/Arrow) לפי <code>aria-valuenow</code>. פאנל דיבאג צף.</td>
+      </tr>
+      <tr>
+        <td>הפניקס 🔥</td>
+        <td class="mono">myloans.fnx.co.il /xtafnit · Kendo UI (לא HTML5) · SPA בכתובת אחת</td>
+        <td class="mono">150,000</td>
+        <td>מטרה אחרת</td>
+        <td><span class="chip otp">always</span> חובה תור</td>
+        <td>כל המסכים מזוהים לפי <strong>טקסט</strong> ולא URL (SPA כתובת-יחידה). כפתור ראשי <code>bPrimary</code> יציב בכל המסכים. סכום=150k מזין <code>requestLoanAmount</code> ומסנכרן סליידר. 3 שאלות (לא סורבתי / אין נהנה נוסף / לא איש ציבור) דרך <code>role=radio</code>. תעסוקה דרך <code>label[for]</code>. <strong>TURBO מבוטל לפניקס</strong> — היה מכבה בחירות Kendo. נקודת תקיעה ידועה: מסך ריבית/החזר ("המשך").</td>
+      </tr>
+      <tr>
+        <td>ישראכרט 💳</td>
+        <td class="mono">isracard.co.il /loans/bingo → digitalloans · Angular + Shadow-DOM</td>
+        <td class="mono">200,000</td>
+        <td>מטרה אחרת</td>
+        <td><span class="chip otp">always</span> חובה תור</td>
+        <td>הכי כבד בדרישות שדות. סליידר Wix (pointer-events על קצה המסלול, RTL). שמות פרטי/משפחה נחתכים ל-10 תווים; מיקוד נכפה ל-7 ספרות (<code>cityZipMap</code>, ברירת מחדל 9101001). כתובת "צוברת זבל >50 תווים" → forceClear. J5="יש כרטיס אשראי" → תמיד לא. CreditReport דורש 'מאשר' מדויק (דוחה 'לא מאשר'). דורש שחרור נעילת launcher (<code>v4launch::/v4errrec::</code>) אחרת נתקע ב-CTA. לחיצה מהירה מדי על "מעניין אותי" → ErrorPage.</td>
+      </tr>
+      <tr>
+        <td>כאל 💎</td>
+        <td class="mono">cal-online.co.il /landing/loan2allg · Angular Material · הכי יציב</td>
+        <td class="mono">200,000</td>
+        <td>הוצאה אחרת</td>
+        <td><span class="chip warn">sometimes</span> זיהוי אוטומטי</td>
+        <td>ניתוב לפי URL. חובה ללחוץ את הכפתור <strong>הכחול</strong> "להלוואה מהירה" (לא טופס הליד הוורוד). ה-submit האמיתי הוא "אפשר להמשיך" (type=submit) — <code>/המשך/</code> לא תופס את "להמשיך" (יש יו"ד!), ו"אישור" הוא כפתור מודאל שגוי. "מעניין אותי" דורש gesture אמיתי (isTrusted) שתוסף לא יכול לזייף → מבקש מהנציג ללחוץ. <code>/card</code> = תמיד ידני. <code>ng-invalid</code> נחשב קוסמטי — כאל מקבל server-side. לקוח כאל קיים = flow נפרד מבודד לפי host.</td>
+      </tr>
+      <tr>
+        <td>מקס ⭐</td>
+        <td class="mono">max.co.il · lightweight · block יחיד</td>
+        <td class="mono">200,000</td>
+        <td>(ריק)</td>
+        <td><span class="chip otp">always</span> חובה תור</td>
+        <td>הפשוט ביותר: login ת"ז → כניסה → OTP → מספר חשבון → "הלוואה אונליין" → סכום מקס + צ'קבוקסים → אישור תנאים. עובד טוב, אבל חן מציין שמקס שינו אתר פעמיים בשנה וימשיכו.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>נקודות אימות חוצות-גופים</h3>
+  <div class="kv">
+    <div class="item"><span class="code">אימות זהות</span><span class="arrow">→</span><span class="mean">תמיד תאריך הנפקת ת"ז<span class="sub">לעולם לא כרטיס אשראי</span></span></div>
+    <div class="item"><span class="code">יש כרטיס אשראי?</span><span class="arrow">→</span><span class="mean">תמיד "לא"<span class="sub">ישראכרט: "אין לי כרטיס אשראי"</span></span></div>
+    <div class="item"><span class="code">זיהוי חשבון</span><span class="arrow">→</span><span class="mean">מספר חשבון (לא כרטיס)<span class="sub">כאל identification</span></span></div>
+    <div class="item"><span class="code">מועד חיוב</span><span class="arrow">→</span><span class="mean">10 לחודש<span class="sub">פניקס: "10 בחודש"</span></span></div>
+    <div class="item"><span class="code">סוג חשבון</span><span class="arrow">→</span><span class="mean">פרטי</span></div>
+    <div class="item"><span class="code">שדה חיפוש בנק</span><span class="arrow">→</span><span class="mean">רק קוד מספרי → לחיצה על השורה<span class="sub">לא "לאומי(10)"</span></span></div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+  <div class="sec-head"><span class="num">04</span><h2>מודל הנתונים — כל שדה שנקרא מ-Yoatsim</h2></div>
+
+  <p>ה-background קורא את <code>client.json[code]</code> ישירות מה-Angular scope. הקודים זוהו בעמל רב (חלקם ע"י חן עצמו — s10/n11 נוספו ב-v2.2.82). להלן המיפוי המלא <strong>קוד CRM → משמעות</strong>. שים לב: <code>id_number</code> ו-<code>full_name</code> באים מ-<code>client.number</code>/<code>client.name</code> ולא משדה json; טלפון ואימייל נשאבים ב-regex מטקסט הדף (שברירי).</p>
+
+  <div class="twrap">
+  <table>
+    <thead><tr><th>קוד CRM</th><th>שדה מנורמל</th><th>משמעות / הערות</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">client.name</td><td>full_name</td><td>שם מלא. <code>first_name</code>/<code>last_name</code> = a88/a89 (fallback: פיצול השם)</td></tr>
+      <tr><td class="mono">client.number</td><td>id_number</td><td>ת"ז — לא שדה json. ריפוד 8→9 ספרות באפס מוביל</td></tr>
+      <tr><td class="mono">regex innerText</td><td>phone / email</td><td>נשאבים מטקסט הדף (05X-XXX-XXXX / אימייל) — <strong>שברירי</strong></td></tr>
+      <tr><td class="mono">a21</td><td>birth_date</td><td>תאריך לידה → מנורמל ל-dd/mm/yyyy</td></tr>
+      <tr><td class="mono">a18</td><td>id_issue_date</td><td>תאריך הנפקת ת"ז — למסלול אימות זהות</td></tr>
+      <tr><td class="mono">s78</td><td>gender</td><td>מגדר · gnMap {65359:זכר, 65360:נקבה}</td></tr>
+      <tr><td class="mono">s5 (fb s42)</td><td>marital_status</td><td>מצב משפחתי · msMap (רווק/נשוי/גרוש/אלמן/ידוע בציבור)</td></tr>
+      <tr><td class="mono">s6 (fb s43)</td><td>employment_type</td><td>סוג תעסוקה · empMap (שכיר/עצמאי/גמלאי/מובטל)</td></tr>
+      <tr><td class="mono">a4</td><td>employer_name</td><td>שם מעסיק</td></tr>
+      <tr><td class="mono">n4</td><td>monthly_income</td><td>הכנסה חודשית</td></tr>
+      <tr><td class="mono">n16</td><td>spouse_income</td><td>הכנסת בן/בת זוג (household = self+spouse אם נשוי)</td></tr>
+      <tr><td class="mono">n3</td><td>seniority_months</td><td>ותק בחודשים · ירושלים: מספר שלם = שנים, עשרוני &lt;1 = חודשים</td></tr>
+      <tr><td class="mono">a1</td><td>city</td><td>עיר · resolveCityName (רישום ~150 ערים, Levenshtein ≥0.85, ריק→ירושלים)</td></tr>
+      <tr><td class="mono">a12</td><td>address</td><td>כתובת מאוחדת (לא street!) · stripHouseNumber/extractHouseNumber</td></tr>
+      <tr><td class="mono">n1 (fb a13)</td><td>house_number</td><td>מספר בית</td></tr>
+      <tr><td class="mono">n53</td><td>zip</td><td>מיקוד — נכפה ל-7 ספרות</td></tr>
+      <tr><td class="mono">s7 (fb s44)</td><td>bank_name / bank_code</td><td>בנק · crmBankIdMap → regex (NN) → fallback חד/דו-ספרתי</td></tr>
+      <tr><td class="mono">n12</td><td>bank_branch</td><td>סניף בנק</td></tr>
+      <tr><td class="mono">a32</td><td>bank_account</td><td>מספר חשבון</td></tr>
+      <tr><td class="mono">n30</td><td>requested_amount</td><td>סכום מבוקש (בפועל תמיד נדרס למקסימום)</td></tr>
+      <tr><td class="mono">n15</td><td>existing_loans</td><td>הלוואות קיימות</td></tr>
+      <tr><td class="mono">n5</td><td>monthly_obligations</td><td>התחייבויות חודשיות · סליידר ירושלים step 4</td></tr>
+      <tr><td class="mono">s10</td><td>housing</td><td>סוג מגורים · housingMap (שכירות/בעלות/משכנתא/הורים/אחר)</td></tr>
+      <tr><td class="mono">n18</td><td>monthly_housing_payment</td><td>החזר שכירות/משכנתא חודשי · סליידר ירושלים step 3</td></tr>
+      <tr><td class="mono">n11</td><td>number_of_children</td><td>מספר ילדים מתחת לגיל 18</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="box pain">
+    <div class="box-h"><span class="tag">אזהרה</span> שני מבני נתונים שלא מסונכרנים</div>
+    <p>ה-CRM מחזיר <code>address</code> מאוחד ולא <code>street</code>. ה-preflight מנדס לאחור: street מסופק ע"י address, ו-house_number "מסופק אם יש ספרה כלשהי במחרוזת" — שברירי. בנוסף קיימות <strong>שתי רשימות שדות שונות</strong>: popup (25 שדות) מול sidepanel (28 — עם housing/children/payment) — עלולות להתפצל.</p>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+  <div class="sec-head"><span class="num">05</span><h2>כללי העסק — זכאות, ניתוב, פסילות, ספי החלטה</h2></div>
+
+  <h3>סכום ומטרה — קבועים לחלוטין</h3>
+  <p>סכום ההלוואה הוא <strong>תמיד המקסימום</strong> לכל גוף (ירושלים/ישראכרט/כאל/מקס 200,000; פניקס 150,000). אם שדה הסכום נמוך יותר — ממלאים מחדש למקס. מטרת ההלוואה קבועה לפי גוף: ירושלים "כיסוי חובות / סגירת התחייבויות"; ישראכרט+פניקס "מטרה אחרת"; כאל "הוצאה אחרת".</p>
+
+  <h3>תשובות רגולציה — מקודדות קשיח</h3>
+  <div class="kv">
+    <div class="item"><span class="mean">הלבנת הון / טרור / סורבת בעבר <span class="sub">→ תמיד "לא" / "לא סורבתי"</span></span></div>
+    <div class="item"><span class="mean">איש/אשת ציבור (PEP) <span class="sub">→ תמיד "לא"</span></span></div>
+    <div class="item"><span class="mean">נהנה נוסף <span class="sub">→ "אין נהנה נוסף"</span></span></div>
+    <div class="item"><span class="mean">מקור החזר <span class="sub">→ "כן, יש לי הכנסה"</span></span></div>
+    <div class="item"><span class="mean">אישור מאגר אשראי <span class="sub">→ תמיד "מאשר" (+צ'קבוקסים)</span></span></div>
+    <div class="item"><span class="mean">עיסוק נדל"ן/הימורים/מט"ח <span class="sub">→ "לא בתחום"</span></span></div>
+    <div class="item"><span class="mean">מקור כספים (ישראכרט) <span class="sub">→ "משכורת"</span></span></div>
+    <div class="item"><span class="mean">תעסוקה <span class="sub">רק עצמאי מפורש→"עצמאי/ת", אחרת "שכיר/ה" / כאל "במשרה מלאה"</span></span></div>
+  </div>
+
+  <div class="box rule">
+    <div class="box-h"><span class="tag">מגדר / תעסוקה</span> אף פעם לא לנחש בטופס מחייב</div>
+    <p>ב-V4 הדטרמיניסטי: ערך מגדר/תעסוקה לא-מוכר מתמפה ל-<code>''</code> → <code>_findClickable</code> מחזיר null → needs-ai → <strong>עצירה נקייה לנציג</strong>. המערכת לעולם לא מנחשת מגדר או סוג תעסוקה בטופס מחייב.</p>
+  </div>
+
+  <h3>ניתוב מגורים — כלל ה"אצל ההורים" (סיכון ציות!)</h3>
+  <p>כלל אוטומטי בירושלים step 3: אם ב-CRM מגורים="שכירות/משכנתא" אבל <code>monthly_housing_payment</code> (n18) חסר → הבוט מחליף אוטומטית ל-"אצל ההורים" כדי לא להיתקע על סליידר ההחזר. <strong>זה לא תמיד נכון</strong> ועלול לייצר אישור שלא משקף את מציאות הלקוח — חשיפה משפטית.</p>
+
+  <h3>פסילות ותוצאות</h3>
+  <p>דחייה היא <strong>תוצאה תקינה (done)</strong>, לא תקיעה. מזוהה במילות-מפתח עבריות שלמות בלבד (למנוע false-positive משיווק חיובי). דוגמאות דחייה: "לא נוכל לאשר", "נדחתה", "אינך זכאי", "הבקשה לא אושרה". דוגמאות אישור: "אושר", "ההלוואה שלך", "אישרנו", "מזל טוב". מקרה מיוחד: פועלים "כבר יש לך חשבון אצלנו" = <strong>נדחה</strong> (לקוח קיים).</p>
+
+  <h3>ספי החלטה תפעוליים</h3>
+  <div class="twrap">
+  <table>
+    <thead><tr><th>סף</th><th>ערך</th><th>מה קורה בחריגה</th></tr></thead>
+    <tbody>
+      <tr><td>Rate limit לגוף</td><td class="mono">6 / שעה</td><td>הגוף מדולג, השם נכנס לרשימת rateLimited</td></tr>
+      <tr><td>Debounce כפל-הרצה</td><td class="mono">2.5 שנ'</td><td>הרצה חוזרת של אותו גוף מדולגת (מונע כפל טאב + כפל OTP)</td></tr>
+      <tr><td>Circuit breaker (מתוכנן)</td><td class="mono">>30% כשל/שעה</td><td>עצירת בדיקות לגוף + התראה לחן</td></tr>
+      <tr><td>OTP auto-release</td><td class="mono">150 שנ'</td><td>גוף שמחזיק OTP יותר מדי — משוחרר בכוח, התור מתקדם</td></tr>
+      <tr><td>אורך מפתח API</td><td class="mono">sk-ant-, ≥85</td><td>נדחה כלא-תקין/חתוך (בעיית תמיכה נפוצה)</td></tr>
+      <tr><td>קוד OTP</td><td class="mono">≥4 ספרות</td><td>לא-ספרות מסוננות, קצר מדי לא נשלח</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <div class="sec-head"><span class="num">06</span><h2>אוטומציות — טיימרים, חזרות, התראות, מעברי סטטוס</h2></div>
+
+  <h3>לולאות ומחזוריות</h3>
+  <div class="twrap">
+  <table>
+    <thead><tr><th>אוטומציה</th><th>תדירות / תקרה</th><th>מטרה</th></tr></thead>
+    <tbody>
+      <tr><td>Auto-pilot כאל</td><td class="mono">600ms</td><td>לולאה עצמאית ששורדת קריסת הלולאה הראשית / שינת SW</td></tr>
+      <tr><td>Auto-pilot ירושלים</td><td class="mono">700ms</td><td>אותו דבר — deadline 10 דק', unlock אחרי 5 שנ' stale</td></tr>
+      <tr><td>לולאה ראשית (agent)</td><td class="mono">round&lt;72, total&lt;5000</td><td>מונה round מתאפס בכל שינוי URL → מתחדש אחרי שהנציג מתקדם ידנית</td></tr>
+      <tr><td>ScreenRunner (V4)</td><td class="mono">MAX_SCREENS 50, ERR 4</td><td>מסך אחד לאיטרציה; retry לכל URL עד 5; OTP עד 6</td></tr>
+      <tr><td>Heartbeat טלמטריה</td><td class="mono">15 שנ'</td><td>ws ping + agent.heartbeat; reconnect עם backoff 5 שנ'</td></tr>
+      <tr><td>Selector hot-load</td><td class="mono">60 שנ'</td><td>polling ל-<code>/api/config</code>, cache ב-storage, offline-safe</td></tr>
+      <tr><td>OTP keep-alive</td><td class="mono">35 שנ'</td><td>fetch ל-favicon.ico בזמן שהנציג מקליד — שומר sticky-IP חם</td></tr>
+      <tr><td>Native poll (OTP)</td><td class="mono">700ms</td><td>ממשיך אוטומטית אם הנציג הקליד קוד ישירות בשדה הגוף</td></tr>
+      <tr><td>watchdog חלון OTP</td><td class="mono">3 דק'</td><td>סוגר את החלון אם הנציג נטש</td></tr>
+      <tr><td>מוניטור סינתטי לילי</td><td class="mono">~02:00</td><td>בדיקה מלאה לכל גוף עם "לקוחות" פנימיים; כשל→התראה + 🔴</td></tr>
+      <tr><td>גיבוי DB</td><td class="mono">0 4 * * *</td><td>gzip dump → Backblaze B2 מוצפן GPG; 30 יומי/12 שבועי/12 חודשי</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>תור OTP טורי (mutex)</h3>
+  <p>רק גוף אחד מחזיק <code>currentOTP</code> בכל רגע; האחרים בתור, ממוינים לפי סדר הבחירה של הנציג. גוף רוכש slot (<code>acquireOtpSlot</code> / <code>v4OtpAcquire</code>) <em>לפני</em> שליחת SMS ומשחרר אחרי אישור — כך רק גוף אחד שולח קוד ומציג חלון בכל פעם. <em>"OTP טורי למנוע-v4 (mutex): מונע SMS מרובים בו-זמנית ובלבול בין קודים."</em></p>
+
+  <h3>אסקלציה (בוט ישן, לפי מסך חוזר)</h3>
+  <p>ככל שהבוט תקוע יותר על אותו מסך, האסטרטגיה מסלימה: <span class="chip ink">1-3 Turbo</span> <span class="chip ink">4-6 Haiku</span> <span class="chip ink">7-9 Sonnet</span> <span class="chip ink">10-12 Sonnet+Vision</span> <span class="chip ink">13-15 לחיצה אגרסיבית</span> <span class="chip ink">16-18 Back+Forward</span> <span class="chip ink">19-20 Refresh</span> <span class="chip sig">21+ GiveUp → stuck</span>. ב-GiveUp מדווח stuck וממתין עד 10 דק' לשינוי URL (התערבות נציג).</p>
+
+  <h3>מעברי סטטוס</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin:16px 0">
+    <span class="chip ink">waiting · ממתין</span>
+    <span class="chip ink">running · רץ</span>
+    <span class="chip otp">otp · ממתין לקוד</span>
+    <span class="chip ok">approved · אושר</span>
+    <span class="chip sig">rejected · נדחה</span>
+    <span class="chip stuck">stuck · תקוע</span>
+    <span class="chip warn">manual · הועבר לנציג</span>
+    <span class="chip ink">done · הושלם</span>
+  </div>
+  <p>סטטוס לא-'running' דוחף progress=100 כדי לעצור את הספינר. חשוב: <code>stuck</code>/<code>manual</code> <strong>אינם דחיית לקוח</strong> — משמיעים אותם בשקט בכוונה (צליל הדחייה גרם לנציג לחשוב שהלקוח נדחה).</p>
+
+  <h3>ריפוי-עצמי ולמידה</h3>
+  <p>V4: תוכניות AI לפי חתימת מסך נשמרות ב-<code>planCache</code> ומושמעות מיידית; selector שבור → re-plan אוטומטי. גם: recording של כל ריצה אמיתית לספריית regression — לפני deploy מריצים את המנוע על מאות snapshots שמורים (0 לקוחות, 0 OTP). <em>הערה: מטמון האסטרטגיות הנלמדות מנוקה בכל עליית SW ו"מכובה" בבוט הישן ("גורם stalling") — התשתית קיימת אך רדומה.</em></p>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="s7">
+  <div class="sec-head"><span class="num">07</span><h2>הבעיות הכואבות היום</h2></div>
+
+  <div class="box pain">
+    <div class="box-h"><span class="tag">#1 הכאב המרכזי</span> התהליכים הכפולים</div>
+    <p>זו הבעיה הכי חמורה. יש <strong>ריבוי מימושים חופפים שרצים על אותו לקוח/מסך</strong>:</p>
+    <ul>
+      <li><strong>כאל = שלושה מימושים חופפים</strong> (auto-pilot IIFE legacy + heuristicCal legacy + heuristicCalFast) ועוד מנוע V4. הערה מפורשת: TURBO "היה מתחרה בהם ומכבה בחירות Kendo".</li>
+      <li><strong>ישראכרט</strong> — <code>heuristicIsracardKycSteps</code> ו-<code>heuristicIsracardSimpleChoiceStep</code> מכסים את אותם מסכים.</li>
+      <li><strong>OTP בשני נתיבים מקבילים</strong>: legacy (requestOTP/otpCompleted/checkOTPTurn) מול v4 (v4OtpAcquire/Release/ShowCrmOtp) — <code>currentOTP</code> משותף, סיכון desync.</li>
+      <li><strong>שני מימושי overlay ל-OTP</strong>: crm-otp-overlay.js על טאב ה-CRM מול showOtpOverlay inline על טאב הגוף — עלולים להתפצל. ה-sidepanel אפילו מסתיר את ה-OTP section שלו ("OTP handled only by CRM popup overlay") אך משאיר קוד חצי-מחווט מת.</li>
+      <li><strong>כפל-runMission</strong> — auto-run + message יכולים להריץ שני ScreenRunners / שני חלונות OTP. נשמר בכוח ע"י נעילות <code>_missionRunning</code> / <code>v4launch::</code>.</li>
+      <li><strong>איפוס נעילה גלובלי שבור</strong>: איפוס <code>{}</code> במקום מחיקת הגוף הספציפי שבר את מוני ה-SMS/reload של גוף מקביל — תוקן ל-<code>delete _of[b]</code>.</li>
+    </ul>
+    <p>התוצאה: <strong>בעיית 7 ה-SMS</strong> — כל התכנון תלוי בהצבת <code>_lastOtpCode</code> רק אחרי לחיצת submit אמיתית, אחרת נשלחים קודים כפולים והתהליך נתקע.</p>
+  </div>
+
+  <div class="box pain">
+    <div class="box-h"><span class="tag">#2</span> reactive במקום proactive</div>
+    <p>agent.js ~9,000 שורות עם selectors קשיחים — כל שינוי קטן באתר בנק שובר → תיקון ידני → נבדק חי על לקוח אמיתי. <strong>4 גרסאות גיבוי ב-6 ימים</strong> = שינויים יומיים, שום דבר לא יציב. כל הכלים הקיימים (AI chat-to-fix, hot selectors, dashboard) מתקנים <em>אחרי</em> שהלקוח כבר נפגע.</p>
+  </div>
+
+  <div class="box pain">
+    <div class="box-h"><span class="tag">#3</span> תקלה 306 בבנק ירושלים</div>
+    <p>rate-limit קשיח: >5 שליחות/שנייה → חסימה "תקלה 306 / הקלדות שגויות" → kill-switch, צריך incognito טרי. בנוסף: כל 5 הטפסים ב-DOM בו-זמנית, ובנר "קדימה, ממשיכים" מתחזה לכפתור המשך ומנווט <strong>אחורה</strong> ל-step 1. גם: מילוי שדה-אחד-לאיטרציה נכפה כי מילוי-הכל-מיידי מזוהה כבוט → 306.</p>
+  </div>
+
+  <div class="box pain">
+    <div class="box-h"><span class="tag">#4</span> סליידרים ששקטים חוזרים לברירת מחדל</div>
+    <p>הכי קריטי מבחינת נכונות: ב-step 4 של ירושלים 3 סליידרים מזוהים לפי aria-valuemax ומתבלבלים, וסליידרים <strong>מתאפסים לברירת מחדל אחרי שהוגדרו</strong> — הבוט ממשיך עם ערכים שגויים ועלול לאשר הלוואה על נתונים לא נכונים. ב-V4: Angular עלול לשים <code>max='0'</code> (מחרוזת truthy) — נבדק מספרית; setSliderMax חייב להגיע ל-aria-valuemax אחרת needs-ai.</p>
+  </div>
+
+  <div class="box pain">
+    <div class="box-h"><span class="tag">#5</span> שברירויות נוספות</div>
+    <ul>
+      <li><strong>ישראכרט SPA "רועד"</strong> — צריך 1-2 reloads, נוחת ב-errorpage תכופות (תקרת retry הועלתה ל-6). שדה ת"ז בלוגין לפעמים ב-iframe לפעמים בדף ראשי → <code>#tz-input</code> לא אמין.</li>
+      <li><strong>פרוקסי sticky-IP נופל ב-idle</strong>: בזמן שהנציג מקליד OTP אין תעבורה → ה-IP מתחלף → המסך הבא נוחת על IP אחר → חסימה. ממותן רק ע"י keep-alive 35 שנ'.</li>
+      <li><strong>MV3 SW נרדם אחרי ~30 שנ'</strong> → הבוט קופא על sendMessage. עוקפים עם WebSocket + timeout 2.5 שנ'.</li>
+      <li><strong>קליטת תוצאה חסרה</strong> — הבוט מסיים אך לא שולח session.end עם amount/rate/period; הנציג קורא ידנית. ה-endpoint קיים, agent.js פשוט לא שולח.</li>
+      <li><strong>ng-invalid מתעלמים ממנו</strong> ("קוסמטי, כאל מקבל server-side") — עלול לשלוח נתונים שגויים.</li>
+      <li><strong>כתובת ישראכרט צוברת זבל >50 תווים</strong> — עוקף עם forceClear, לא תוקן.</li>
+      <li><strong>datacenter VPN חסום ב-ASN</strong> ע"י הבנקים; IP משותף נחסם אחרי כמה בדיקות → צריך residential IL עם סבב לכל בדיקה.</li>
+    </ul>
+  </div>
+
+  <div class="box pain">
+    <div class="box-h"><span class="tag">#6</span> פערי ייצור ומשפט</div>
+    <ul>
+      <li><strong>אין כתיבה חזרה ל-CRM</strong> — תוצאות הולכות רק ל-webhook/history; סטטוס ה-CRM לא מתעדכן.</li>
+      <li><strong>שרת v3 = Phase 0</strong>: אין DB, אין auth (localhost), אירועים בזיכרון + events.jsonl.</li>
+      <li><strong>ANTHROPIC_API_KEY חסר בשרת</strong> → AI chat-to-fix ("ה-killer feature") לא פעיל.</li>
+      <li><strong>Terms of Service ומדיניות פרטיות לא קיימים</strong> — חובה לפני ייצור, בבדיקת עו"ד.</li>
+    </ul>
+  </div>
+
+  <div class="box quote">
+    "באג בסלקטור = 50 נציגים שבורים, יום של ZIPים → תיקון JSON על השרת = 60 שניות לכולם."
+    <span class="who">— חן</span>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="s8">
+  <div class="sec-head"><span class="num">08</span><h2>המלצות — מה לבנות ב-Bingo CRM</h2></div>
+
+  <p>המטרה: לשקף את התפעול נכון <strong>ולפתור את הכאב</strong>. סדר בנייה נעול, מהשבור ביותר ליציב: <strong>1) בנק ירושלים · 2) פניקס · 3) מקס · 4) ישראכרט · 5) כאל</strong>. כאל נבחר כ-pilot ל-V4 כי הוא הכי יציב — להוכיח שהמנוע לא שובר את מה שכבר עובד.</p>
+
+  <div class="box fix">
+    <div class="box-h"><span class="tag">A</span> מנוע יחיד — לחסל את התהליכים הכפולים</div>
+    <p>להעביר כל גוף ל-<strong>ScreenRunner דטרמיניסטי יחיד</strong> (server-brain) ולמחוק את שלושת מימושי כאל / כפל ישראכרט / שני נתיבי OTP / שני overlay-ים. עיקרון V4: "מפסיקים לקודד <em>איך</em> (selectors), מקודדים רק <em>מה</em> (כוונה)". גוף = קובץ ~40 שורות declarative intent-flow. mutex OTP אחד ויחיד. overlay OTP אחד ויחיד (על טאב ה-CRM).</p>
+  </div>
+
+  <div class="box fix">
+    <div class="box-h"><span class="tag">B</span> Selectors חמים בשרת + ריפוי-עצמי 3 שכבות</div>
+    <p>כל selector = עד 5 אסטרטגיות מסודרות (CSS / XPath / <code>:has-text()</code>). Resolver: <strong>שכבה 1 cache</strong> (~99%, חינם, מיידי) → <strong>שכבה 2 Claude</strong> קורא DOM snapshot כשה-cache נשבר (נשמר כ-cache חדש) → <strong>שכבה 3 נציג</strong> מצביע ב-side-panel. תיקון = עריכת JSON בדשבורד, מתפשט תוך 60 שנ' דרך <code>/api/config</code>. מפתח selector: <code>body.step.field</code> (למשל <code>jerusalem.step3.continue</code>).</p>
+  </div>
+
+  <div class="box fix">
+    <div class="box-h"><span class="tag">C</span> Pre-flight אמיתי — לעצור להיות reactive</div>
+    <p>לפני שהלקוח על הקו: הבוט פותח את אתר הבנק בטאב רקע, מנווט עד רגע לפני login, ה-AI מוודא שה-DOM נראה כצפוי. ירוק ("מוכן") → הפאנל מתקדם ל-OTP. אדום → ה-AI מציע תיקון selector, חן מאשר, ורק אז מתחילים עם הלקוח. <strong>"לקוח אמיתי הוא לא QA."</strong></p>
+  </div>
+
+  <div class="box fix">
+    <div class="box-h"><span class="tag">D</span> מוניטור סינתטי לילי + Regression בלי לקוחות</div>
+    <p>קרון ב-~02:00 מריץ בדיקה מלאה לכל גוף עם "לקוחות" פנימיים (חן + עובדים מסכימים), OTP למספר פנימי. כשל → מסמן גוף 🔴 <em>לפני</em> יום העבודה. בנוסף: כל ריצה אמיתית נשמרת לספריית recordings; לפני כל שינוי מריצים את המנוע החדש (StaticDriver) על מאות snapshots — 100% pass = בטוח ל-deploy. DOM-diff >15% = אזהרה מוקדמת.</p>
+  </div>
+
+  <div class="box fix">
+    <div class="box-h"><span class="tag">E</span> Canary + Circuit Breaker + Audit</div>
+    <p>לעולם לא לשחרר selector לא-בדוק לכולם בבת אחת: <strong>Canary</strong> — נציג 1, אם 3 בדיקות עוברות → 5, אם 10 עוברות → כולם; כל כשל = rollback אוטומטי. <strong>Circuit breaker</strong>: כשל >30% בשעה האחרונה → עצירת הגוף + התראה. כל שינוי נשמר עם מי/מתי/למה (audit), הפיך ב-click אחד. selector מסומן valid רק אחרי 3 נציגים שונים שהריצו בהצלחה.</p>
+  </div>
+
+  <div class="box fix">
+    <div class="box-h"><span class="tag">F</span> צעד אישור מגורים/הכנסה (ציות)</div>
+    <p>לפתור את חשיפת ה"אצל ההורים": <strong>צעד אישור לפני ההרצה</strong> שנותן לנציג לאשר/לתקן מגורים + הכנסה + ילדים + גיל + תעסוקה — כדי לא לתת ללקוח אישור לא-מדויק. בנוסף: <strong>כתיבה חזרה ל-CRM</strong> של סטטוס התוצאה (amount/rate/period/monthly) — הפער הכי בולט היום.</p>
+  </div>
+
+  <div class="box fix">
+    <div class="box-h"><span class="tag">G</span> קליטת תוצאה מובנית + הקשחת ייצור</div>
+    <p>לחבר את <code>session.end</code> עם result JSON (ה-endpoint כבר קיים). להשלים Phase 5: DB אמיתי + auth + HTTPS + JWT (30 יום, disable מבטל מיידית), התראות Resend/Telegram (server-down + Sentry חדש מעירים בלילה; שאר עד 07:00), redaction PII בלוגים/snapshots, ולבסוף <strong>Terms + Privacy בבדיקת עו"ד</strong> ו-<code>ANTHROPIC_API_KEY</code> על השרת כדי להפעיל את ה-chat-to-fix.</p>
+  </div>
+
+  <h3>סיכום מנהלים — מה מייצג הצלחה</h3>
+  <p>נציג בוחר גוף+לקוח → <strong>pre-flight ירוק לפני OTP</strong> → הלקוח מקבל SMS פעם אחת בלבד → הבדיקה רצה על מנוע דטרמיניסטי יחיד → תוצאה מובנית נכתבת חזרה ל-CRM. כשבנק משנה אתר: המוניטור הלילי תופס, חן מתקן selector בדשבורד, Canary מוודא, וכל 17 הנציגים מקבלים תוך 60 שנ'. <strong>0 ZIPים. 0 לקוחות כ-QA.</strong></p>
+</section>
+
+<footer>
+  Bingo · מסמך שליטה תפעולי · מבוסס על ניתוח agent.js · background.js · popup/sidepanel · engine-v4 · mirror-server v3 · מסמכי אסטרטגיה · יולי 2026
+</footer>
+
+</main>
+</div>
+</div>
