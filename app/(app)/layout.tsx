@@ -10,7 +10,6 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { KeyboardShortcutsModal } from "@/components/ui/KeyboardShortcuts";
 import { PWARegister } from "@/components/ui/PWARegister";
-import { AIAssistant, AIAssistantLauncher } from "@/components/ui/AIAssistant";
 import { QuickAddLead } from "@/components/ui/QuickAddLead";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -30,8 +29,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <MobileBottomNav />
-          <AIAssistant />
-          <AIAssistantLauncher />
+          {/* שכפול יועצים: עוזר ה-AI (תוספת בינגו) מוסתר עד שלב הפיצ'רים —
+              להחזרה: ייבוא AIAssistant + AIAssistantLauncher מ-components/ui/AIAssistant */}
           <QuickAddLead />
           <PWARegister />
         </div>

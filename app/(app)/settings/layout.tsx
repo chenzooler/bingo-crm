@@ -1,31 +1,45 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 
+/**
+ * שכפול יועצים 1:1 (החלטת חן 06/07/26): תפריט ההגדרות = בדיוק רשימת §2
+ * מהאפיון, באותו סדר. "הרשאות" נכלל תחת ניהול משתמשים כמו במקור אך מקבל
+ * שורה כדי שהמטריצה תהיה נגישה. תוספות בינגו הוסתרו — ראו NAV_HIDDEN למטה.
+ */
 const NAV = [
-  { href: "/settings", label: "כללי", group: "ארגון" },
-  { href: "/settings/users", label: "משתמשים והרשאות", group: "ארגון" },
-  { href: "/settings/teams", label: "צוותים", group: "ארגון" },
+  { href: "/settings/users", label: "ניהול משתמשים", group: "הגדרות" },
+  { href: "/settings/permissions", label: "הרשאות", group: "הגדרות" },
+  { href: "/settings/fields", label: "הגדרת שדות", group: "הגדרות" },
+  { href: "/settings/processes", label: "תהליכים וסטטוסים", group: "הגדרות" },
+  { href: "/settings/leads-api", label: "קבלת לידים / API", group: "הגדרות" },
+  { href: "/settings/landing-pages", label: "דפי נחיתה", group: "הגדרות" },
+  { href: "/settings/action-templates", label: "תבניות פעולות/משימות/פגישות/כספים", group: "הגדרות" },
+  { href: "/settings/templates", label: "תבניות סמס/ווטסאפ", group: "הגדרות" },
+  { href: "/settings/templates?channel=email", label: "תבניות מיילים", group: "הגדרות" },
+  { href: "/settings/forms", label: "טפסים", group: "הגדרות" },
+  { href: "/settings/automations", label: "אוטומציות", group: "הגדרות" },
+  { href: "/settings/whatsapp-bot", label: "בוט ווטסאפ", group: "הגדרות" },
+  { href: "/settings/modules", label: "מודולים", group: "הגדרות" },
+  { href: "/admin/import", label: "ייבוא", group: "הגדרות" },
+];
 
-  { href: "/settings/lifecycle", label: "Lifecycle - שלבי ליד ✨", group: "זרימת עבודה" },
-  { href: "/settings/pipelines", label: "תהליכים וסטטוסים (מערכת ישנה)", group: "זרימת עבודה" },
-  { href: "/settings/sources", label: "מקורות לידים", group: "זרימת עבודה" },
-  { href: "/settings/loan-purposes", label: "מטרות הלוואה", group: "זרימת עבודה" },
-  { href: "/settings/automations", label: "אוטומציות", group: "זרימת עבודה" },
-  { href: "/settings/sla", label: "SLA והסלמות", group: "זרימת עבודה" },
-
-  { href: "/settings/lenders", label: "גופי מימון", group: "גופי מימון" },
-  { href: "/settings/forms", label: "טפסים והסכמים", group: "גופי מימון" },
-
-  { href: "/settings/templates", label: "תבניות הודעות", group: "תקשורת" },
-  { href: "/settings/numbers", label: "מספרי טלפון + ספאם ✨", group: "תקשורת" },
-  { href: "/settings/integrations", label: "אינטגרציות", group: "תקשורת" },
-  { href: "/settings/webhooks", label: "Webhooks", group: "תקשורת" },
-
-  { href: "/settings/bonus", label: "בונוסים ויעדים", group: "פיננסי" },
-  { href: "/settings/pricing", label: "תמחור שכ\"ט", group: "פיננסי" },
-
-  { href: "/settings/security", label: "אבטחה והרשאות", group: "מערכת" },
-  { href: "/settings/audit-log", label: "Audit Log", group: "מערכת" },
+// תוספות בינגו — מוסתרות במצב שכפול-יועצים; הדפים חיים ב-URL. להחזרה: להעביר ל-NAV.
+export const NAV_HIDDEN = [
+  { href: "/settings", label: "כללי" },
+  { href: "/settings/teams", label: "צוותים" },
+  { href: "/settings/lifecycle", label: "Lifecycle - שלבי ליד" },
+  { href: "/settings/pipelines", label: "תהליכים וסטטוסים (מערכת ישנה)" },
+  { href: "/settings/sources", label: "מקורות לידים" },
+  { href: "/settings/loan-purposes", label: "מטרות הלוואה" },
+  { href: "/settings/sla", label: "SLA והסלמות" },
+  { href: "/settings/lenders", label: "גופי מימון" },
+  { href: "/settings/numbers", label: "מספרי טלפון + ספאם" },
+  { href: "/settings/integrations", label: "אינטגרציות" },
+  { href: "/settings/webhooks", label: "Webhooks" },
+  { href: "/settings/bonus", label: "בונוסים ויעדים" },
+  { href: "/settings/pricing", label: "תמחור שכ\"ט" },
+  { href: "/settings/security", label: "אבטחה והרשאות" },
+  { href: "/settings/audit-log", label: "Audit Log" },
 ];
 
 export default function SettingsLayout({ children }: { children: ReactNode }) {

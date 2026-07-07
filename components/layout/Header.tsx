@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { Search, Plus, HelpCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Plus, HelpCircle, Loader2 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
-import { CommandPalette } from "@/components/ui/CommandPalette";
 import { NotificationDropdown } from "@/components/layout/NotificationDropdown";
 import { UserDropdown } from "@/components/layout/UserDropdown";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
   return (
     <>
-      <CommandPalette />
+      {/* שכפול יועצים: פלטת הפקודות ⌘K מוסתרת יחד עם ה-SearchTrigger */}
       <header className="h-[60px] sticky top-0 z-40 surface-toolbar flex items-center px-4 lg:px-6 gap-4">
         {/* Mobile menu */}
         <button
@@ -30,21 +30,15 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
           <span className="block w-5 h-[2px] bg-current rounded-full" />
         </button>
 
-        <Link href="/dashboard" className="flex items-center shrink-0" aria-label="בינגו — הבית">
+        <Link href="/leads" className="flex items-center shrink-0" aria-label="בינגו — הבית">
           <Logo size={26} />
         </Link>
 
-        <SearchTrigger />
+        {/* שכפול יועצים: חיפוש ה-⌘K הגלובלי (תוספת בינגו) מוסתר — החיפוש המהיר
+            והמתקדם חיים במסך הראשי כמו במקור. להחזרה: <SearchTrigger /> */}
 
         <div className="mr-auto flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => document.dispatchEvent(new CustomEvent("bingo:quick-add-lead"))}
-            className="b-pill b-pill-green b-pill-sm hidden sm:inline-flex"
-          >
-            <Plus className="size-4" strokeWidth={2.6} />
-            ליד חדש
-          </button>
+          <NewLeadButton />
           <NotificationDropdown />
           <button
             type="button"
@@ -58,6 +52,43 @@ export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
         </div>
       </header>
     </>
+  );
+}
+
+/** יוצר ליד חדש (מחלקת החתמות · "ליד חדש") ונכנס ישר לכרטיס — כמו במקור */
+function NewLeadButton() {
+  const router = useRouter();
+  const [busy, setBusy] = React.useState(false);
+
+  const create = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      if (res.ok) {
+        const lead = await res.json();
+        router.push(`/leads/${lead.id}`);
+      }
+    } catch { /* נשארים במסך הנוכחי */ } finally {
+      // ה-Header חי ב-layout ולא נעלם בניווט — משחררים את הכפתור תמיד
+      setBusy(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={() => void create()}
+      disabled={busy}
+      className="b-pill b-pill-green b-pill-sm hidden sm:inline-flex disabled:opacity-60"
+    >
+      {busy ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" strokeWidth={2.6} />}
+      ליד חדש
+    </button>
   );
 }
 

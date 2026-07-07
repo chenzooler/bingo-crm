@@ -4,7 +4,7 @@
  * 10 clear stages + 5 categories + flexible tags.
  */
 
-import type { StatusGlyph as IconKind } from "@/components/icons/PipelineIcons";
+import type { StatusKind as IconKind } from "@/components/icons/PipelineIcons";
 
 export type LifecycleStage =
   | "NEW"            // ליד חדש

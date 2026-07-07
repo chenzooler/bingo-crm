@@ -143,7 +143,7 @@ export default function DashboardPage() {
               <span className="b-icon b-icon-blue size-10"><TrendingUp className="size-[18px]" /></span>
               <div>
                 <h2 className="text-[17px] font-bold text-bingo-black">
-                  ביצועים — {range === "today" ? "היום" : range === "week" ? "השבוע" : "החודש"}
+                  ביצועים — {range === "today" ? "היום" : range === "7d" ? "השבוע" : "החודש"}
                 </h2>
                 <p className="text-[12px] text-bingo-gray-500">כל המספרים שלך בטווח שבחרת</p>
               </div>

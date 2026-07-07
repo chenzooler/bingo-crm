@@ -20,11 +20,12 @@ export async function GET(req: NextRequest) {
   if (ownerId) where.ownerId = Number(ownerId);
   if (providerId) where.providerId = Number(providerId);
   if (q) {
+    // ספרות בלבד משוות מול טלפון/ת.ז — שאילתה עברית לא תתפוס הכל דרך contains("")
+    const digits = q.replace(/\D/g, "");
     where.OR = [
       { fullName: { contains: q } },
-      { phone: { contains: q.replace(/\D/g, "") } },
-      { idNumber: { contains: q.replace(/\D/g, "") } },
       { email: { contains: q } },
+      ...(digits ? [{ phone: { contains: digits } }, { idNumber: { contains: digits } }] : []),
     ];
   }
 
@@ -42,9 +43,28 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ total, page, pageSize, leads });
 }
 
+// יצירת ליד ידנית — כמו ב-Yoatsim: כל ליד חדש נכנס למחלקת החתמות בסטטוס "ליד חדש".
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  if (!body.fullName) return NextResponse.json({ error: "שם חסר" }, { status: 400 });
-  const lead = await db.lead.create({ data: { ...body, syncSource: body.syncSource || "manual" } });
+  const body = await req.json().catch(() => ({}));
+  const fullName = typeof body?.fullName === "string" && body.fullName.trim()
+    ? body.fullName.trim()
+    : "ליד חדש";
+
+  const lead = await db.lead.create({
+    data: {
+      fullName,
+      phone: typeof body?.phone === "string" && body.phone.trim() ? body.phone.trim() : null,
+      source: "manual",
+      syncSource: "manual",
+      cardKind: "card",
+    },
+  });
+  await db.leadProcess.create({
+    data: { leadId: lead.id, processKey: "signatures", statusKey: "ליד חדש" },
+  });
+  await db.activity.create({
+    data: { leadId: lead.id, type: "system", text: "ליד נוצר ידנית" },
+  });
+
   return NextResponse.json(lead, { status: 201 });
 }

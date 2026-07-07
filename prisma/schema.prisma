@@ -24,6 +24,7 @@ model User {
   phone      String?
   emoji      String?
   role       String   @default("agent") // owner | manager | agent | underwriter | bot | marketing
+  permissionRole String? // אחת מ-9 רמות ההרשאה של Yoatsim (lib/yoatsim/permissions.ts key)
   active     Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -31,6 +32,9 @@ model User {
   leads      Lead[]     @relation("LeadOwner")
   activities Activity[]
   imports    ImportBatch[]
+  leadProcesses LeadProcess[]
+  tasksFrom  Task[]     @relation("TaskFrom")
+  tasksTo    Task[]     @relation("TaskTo")
 }
 
 // ============ LEAD PROVIDERS — ספקי לידים ============
@@ -149,6 +153,25 @@ model Lead {
   feeAmount           Float?
   feePaid             Boolean @default(false)
 
+  // --- מסע (כרטיס הלקוח) ---
+  journeyJson      String? // full JourneyState JSON — source of truth for the card
+  journeyUpdatedAt DateTime?
+  journeyVersion   Int      @default(0) // optimistic concurrency for multi-rep editing
+
+  // --- שכפול Yoatsim 1:1 — שדות ללא עמודה ייעודית ---
+  extraJson String? // JSON: כל שדות הכרטיס הקלאסי שאין להם עמודה (פנסיה, שמאות, הגדלה...)
+
+  // --- תת-סוגי כרטיס כמו במקור: כרטיס · שכפול · כרטיס בדיקה + ארכיון ---
+  cardKind     String  @default("card") // card | duplicate | test
+  parentLeadId Int?
+  parentLead   Lead?   @relation("CardClones", fields: [parentLeadId], references: [id], onDelete: SetNull)
+  clones       Lead[]  @relation("CardClones")
+  archived     Boolean @default(false)
+
+  processes LeadProcess[]
+  tasks     Task[]
+  sentForms SentForm[]
+
   // --- מטא ---
   intakeDate     DateTime  @default(now())
   stageChangedAt DateTime?
@@ -166,6 +189,23 @@ model Lead {
   @@index([phone])
   @@index([idNumber])
   @@index([intakeDate])
+}
+
+// ============ LEAD PROCESSES — שכפול Yoatsim: ליד ∈ כמה תהליכים ============
+// אחד-על-אחד עם המקור: לכל שיוך יש תהליך, סטטוס ואחראי. (איחוד — בשלב הבא.)
+model LeadProcess {
+  id            Int      @id @default(autoincrement())
+  leadId        Int
+  lead          Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  processKey    String // one of the 15 process keys (lib/yoatsim/processes.ts)
+  statusKey     String // status within that process
+  responsibleId Int?
+  responsible   User?    @relation(fields: [responsibleId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([leadId])
+  @@index([processKey, statusKey])
 }
 
 // ============ ACTIVITIES — היסטוריה ופעילות ============
@@ -202,6 +242,77 @@ model LenderCheck {
 
   @@index([leadId])
   @@index([lenderId, checkedAt])
+}
+
+// ============ TASKS — שכפול פאנל "משימות ופעילויות" של Yoatsim ============
+// מבנה כמו במקור: תאריך + מ-משתמש → אל-משתמש + (שם ליד) + טקסט חופשי.
+// "מתפרצת" = urgent (הכפתור האדום בפאנל).
+model Task {
+  id         Int       @id @default(autoincrement())
+  leadId     Int?
+  lead       Lead?     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  fromUserId Int?
+  fromUser   User?     @relation("TaskFrom", fields: [fromUserId], references: [id])
+  toUserId   Int?
+  toUser     User?     @relation("TaskTo", fields: [toUserId], references: [id])
+  text       String
+  urgent     Boolean   @default(false) // "מתפרצת"
+  channel    String? // call | whatsapp | sms | email — לפילטרי האייקונים
+  dueAt      DateTime?
+  done       Boolean   @default(false)
+  doneAt     DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([toUserId, done, dueAt])
+  @@index([leadId])
+}
+
+// ============ AUTOMATIONS — 21 האוטומציות של Yoatsim ============
+// מבנה קבוע כמו במקור: פרטי בסיס → תנאים → פעולות. נזרע מ-lib/yoatsim/automations.ts.
+model Automation {
+  id             Int      @id @default(autoincrement())
+  name           String   @unique
+  cardType       String   @default("כרטיס") // כרטיס | שכפול | כרטיס בדיקה
+  actionType     String? // "סוג פעולה"
+  enabled        Boolean  @default(true)
+  conditionsJson String? // JSON [{fieldType, fieldName, operator, value}]
+  actionsJson    String? // JSON [{type, processKey, statusKey, templateName}]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ============ MESSAGE TEMPLATES — תבניות הודעה (SMS/WhatsApp/WATI) ============
+// נזרע מ-lib/yoatsim/templates.ts. sender ריק = הטלפון של היוזר המחובר.
+model MessageTemplate {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  channel   String   @default("sms") // sms | whatsapp | wati | email
+  sender    String? // "" | 972505696756 | bingoisrael | bingocredit
+  body      String?
+  watiJson  String? // JSON ל-WATI: template_name, broadcast_name, parameters, buttons
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============ APP SETTINGS — הגדרות מערכת (בוט ווטסאפ, מודולים, דפי נחיתה, API) ============
+model AppSetting {
+  key       String   @id
+  valueJson String // JSON חופשי לפי המסך
+  updatedAt DateTime @updatedAt
+}
+
+// ============ SENT FORMS — "טפסים וקבצים": טפסים שנשלחו/נחתמו ============
+model SentForm {
+  id           Int       @id @default(autoincrement())
+  leadId       Int
+  lead         Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  templateName String // "הלוואה לכל מטרה – בינגו" | "הלוואה כנגד רכב – בינגו" | ...
+  status       String    @default("sent") // sent | signed
+  sentAt       DateTime  @default(now())
+  signedAt     DateTime?
+
+  @@index([leadId])
 }
 
 // ============ IMPORT BATCHES — תיעוד ייבוא מ-Yoatsim ============

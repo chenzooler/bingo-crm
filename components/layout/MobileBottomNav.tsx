@@ -2,15 +2,15 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, Phone, ListChecks, MessageSquare, Plus } from "lucide-react";
+import { Home, ListChecks, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// שכפול יועצים: במובייל כמו בדסקטופ — רק המסך הראשי, משימות (הפאנל של המקור)
+// והגדרות. שאר תוספות בינגו מוסתרות עד שלב הפיצ'רים.
 const NAV_ITEMS = [
-  { href: "/", label: "ראשי", icon: Home },
-  { href: "/leads", label: "לידים", icon: Users },
-  { href: "/dialer", label: "חיוג", icon: Phone, primary: true },
+  { href: "/leads", label: "ראשי", icon: Home, primary: true },
   { href: "/tasks", label: "משימות", icon: ListChecks },
-  { href: "/inbox", label: "תיבה", icon: MessageSquare },
+  { href: "/settings", label: "הגדרות", icon: Settings },
 ];
 
 export function MobileBottomNav() {

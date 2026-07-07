@@ -5,7 +5,7 @@
  * Real card sections, in order:
  * 1. פתיחת שיחה — "איך אפשר לעזור?" (שם, סכום, מטרה)
  * 2. בדיקת נתוני אשראי — אילו כרטיסים · גובה מסגרת · בדיקה קודמת איפה
- * 3. בדיקת חיווי אשראי — אישור לקוח BDI · סמיילי אוטומציה (בוט) ·
+ * 3. בדיקת חיווי אשראי — אישור לקוח BDI · סמיילי אוטומציה (מערכת חיצונית) ·
  *    סמיילי ידני (נציג) · שם פרטי/משפחה כפי שרשום ב-BDI · מין · לידה
  * 4. השלמת נתונים — תאריך הנפקת ת.ז, מצב משפחתי, ילדים
  * 5. הכנסות — תעסוקה, מקום+תפקיד, ותק, הכנסה, נוספות, פנסיה/השתלמות
@@ -113,7 +113,7 @@ export interface JourneyState {
   smileyLastName?: string;
   birthDate?: string;
   bdiApproved: boolean;               // אישור לקוח לבדיקת BDI
-  smileyAuto: Smiley;                 // סמיילי אוטומציה (הבוט)
+  smileyAuto: Smiley;                 // סמיילי אוטומציה (מערכת חיצונית)
   smileyManual: Smiley;               // סמיילי ידני (הנציג)
 
   // --- 4. השלמת נתונים ---
@@ -126,6 +126,7 @@ export interface JourneyState {
   employerAndRole?: string;
   seniorityYears?: string;
   monthlyIncome?: string;
+  spouseIncome?: string;
   additionalIncome?: string;
   hasPension?: YesNo;
   pensionCompany?: string;
@@ -143,11 +144,20 @@ export interface JourneyState {
   bankBranch?: string;
   bankAccount?: string;
 
+  // --- מסלול רכב: למה הלקוח שם + מסלול משולב ---
+  /** screening-failed | rejected-general | amount-insufficient | combo */
+  vehicleReason: string | null;
+  /** הלקוח לוקח גם כל-מטרה וגם רכב במקביל */
+  comboVehicle: boolean;
+
   // --- 8. הסכם התקשרות ---
   contractSentAt: string | null;
   contractSentVia?: "whatsapp" | "sms";
   signedAt: string | null;
   callbackDueAt: string | null;
+  /** חזרה שנקבעה ידנית ("ביקש שנחזור אליו") */
+  manualCallbackAt: string | null;
+  manualCallbackNote?: string;
 
   // --- post-signature lifecycle ---
   checksStartedAt: string | null;
@@ -157,12 +167,14 @@ export interface JourneyState {
   docsUploadedAt: string | null;
   finalApproval: { amount?: number | null; rate?: number | null; months?: number | null } | null;
   chosenLender: string | null;
+  loanArrivedAt: string | null;
   paymentDueAt: string | null;
   feeAmount?: string;
   paidAt: string | null;
 
   exitReason: string | null;
-  timeline: Array<{ at: string; text: string; kind: string }>;
+  /** keys hydrated from the DB on first load — powers the "✓ ממערכת" badges */
+  prefilledKeys?: string[];
 }
 
 export function initialJourney(): JourneyState {
@@ -175,9 +187,12 @@ export function initialJourney(): JourneyState {
     smileyManual: null,
     hasVehicle: null,
     hasPension: null,
+    vehicleReason: null,
+    comboVehicle: false,
     contractSentAt: null,
     signedAt: null,
     callbackDueAt: null,
+    manualCallbackAt: null,
     checksStartedAt: null,
     lenderResults: {},
     checksDone: false,
@@ -185,10 +200,10 @@ export function initialJourney(): JourneyState {
     docsUploadedAt: null,
     finalApproval: null,
     chosenLender: null,
+    loanArrivedAt: null,
     paymentDueAt: null,
     paidAt: null,
     exitReason: null,
-    timeline: [],
   };
 }
 
@@ -205,16 +220,36 @@ export function disqualified(j: JourneyState): boolean {
   return badSmiley || noCard || lowLimit;
 }
 
+/** every lender check came back rejected (general track failed at the auction) */
+export function generalRejected(j: JourneyState): boolean {
+  const outcomes = Object.values(j.lenderResults).map((r) => r.outcome);
+  return j.checksDone && outcomes.length > 0 && !outcomes.includes("approved");
+}
+
 /** current track, derived from the data */
 export function deriveTrack(j: JourneyState): Track {
   const purposeVehicle = j.loanPurpose === "רכב";
   if (disqualified(j) || purposeVehicle) {
     return j.hasVehicle === "yes" ? "vehicle" : null;
   }
+  // סורב בכל הגופים במסלול כל מטרה + יש רכב → הרכב הופך למסלול
+  if (generalRejected(j) && j.hasVehicle === "yes" && !j.chosenLender) return "vehicle";
   // clean so far → general once we know enough
   const answeredAny = j.smileyAuto !== null || j.smileyManual !== null ||
                       j.creditCards.length > 0 || j.smileyGreenConfirmed;
   return answeredAny ? "general" : null;
+}
+
+/* ---------- why is the customer on the vehicle track? ---------- */
+export const VEHICLE_REASONS: Record<string, string> = {
+  "screening-failed":    "נפסל בסינון (סמיילי/אשראי)",
+  "rejected-general":    "סורב בהלוואה לכל מטרה",
+  "amount-insufficient": "הסכום בכל מטרה לא הספיק",
+  "combo":               "משולב — גם כל מטרה וגם רכב",
+};
+
+export function vehicleReasonLabel(j: JourneyState): string | null {
+  return j.vehicleReason ? (VEHICLE_REASONS[j.vehicleReason] ?? j.vehicleReason) : null;
 }
 
 /** disqualified but no car answer yet → agent MUST ask */
@@ -235,16 +270,50 @@ export type SectionId =
   | "assets" | "bank" | "contract"
   | "cooldown" | "checks" | "docs" | "results" | "closing";
 
-export const FIRST_CALL_SECTIONS: Array<{ id: SectionId; num: number; title: string; short: string }> = [
-  { id: "opening",  num: 1, title: "פתיחת שיחה — סכום ומטרה",  short: "פתיחה" },
-  { id: "credit",   num: 2, title: "בדיקת נתוני אשראי",        short: "אשראי" },
-  { id: "bdi",      num: 3, title: "בדיקת חיווי אשראי (סמיילי)", short: "סמיילי" },
-  { id: "personal", num: 4, title: "השלמת נתונים",             short: "נתונים" },
-  { id: "income",   num: 5, title: "תעסוקה והכנסות",           short: "הכנסות" },
-  { id: "assets",   num: 6, title: "נכסים ורכב",               short: "נכסים" },
-  { id: "bank",     num: 7, title: "פרטי בנק",                 short: "בנק" },
-  { id: "contract", num: 8, title: "הסכם התקשרות",             short: "חתימה" },
+export interface SectionMeta {
+  id: SectionId;
+  num: number;
+  title: string;
+  short: string;
+  /** משפט התסריט — מה הנציג אומר ללקוח בשלב הזה */
+  hint: string;
+}
+
+export const FIRST_CALL_SECTIONS: SectionMeta[] = [
+  { id: "opening",  num: 1, title: "פתיחת שיחה — סכום ומטרה",  short: "פתיחה",
+    hint: "\"היי, מדברים מבינגו מימון! כמה כסף אתה צריך — ולמה?\"" },
+  { id: "credit",   num: 2, title: "בדיקת נתוני אשראי",        short: "אשראי",
+    hint: "\"יש בבעלותך כרטיסי אשראי? מה גובה המסגרת? בדקת כבר במקום אחר?\"" },
+  { id: "bdi",      num: 3, title: "בדיקת חיווי אשראי (סמיילי)", short: "סמיילי",
+    hint: "\"אני מריץ בדיקת חיווי אשראי — אקריא לך את הפרטים כפי שהם רשומים\"" },
+  { id: "personal", num: 4, title: "השלמת נתונים",             short: "נתונים",
+    hint: "\"כמה שאלות קצרות — מצב משפחתי? ילדים מתחת ל-18?\"" },
+  { id: "income",   num: 5, title: "תעסוקה והכנסות",           short: "הכנסות",
+    hint: "\"במה אתה עובד? כמה יוצא נטו בחודש?\"" },
+  { id: "assets",   num: 6, title: "נכסים ורכב",               short: "נכסים",
+    hint: "\"יש דירה בבעלותך? ורכב? (הרכב הוא הגיבוי — תמיד לשאול!)\"" },
+  { id: "bank",     num: 7, title: "פרטי בנק",                 short: "בנק",
+    hint: "\"באיזה בנק מתנהל החשבון שלך?\"" },
+  { id: "contract", num: 8, title: "הסכם התקשרות",             short: "חתימה",
+    hint: "\"אני שולח לך עכשיו הסכם התקשרות — תחתום ונתחיל לעבוד בשבילך\"" },
 ];
+
+export const POST_SIGN_SECTIONS: SectionMeta[] = [
+  { id: "cooldown", num: 9,  title: "המתנה — חזרה ללקוח", short: "המתנה",
+    hint: "שעה אחרי החתימה חוזרים ללקוח ומתחילים לעבוד" },
+  { id: "checks",   num: 10, title: "בדיקות זכאות — כל הגופים", short: "בדיקות",
+    hint: "\"אני מריץ עכשיו בדיקות זכאות בכל גופי המימון במקביל\"" },
+  { id: "docs",     num: 10, title: "מסמכים — מסלול רכב", short: "מסמכים",
+    hint: "\"שלח לי 4 מסמכים: רישיון רכב, ת.ז, רישיון נהיגה ואישור ניהול חשבון\"" },
+  { id: "results",  num: 11, title: "שיקוף תוצאות", short: "תוצאות",
+    hint: "\"יש לי בשורות! הנה האישורים שקיבלת — בוא נבחר את הטוב ביותר\"" },
+  { id: "closing",  num: 12, title: "הלוואה ותשלום", short: "תשלום",
+    hint: "\"ההלוואה בדרך אליך — נשאר רק להסדיר את שכר הטרחה\"" },
+];
+
+export function sectionMeta(id: SectionId): SectionMeta {
+  return [...FIRST_CALL_SECTIONS, ...POST_SIGN_SECTIONS].find((s) => s.id === id)!;
+}
 
 export function sectionComplete(j: JourneyState, id: SectionId): boolean {
   switch (id) {
@@ -277,5 +346,208 @@ export function currentSection(j: JourneyState): SectionId {
     if (!sectionComplete(j, "checks")) return "checks";
   }
   if (!sectionComplete(j, "results")) return "results";
+  // מסלול משולב: אחרי בחירת הצעה בכל-מטרה ממשיכים למסמכי הרכב
+  if (deriveTrack(j) !== "vehicle" && j.comboVehicle && !sectionComplete(j, "docs")) return "docs";
   return "closing";
+}
+
+/* ============================================================
+   Derived helpers — the card, the map and the DB mirror
+   ============================================================ */
+
+/** the worst of the two indicator lights (red > yellow > green > null) */
+export function worstIndicator(j: JourneyState): Smiley {
+  const vals = [j.smileyAuto, j.smileyManual];
+  if (vals.includes("red")) return "red";
+  if (vals.includes("yellow")) return "yellow";
+  if (vals.includes("green")) return "green";
+  return null;
+}
+
+/** why the customer failed general-track screening — Hebrew labels for the pivot moment */
+export function screeningFailReasons(j: JourneyState): string[] {
+  const reasons: string[] = [];
+  const badAuto = j.smileyAuto === "yellow" || j.smileyAuto === "red";
+  const badManual = j.smileyManual === "yellow" || j.smileyManual === "red";
+  if (badAuto) reasons.push(`סמיילי אוטומטי ${j.smileyAuto === "red" ? "אדום" : "צהוב"}`);
+  if (badManual) reasons.push(`סמיילי ידני ${j.smileyManual === "red" ? "אדום" : "צהוב"}`);
+  if (j.creditCards.includes("אין כרטיס בכלל")) reasons.push("אין כרטיס אשראי");
+  if (j.cardLimit === "עד 5,000 ש\"ח") reasons.push("מסגרת עד 5,000 ₪");
+  if (j.loanPurpose === "רכב") reasons.push("מטרת ההלוואה: רכב");
+  return reasons;
+}
+
+/** the ordered section list for THIS journey (track-aware, incl. post-signature) */
+export function activeSections(j: JourneyState): SectionId[] {
+  const track = deriveTrack(j);
+  const post: SectionId[] =
+    track === "vehicle" ? ["docs", "results"] :
+    j.comboVehicle ? ["checks", "results", "docs"] :   // משולב: תוצאות כל-מטרה ואז מסמכי רכב
+    ["checks", "results"];
+  return [
+    ...FIRST_CALL_SECTIONS.map((s) => s.id),
+    "cooldown",
+    ...post,
+    "closing",
+  ] as SectionId[];
+}
+
+/* ============================================================
+   Context — מי הלקוח הזה ולמה אנחנו מדברים איתו עכשיו
+   ============================================================ */
+export interface JourneyContextInfo {
+  label: string;
+  tone: "green" | "blue" | "orange" | "red" | "gray";
+  detail?: string;
+}
+
+export function journeyContext(j: JourneyState, hasHistory: boolean): JourneyContextInfo {
+  const trackLabel =
+    deriveTrack(j) === "vehicle" ? "הלוואה כנגד רכב" :
+    j.comboVehicle ? "כל מטרה + רכב במקביל" : "הלוואה לכל מטרה";
+
+  if (j.paidAt) return { label: "העסקה הושלמה — שילם ✅", tone: "green", detail: trackLabel };
+  if (j.exitReason) return { label: "יצא מהמערכת", tone: "red", detail: j.exitReason };
+
+  if (j.manualCallbackAt && !j.signedAt) {
+    const when = new Date(j.manualCallbackAt);
+    const fmt = when.toLocaleString("he-IL", { weekday: "short", hour: "2-digit", minute: "2-digit" });
+    return {
+      label: `ביקש שנחזור אליו — ${fmt}`,
+      tone: "orange",
+      detail: j.manualCallbackNote || undefined,
+    };
+  }
+
+  if (j.signedAt) {
+    const detail =
+      j.chosenLender || j.finalApproval ? "אחרי אישור — לקראת הלוואה ותשלום" :
+      j.checksStartedAt ? (deriveTrack(j) === "vehicle" ? "באיסוף מסמכים" : "בבדיקות זכאות") :
+      "ממתין לחזרה של שעה";
+    return { label: `לקוח חתום — ${trackLabel}`, tone: "blue", detail };
+  }
+  if (j.contractSentAt) return { label: `נשלח הסכם — ממתין לחתימה`, tone: "orange", detail: trackLabel };
+
+  const startedAnything =
+    !!j.amountRequested || !!j.loanPurpose || j.creditCards.length > 0 ||
+    j.smileyAuto !== null || j.smileyManual !== null;
+  if (startedAnything) {
+    return { label: "בתהליך שיחה ראשונה", tone: "blue", detail: sectionMeta(currentSection(j)).title };
+  }
+  if (hasHistory) return { label: "לקוח חוזר — יש היסטוריה קודמת", tone: "orange", detail: "בדוק את ציר הזמן לפני השיחה" };
+  return { label: "ליד חדש — טרם דיברו", tone: "gray", detail: "פתח בשיחת היכרות" };
+}
+
+export function journeyProgress(j: JourneyState): { done: number; total: number; pct: number } {
+  const ids = activeSections(j);
+  const done = ids.filter((id) => sectionComplete(j, id)).length;
+  return { done, total: ids.length, pct: Math.round((done / ids.length) * 100) };
+}
+
+/** which JourneyState keys belong to each section — powers pre-fill badges + missing counts */
+export const SECTION_FIELDS: Record<SectionId, (keyof JourneyState)[]> = {
+  opening:  ["amountRequested", "loanPurpose"],
+  credit:   ["creditCards", "cardLimit", "checkedBefore"],
+  bdi:      ["idNumber", "gender", "smileyFirstName", "smileyLastName", "birthDate", "smileyAuto", "smileyManual"],
+  personal: ["idIssueDate", "maritalStatus", "children"],
+  income:   ["employment", "employerAndRole", "seniorityYears", "monthlyIncome", "spouseIncome"],
+  assets:   ["hasProperty", "hasVehicle", "vehicleYear", "vehicleMake", "vehicleFree"],
+  bank:     ["bankName", "bankBranch", "bankAccount"],
+  contract: ["contractSentAt", "signedAt"],
+  cooldown: ["checksStartedAt"],
+  checks:   ["lenderResults", "checksDone"],
+  docs:     ["docsReceived", "docsUploadedAt", "finalApproval"],
+  results:  ["chosenLender"],
+  closing:  ["feeAmount", "paidAt"],
+};
+
+/** is a journey value "filled"? (arrays → non-empty, objects → non-empty, else truthy/false-ok) */
+export function fieldFilled(j: JourneyState, key: keyof JourneyState): boolean {
+  const v = j[key];
+  if (v === null || v === undefined || v === "") return false;
+  if (Array.isArray(v)) return v.length > 0;
+  if (typeof v === "object") return Object.keys(v).length > 0;
+  return true;
+}
+
+/** how many of the section's fields are still empty (for the map badges) */
+export function missingCount(j: JourneyState, id: SectionId): number {
+  return SECTION_FIELDS[id].filter((k) => !fieldFilled(j, k)).length;
+}
+
+/* ============================================================
+   Next Action — חוק הברזל של רֶצֶף: לכל ליד פעיל יש בדיוק צעד-הבא אחד.
+   נגזר-בקריאה מהמצב — ליד "בלי צעד הבא" הוא מצב בלתי-אפשרי מבנית.
+   ============================================================ */
+export interface NextAction {
+  type: string;
+  /** מה עושים — בעברית, מנוסח לנציג */
+  label: string;
+  /** מתי — ISO; null = עכשיו */
+  dueAt: string | null;
+  tone: "blue" | "purple" | "amber" | "teal" | "orange" | "green" | "gold" | "gray";
+}
+
+function plusHours(iso: string, h: number): string {
+  return new Date(new Date(iso).getTime() + h * 3600_000).toISOString();
+}
+
+export function nextActionFor(j: JourneyState): NextAction {
+  if (j.paidAt) return { type: "done", label: "העסקה הושלמה — אין צעד נוסף", dueAt: null, tone: "green" };
+  if (j.exitReason) {
+    return { type: "reentry", label: "בדיקה מחדש בעוד 90 יום", dueAt: plusHours(new Date().toISOString(), 90 * 24), tone: "gray" };
+  }
+  if (j.loanArrivedAt && !j.paidAt) {
+    return { type: "collect", label: "גביית שכר טרחה", dueAt: plusHours(j.loanArrivedAt, 24), tone: "gold" };
+  }
+  const track = deriveTrack(j);
+  if ((j.chosenLender || (track === "vehicle" && j.paymentDueAt)) && !j.loanArrivedAt && j.signedAt) {
+    return { type: "await-loan", label: "מעקב העברת ההלוואה", dueAt: j.paymentDueAt, tone: "green" };
+  }
+  if ((j.checksDone || j.finalApproval) && !j.chosenLender && track !== "vehicle" && !j.comboVehicle) {
+    return { type: "reflect", label: "שיחת שיקוף תוצאות ללקוח", dueAt: null, tone: "green" };
+  }
+  if (j.checksStartedAt && (track === "vehicle" || j.comboVehicle) && !j.finalApproval) {
+    const missing = VEHICLE_DOCS.filter((d) => !j.docsReceived[d.id]).length;
+    return {
+      type: "docs",
+      label: missing > 0 ? `רדיפת מסמכים — חסרים ${missing}` : "העלאת מסמכים ואישור סופי",
+      dueAt: plusHours(j.checksStartedAt, 3),
+      tone: "orange",
+    };
+  }
+  if (j.checksStartedAt && !j.checksDone && track !== "vehicle") {
+    return { type: "checks", label: "השלמת בדיקות זכאות", dueAt: plusHours(j.checksStartedAt, 0.5), tone: "teal" };
+  }
+  if (j.signedAt && !j.checksStartedAt) {
+    return { type: "cooldown", label: "חזרה ללקוח אחרי הצינון", dueAt: j.callbackDueAt, tone: "amber" };
+  }
+  if (j.contractSentAt && !j.signedAt) {
+    return { type: "sign-chase", label: "רדיפת חתימה על ההסכם", dueAt: plusHours(j.contractSentAt, 3), tone: "purple" };
+  }
+  if (j.manualCallbackAt && new Date(j.manualCallbackAt).getTime() > Date.now()) {
+    return { type: "callback", label: "חזרה שהובטחה ללקוח", dueAt: j.manualCallbackAt, tone: "purple" };
+  }
+  const started = !!j.amountRequested || !!j.loanPurpose || j.creditCards.length > 0 ||
+    j.smileyAuto !== null || j.smileyManual !== null;
+  if (started) return { type: "continue", label: "המשך שאלון — שיחה באמצע", dueAt: null, tone: "blue" };
+  return { type: "first-call", label: "שיחה ראשונה", dueAt: null, tone: "blue" };
+}
+
+/**
+ * lifecycle mirror — maps the journey onto Lead.stage
+ * (vocabulary from lib/data/lifecycle.ts: NEW → CONTACT → SCREENING → CONTRACT →
+ *  BDI → AUCTION → DECISION → DOCS → DISBURSEMENT → PAID | EXIT)
+ */
+export function deriveStage(j: JourneyState): string {
+  if (j.paidAt) return "PAID";
+  if (j.exitReason) return "EXIT";
+  if (j.chosenLender || j.loanArrivedAt || (deriveTrack(j) === "vehicle" && j.paymentDueAt)) return "DISBURSEMENT";
+  if (j.checksDone || j.finalApproval) return "DECISION";
+  if (j.checksStartedAt) return deriveTrack(j) === "vehicle" ? "DOCS" : "AUCTION";
+  if (j.signedAt) return "BDI";
+  if (j.contractSentAt) return "CONTRACT";
+  if (j.smileyAuto !== null || j.smileyManual !== null || j.creditCards.length > 0 || j.cardLimit) return "SCREENING";
+  if (j.amountRequested || j.loanPurpose) return "CONTACT";
+  return "NEW";
 }

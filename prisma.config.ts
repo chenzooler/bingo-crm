@@ -11,6 +11,8 @@ export default defineConfig({
   datasource: {
     url: dbUrl,
   },
+  // @ts-expect-error — key from an older Prisma config shape, kept because migrations
+  // verified working with it; current CLI reads datasource.url. Remove on next Prisma bump.
   migrate: {
     async adapter() {
       const { PrismaBetterSqlite3 } = await import("@prisma/adapter-better-sqlite3");

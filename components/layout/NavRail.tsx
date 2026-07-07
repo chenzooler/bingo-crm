@@ -3,18 +3,31 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home, Users, Rocket, MessageCircle, Phone, Calendar,
-  ListChecks, BarChart3, Tv, ShieldCheck, Settings, Sun, Database,
+  ListChecks, BarChart3, Tv, ShieldCheck, Settings, Sun, Database, Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * NavRail — the primary navigation. Icon + label, always visible,
- * obvious. Replaces the old 11-links-crammed-in-header pattern.
+ * NavRail — the primary navigation. Icon + label, always visible.
+ *
+ * מצב שכפול-יועצים (החלטת חן 06/07/26): מציגים רק את מה שקיים במקור —
+ * מסך ראשי (רשימת הלידים) + הגדרות. משימות/דוחות מגיעים מהמסך הראשי עצמו
+ * (הפאנל וכפתור "תצוגת דוח"), בדיוק כמו ביועצים. כל תוספות בינגו מוסתרות
+ * ב-NAV_HIDDEN — מחזירים פריט ע"י העברתו חזרה ל-NAV.
  */
 const NAV: Array<{ href: string; label: string; icon: React.ElementType; match?: string[] }> = [
+  { href: "/leads", label: "ראשי", icon: Home, match: ["/leads"] },
+];
+
+const NAV_BOTTOM: Array<{ href: string; label: string; icon: React.ElementType; match?: string[] }> = [
+  { href: "/settings", label: "הגדרות", icon: Settings, match: ["/settings"] },
+];
+
+// תוספות בינגו — מוסתרות עד שנחזיר אותן בשלב הפיצ'רים. הדפים עצמם חיים ב-URL.
+export const NAV_HIDDEN: Array<{ href: string; label: string; icon: React.ElementType; match?: string[] }> = [
   { href: "/briefing",       label: "בוקר",     icon: Sun },
+  { href: "/desk",           label: "רֶצֶף",     icon: Layers, match: ["/desk"] },
   { href: "/dashboard",      label: "הבית",     icon: Home },
-  { href: "/leads",          label: "לידים",    icon: Users, match: ["/leads"] },
   { href: "/dialer/cockpit", label: "תותח",     icon: Rocket, match: ["/dialer"] },
   { href: "/inbox",          label: "הודעות",   icon: MessageCircle },
   { href: "/calls",          label: "שיחות",    icon: Phone },
@@ -22,12 +35,8 @@ const NAV: Array<{ href: string; label: string; icon: React.ElementType; match?:
   { href: "/tasks",          label: "משימות",   icon: ListChecks },
   { href: "/reports",        label: "דוחות",    icon: BarChart3 },
   { href: "/wallboard",      label: "מסך חי",   icon: Tv },
-];
-
-const NAV_BOTTOM: Array<{ href: string; label: string; icon: React.ElementType; match?: string[] }> = [
-  { href: "/admin/import", label: "סנכרון", icon: Database, match: ["/admin/import"] },
-  { href: "/admin",        label: "מנהל",   icon: ShieldCheck, match: ["/admin"] },
-  { href: "/settings",     label: "הגדרות", icon: Settings, match: ["/settings"] },
+  { href: "/admin/import",   label: "סנכרון",   icon: Database, match: ["/admin/import"] },
+  { href: "/admin",          label: "מנהל",     icon: ShieldCheck, match: ["/admin"] },
 ];
 
 function RailLink({ item, active }: { item: (typeof NAV)[number]; active: boolean }) {

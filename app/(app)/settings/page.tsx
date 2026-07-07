@@ -1,46 +1,45 @@
-import { Field } from "@/components/ui/Field";
-import { Settings as SettingsIcon } from "lucide-react";
-import { Icon3D } from "@/components/ui/Icon3D";
+import Link from "next/link";
+import { Users, ListTree, Workflow, ShieldCheck, Zap, MessageSquareText, Mail, Upload, KeyRound, Globe, ClipboardList, FileSignature, Bot, LayoutGrid } from "lucide-react";
+
+/**
+ * שכפול יועצים 1:1: מרכזיית ההגדרות = בדיוק סקשני §2 מהאפיון, בסדר המקורי.
+ * טופס "הגדרות כלליות" של בינגו הוסתר (תוספת — יחזור בשלב הפיצ'רים; git שומר אותו).
+ */
+const YOATSIM_SECTIONS = [
+  { href: "/settings/users", label: "ניהול משתמשים", icon: Users, tone: "b-icon-green" },
+  { href: "/settings/fields", label: "הגדרת שדות", icon: ListTree, tone: "b-icon-blue" },
+  { href: "/settings/processes", label: "תהליכים וסטטוסים", icon: Workflow, tone: "b-icon-orange" },
+  { href: "/settings/leads-api", label: "קבלת לידים/API", icon: KeyRound, tone: "b-icon-green" },
+  { href: "/settings/landing-pages", label: "דפי נחיתה", icon: Globe, tone: "b-icon-blue" },
+  { href: "/settings/action-templates", label: "תבניות פעולות/משימות/פגישות/כספים", icon: ClipboardList, tone: "b-icon-orange" },
+  { href: "/settings/templates", label: "תבניות סמס/ווטסאפ", icon: MessageSquareText, tone: "b-icon-green" },
+  { href: "/settings/templates?channel=email", label: "תבניות מיילים", icon: Mail, tone: "b-icon-blue" },
+  { href: "/settings/forms", label: "טפסים", icon: FileSignature, tone: "b-icon-purple" },
+  { href: "/settings/automations", label: "אוטומציות", icon: Zap, tone: "b-icon-red" },
+  { href: "/settings/whatsapp-bot", label: "בוט ווטסאפ", icon: Bot, tone: "b-icon-green" },
+  { href: "/settings/modules", label: "מודולים", icon: LayoutGrid, tone: "b-icon-gray" },
+  { href: "/admin/import", label: "ייבוא", icon: Upload, tone: "b-icon-gray" },
+  { href: "/settings/permissions", label: "הרשאות", icon: ShieldCheck, tone: "b-icon-purple" },
+] as const;
 
 export default function GeneralSettingsPage() {
   return (
-    <div className="bg-white rounded-3xl border border-bingo-gray-200 p-6" style={{ boxShadow: "0 2px 4px -1px rgba(0,0,0,0.03), 0 8px 24px -6px rgba(46, 161, 13, 0.10)" }}>
-      <div className="flex items-center gap-4 mb-5 pb-5 border-b border-bingo-gray-100">
-        <Icon3D icon={<SettingsIcon className="size-6" />} tone="bingo" size={56} />
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-bingo-gray-500 mb-1">ארגון</div>
-          <h2 className="text-2xl font-black tracking-tight text-bingo-black flex items-center gap-2">
-            <span>הגדרות כלליות</span>
-            <span className="text-[12px] font-black px-2 py-0.5 rounded-lg text-gradient-bingo bg-bingo-green/10 border border-bingo-green/25">בינגו ישראל</span>
-          </h2>
-        </div>
-      </div>
-
-      <div className="space-y-4 max-w-2xl">
-        <Field label="שם החברה" defaultValue="בינגו ישראל - יועצי אשראי" />
-        <Field label="ח.פ. / ת.ז." defaultValue="" placeholder="לדוגמה 514123456" />
-        <Field label="כתובת" defaultValue="" />
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="טלפון" defaultValue="9847*" />
-          <Field label="אימייל" defaultValue="info@bingoisrael.co.il" />
-        </div>
-        <Field label="אתר" defaultValue="https://www.bingoisrael.co.il" />
-        <div>
-          <label className="block text-[13px] font-bold text-bingo-charcoal mb-2">סלוגן</label>
-          <textarea
-            defaultValue="מימון בול בשבילך"
-            className="min-h-[80px] w-full rounded-2xl bg-white border-2 border-bingo-gray-200 px-4 py-3 text-sm font-medium hover:border-bingo-gray-300 focus:border-bingo-green focus:outline-none focus:ring-4 focus:ring-bingo-green/15"
-          />
-        </div>
-
-        <div className="pt-4 flex items-center justify-end gap-2">
-          <button className="h-10 px-4 rounded-xl bg-bingo-gray-100 text-bingo-charcoal text-sm font-bold hover:bg-bingo-gray-200">
-            ביטול
-          </button>
-          <button className="btn-vibrant">
-            שמור שינויים
-          </button>
-        </div>
+    <div className="b-card !p-5">
+      <div className="b-eyebrow">הגדרות</div>
+      <h2 className="text-lg font-extrabold text-bingo-black mb-3">כל מסכי ההגדרות</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        {YOATSIM_SECTIONS.map(({ href, label, icon: Icon, tone }) => (
+          <Link
+            key={href}
+            href={href}
+            className="flex items-center gap-2.5 rounded-2xl border border-bingo-gray-100 bg-white px-3.5 py-3 hover:border-bingo-green/40 hover:bg-bingo-green/[0.04] transition"
+          >
+            <span className={`b-icon ${tone} !size-9 shrink-0`}>
+              <Icon className="size-4" />
+            </span>
+            <span className="text-[13px] font-extrabold text-bingo-black leading-tight">{label}</span>
+          </Link>
+        ))}
       </div>
     </div>
   );
