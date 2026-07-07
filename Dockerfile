@@ -36,8 +36,19 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/research ./research
 
+# Run migrations + seed on container start. Needs the prisma CLI, tsx, the
+# generated client and the seed sources — so overlay the FULL node_modules
+# (from builder, after `prisma generate`) on top of the standalone one.
+# Bigger image, but startup is self-healing: a fresh/behind DB gets schema+seed.
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder --chown=nextjs:nodejs /app/lib ./lib
+
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# migrate deploy = additive schema sync; the seed is idempotent (upserts only,
+# never overwrites UI edits) — if it fails we log and still start the server.
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && (./node_modules/.bin/tsx prisma/seed.ts || echo 'seed failed - continuing') && node server.js"]
