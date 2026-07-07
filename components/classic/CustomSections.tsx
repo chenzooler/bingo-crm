@@ -1,7 +1,7 @@
 "use client";
 /**
  * הסקשנים המיוחדים של הכרטיס הקלאסי:
- * באנר הסמיילי · בלוקי גופי המימון (6, מבנה זהה) · מקור הליד · טפסים וקבצים.
+ * באנר הרמזור · בלוקי גופי המימון (6, מבנה זהה) · מקור הליד · טפסים וקבצים.
  * מבנה 1:1 מהאפיון — עיצוב בינגו.
  */
 import * as React from "react";
@@ -12,7 +12,7 @@ import { FORM_TEMPLATES } from "@/lib/yoatsim/forms";
 import { cn, formatCurrency, formatDate, formatTime } from "@/lib/utils";
 import type { ClassicCardState } from "./useClassicCard";
 
-/* ---------- באנר "לקוח תקין בדיקת סמיילי ירוקה" ---------- */
+/* ---------- באנר "לקוח תקין — בדיקת רמזור ירוקה" ---------- */
 export function SmileyBanner({ values, set }: {
   values: ClassicValues;
   set: ClassicCardState["set"];
@@ -36,7 +36,7 @@ export function SmileyBanner({ values, set }: {
           : <AlertTriangle className={cn("size-6 shrink-0", negative ? "text-status-red" : "text-bingo-gray-300")} />}
       <div>
         <p className="text-[14.5px] font-bold text-bingo-black">
-          {negative && !ok ? "לקוח עם חיווי אשראי שלילי" : "לקוח תקין בדיקת סמיילי ירוקה ✅"}
+          {negative && !ok ? "לקוח עם חיווי אשראי שלילי" : "לקוח תקין — בדיקת רמזור ירוקה"}
         </p>
         <p className="text-[11.5px] text-bingo-gray-500">לחץ לסימון/ביטול — כמו התיבה הירוקה ביועצים</p>
       </div>

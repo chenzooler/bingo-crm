@@ -80,6 +80,16 @@ async function main() {
     });
   }
 
+  // שינויי-שם (החלטת חן 07/26: "סמיילי"→"רמזור") — לפני ה-upsert, כדי שמסדים
+  // קיימים (כולל פרודקשן, שמריץ seed בעלייה) ישנו את השורה במקום ליצור כפילות
+  const AUTOMATION_RENAMES: [string, string][] = [
+    ["אישור לקוח-בדיקת סמיילי", "אישור לקוח-בדיקת רמזור"],
+    ["סמיילי אדום", "רמזור אדום"],
+  ];
+  for (const [oldName, newName] of AUTOMATION_RENAMES) {
+    await db.automation.updateMany({ where: { name: oldName }, data: { name: newName } });
+  }
+
   // 21 האוטומציות — upsert לפי שם; עריכות של המשתמש ב-UI לא נדרסות (update רק בשדות בסיס)
   for (const a of AUTOMATIONS) {
     const data = {

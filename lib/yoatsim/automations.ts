@@ -62,7 +62,7 @@ export const AUTOMATIONS: AutomationDef[] = [
     ],
   },
   {
-    name: "אישור לקוח-בדיקת סמיילי",
+    name: "אישור לקוח-בדיקת רמזור",
     cardType: "כרטיס",
     actionType: "שינוי שדה",
     enabled: true,
@@ -185,12 +185,12 @@ export const AUTOMATIONS: AutomationDef[] = [
     ],
   },
   {
-    name: "סמיילי אדום",
+    name: "רמזור אדום",
     cardType: "כרטיס",
     actionType: "שינוי שדה",
     enabled: true,
     conditions: [
-      { fieldType: "רמזור", fieldName: "בדיקת סמיילי - אוטומציה", operator: EQ, value: "אדום" },
+      { fieldType: "רמזור", fieldName: "בדיקת רמזור — אוטומציה", operator: EQ, value: "אדום" },
     ],
     actions: [
       { type: "add-process", processKey: "all-irrelevant", statusKey: "אדום!!" },

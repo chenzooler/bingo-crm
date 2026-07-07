@@ -50,8 +50,12 @@ function labelMap(): Map<string, string> {
 
 /** כינויים — שמות שדה בתנאי האוטומציות שלא תואמים 1:1 את labels הסכמה */
 const ALIASES: Record<string, string> = {
-  'האם היו בעיות בהוצל"פ ב-3 שנים': "enforcementIssues", // בסכמה: "בעיות בהוצל\"פ ב-3/5 שנים"
+  'האם היו בעיות בהוצל"פ ב-3 שנים': "enforcementIssues", // ניסוח האפיון המקורי
+  // שמות היסטוריים + שני סגנונות מקף — כולם אותו שדה (הכינוי "רמזור" הוא שם התצוגה החדש)
   "בדיקת סמיילי - אוטומציה": "smileyAuto",
+  "בדיקת סמיילי — אוטומציה": "smileyAuto",
+  "בדיקת רמזור - אוטומציה": "smileyAuto",
+  "בדיקת רמזור — אוטומציה": "smileyAuto",
 };
 
 /** תנאי מיוחד: "מעוניין להתקדם?" — נבדק מול כל אחד מ-6 גופי המימון */
@@ -69,6 +73,9 @@ const TRAFFIC_HE: Record<string, string> = {
 /* ============================================================
    הערכת תנאי בודד
    ============================================================ */
+
+/** ערכים שמשמעותם "אין בעיה" — התנאי המיוחד "היו בעיות" לא מתקיים עבורם */
+const NO_PROBLEM_VALUES = new Set(["לא", "הכל תקין", "לא חזר כלום", "החשבון תקין", "לא ביצעתי"]);
 
 function isFilled(v: unknown): boolean {
   if (Array.isArray(v)) return v.length > 0;
@@ -90,8 +97,10 @@ function valueMatches(v: unknown, condValue: string): boolean {
     return d.getTime() <= endOfToday.getTime();
   }
 
-  // "היו בעיות" — מולא וגם לא "לא"
-  if (condValue === "היו בעיות") return isFilled(v) && v !== "לא";
+  // "היו בעיות" — מולא וגם לא אחד מערכי "תקין" (הניסוחים הישנים + החדשים)
+  if (condValue === "היו בעיות") {
+    return isFilled(v) && !NO_PROBLEM_VALUES.has(String(v));
+  }
 
   // רמזור בעברית → הפורמט השמור
   const traffic = TRAFFIC_HE[condValue];

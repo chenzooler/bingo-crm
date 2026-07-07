@@ -17,7 +17,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <ToastProvider>
         <KeyboardShortcutsModal />
-        <div className="min-h-screen bg-bingo-cream">
+        {/* Premium v2: שמנת חמה + גלואים פסטליים אמביינטיים (b-app-ambient ב-globals.css);
+            bg-bingo-cream נשאר כ-fallback מתחת לגרדיאנט */}
+        <div className="min-h-screen bg-bingo-cream b-app-ambient">
           <Header />
           <div className="flex">
             <NavRail />

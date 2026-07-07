@@ -79,14 +79,6 @@ export const CARD_LENDERS = [
    ============================================================ */
 export const CARD_SECTIONS: SectionDef[] = [
   {
-    id: "questionnaire",
-    title: "תוצאות שאלון",
-    bullet: "none",
-    fields: [
-      { key: "questionnaireResults", label: "תוצאות שאלון", type: "textarea", wide: true, placeholder: "טקסט חופשי..." },
-    ],
-  },
-  {
     id: "help",
     title: "איך אפשר לעזור?",
     bullet: "dot",
@@ -105,22 +97,20 @@ export const CARD_SECTIONS: SectionDef[] = [
     fields: [
       { key: "creditCards", label: "יש בבעלותך כרטיסי אשראי?", type: "multi-buttons", options: CREDIT_CARDS_Y, wide: true },
       { key: "cardLimit", label: "מה גובה המסגרת בכרטיס האשראי?", type: "select", options: CARD_LIMIT_Y },
+      { key: "enforcementIssues", label: "היו בעיות בהוצאה לפועל בשלוש השנים האחרונות?", type: "select", options: ["הכל תקין", "היו בעיות"] },
+      { key: "returnedChecks", label: "חזרו צ'קים, הוראות קבע או תשלומי הלוואה בשנתיים האחרונות?", type: "select", options: ["לא חזר כלום", "חזרו"] },
+      { key: "accountRestricted", label: "החשבון מתנהל תקין? לא מוגבל היום ולא היה מוגבל?", type: "select", options: ["החשבון תקין", "מוגבל / היה מוגבל"] },
+      { key: "bdiRepair", label: "עשית פעם מחיקה או שיפור נתונים ב־BDI?", type: "select", options: ["לא ביצעתי", "ביצעתי"] },
       { key: "checkedBefore", label: "ביצעת בדיקה להלוואה לפני שפנית אלינו?", type: "multi-buttons", options: CHECKED_BEFORE_Y, wide: true },
       { key: "creditNotes", label: "הערות בדיקות", type: "textarea", wide: true },
-    ],
-    collapsedExtras: [
-      { key: "enforcementIssues", label: "בעיות בהוצל\"פ ב-3/5 שנים", type: "select", options: ["לא", "ב-3 שנים", "ב-5 שנים"] },
-      { key: "returnedChecks", label: "חזרו צ'קים/הו\"ק/הלוואות בשנתיים", type: "select", options: ["לא", "כן"] },
-      { key: "accountRestricted", label: "חשבון מוגבל", type: "select", options: ["לא", "כעת", "בעבר"] },
-      { key: "bdiRepair", label: "מחיקה/שיפור BDI", type: "text" },
     ],
   },
   {
     id: "smiley-banner",
-    title: "לקוח תקין בדיקת סמיילי ירוקה",
+    title: "לקוח תקין — בדיקת רמזור ירוקה",
     custom: "smiley-banner",
     fields: [
-      { key: "smileyGreenConfirmed", label: "לקוח תקין בדיקת סמיילי ירוקה ✅", type: "checkbox" },
+      { key: "smileyGreenConfirmed", label: "לקוח תקין — בדיקת רמזור ירוקה", type: "checkbox" },
     ],
   },
   {
@@ -130,12 +120,12 @@ export const CARD_SECTIONS: SectionDef[] = [
     fields: [
       { key: "idNumber", label: "תעודת זהות", type: "text", placeholder: "9 ספרות" },
       { key: "gender", label: "מין", type: "select", options: ["זכר", "נקבה"] },
-      { key: "smileyFirstName", label: "שם פרטי - סמיילי", type: "text" },
-      { key: "smileyLastName", label: "שם משפחה - סמיילי", type: "text" },
+      { key: "smileyFirstName", label: "שם פרטי - רמזור", type: "text" },
+      { key: "smileyLastName", label: "שם משפחה - רמזור", type: "text" },
       { key: "birthDate", label: "תאריך לידה", type: "date" },
       { key: "bdiClientApproval", label: "אישור לקוח בדיקת BDI", type: "traffic" },
-      { key: "smileyAuto", label: "בדיקת סמיילי - אוטומציה 🚦", type: "traffic", note: "מתמלא אוטומטית מהבוט" },
-      { key: "smileyManual", label: "בדיקת סמיילי - ידנית 🚦", type: "traffic" },
+      { key: "smileyAuto", label: "בדיקת רמזור — אוטומציה", type: "traffic", note: "מתמלא אוטומטית מהבוט" },
+      { key: "smileyManual", label: "בדיקת רמזור — ידנית", type: "traffic" },
     ],
   },
   {

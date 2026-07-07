@@ -5,8 +5,8 @@
  * Real card sections, in order:
  * 1. פתיחת שיחה — "איך אפשר לעזור?" (שם, סכום, מטרה)
  * 2. בדיקת נתוני אשראי — אילו כרטיסים · גובה מסגרת · בדיקה קודמת איפה
- * 3. בדיקת חיווי אשראי — אישור לקוח BDI · סמיילי אוטומציה (מערכת חיצונית) ·
- *    סמיילי ידני (נציג) · שם פרטי/משפחה כפי שרשום ב-BDI · מין · לידה
+ * 3. בדיקת חיווי אשראי — אישור לקוח BDI · רמזור אוטומציה (מערכת חיצונית) ·
+ *    רמזור ידני (נציג) · שם פרטי/משפחה כפי שרשום ב-BDI · מין · לידה
  * 4. השלמת נתונים — תאריך הנפקת ת.ז, מצב משפחתי, ילדים
  * 5. הכנסות — תעסוקה, מקום+תפקיד, ותק, הכנסה, נוספות, פנסיה/השתלמות
  * 6. נכסים ורכב (הרכב = הגיבוי!)
@@ -15,7 +15,7 @@
  * ואז: המתנה שעה → בדיקות/מסמכים → תוצאות → תשלום.
  *
  * Routing (Chen's rules, verified against the card):
- * - סמיילי אדום/צהוב (אוטומטי או ידני) → רכב
+ * - רמזור אדום/צהוב (אוטומטי או ידני) → רכב
  * - הצהרה על נתוני אשראי שליליים → רכב
  * - אין כרטיס אשראי → רכב
  * - מסגרת עד 5,000 ₪ → רכב
@@ -104,7 +104,7 @@ export interface JourneyState {
   cardLimit?: string;                 // מעל / עד 5,000
   checkedBefore: string[];            // איפה בדק קודם
   creditNotes?: string;
-  smileyGreenConfirmed: boolean;      // checkbox "לקוח תקין בדיקת סמיילי ירוקה"
+  smileyGreenConfirmed: boolean;      // checkbox "לקוח תקין בדיקת רמזור ירוקה"
 
   // --- 3. בדיקת חיווי אשראי (BDI) ---
   idNumber?: string;
@@ -113,8 +113,8 @@ export interface JourneyState {
   smileyLastName?: string;
   birthDate?: string;
   bdiApproved: boolean;               // אישור לקוח לבדיקת BDI
-  smileyAuto: Smiley;                 // סמיילי אוטומציה (מערכת חיצונית)
-  smileyManual: Smiley;               // סמיילי ידני (הנציג)
+  smileyAuto: Smiley;                 // רמזור אוטומציה (מערכת חיצונית)
+  smileyManual: Smiley;               // רמזור ידני (הנציג)
 
   // --- 4. השלמת נתונים ---
   idIssueDate?: string;
@@ -242,7 +242,7 @@ export function deriveTrack(j: JourneyState): Track {
 
 /* ---------- why is the customer on the vehicle track? ---------- */
 export const VEHICLE_REASONS: Record<string, string> = {
-  "screening-failed":    "נפסל בסינון (סמיילי/אשראי)",
+  "screening-failed":    "נפסל בסינון (רמזור/אשראי)",
   "rejected-general":    "סורב בהלוואה לכל מטרה",
   "amount-insufficient": "הסכום בכל מטרה לא הספיק",
   "combo":               "משולב — גם כל מטרה וגם רכב",
@@ -284,7 +284,7 @@ export const FIRST_CALL_SECTIONS: SectionMeta[] = [
     hint: "\"היי, מדברים מבינגו מימון! כמה כסף אתה צריך — ולמה?\"" },
   { id: "credit",   num: 2, title: "בדיקת נתוני אשראי",        short: "אשראי",
     hint: "\"יש בבעלותך כרטיסי אשראי? מה גובה המסגרת? בדקת כבר במקום אחר?\"" },
-  { id: "bdi",      num: 3, title: "בדיקת חיווי אשראי (סמיילי)", short: "סמיילי",
+  { id: "bdi",      num: 3, title: "בדיקת חיווי אשראי (רמזור)", short: "רמזור",
     hint: "\"אני מריץ בדיקת חיווי אשראי — אקריא לך את הפרטים כפי שהם רשומים\"" },
   { id: "personal", num: 4, title: "השלמת נתונים",             short: "נתונים",
     hint: "\"כמה שאלות קצרות — מצב משפחתי? ילדים מתחת ל-18?\"" },
@@ -369,8 +369,8 @@ export function screeningFailReasons(j: JourneyState): string[] {
   const reasons: string[] = [];
   const badAuto = j.smileyAuto === "yellow" || j.smileyAuto === "red";
   const badManual = j.smileyManual === "yellow" || j.smileyManual === "red";
-  if (badAuto) reasons.push(`סמיילי אוטומטי ${j.smileyAuto === "red" ? "אדום" : "צהוב"}`);
-  if (badManual) reasons.push(`סמיילי ידני ${j.smileyManual === "red" ? "אדום" : "צהוב"}`);
+  if (badAuto) reasons.push(`רמזור אוטומטי ${j.smileyAuto === "red" ? "אדום" : "צהוב"}`);
+  if (badManual) reasons.push(`רמזור ידני ${j.smileyManual === "red" ? "אדום" : "צהוב"}`);
   if (j.creditCards.includes("אין כרטיס בכלל")) reasons.push("אין כרטיס אשראי");
   if (j.cardLimit === "עד 5,000 ש\"ח") reasons.push("מסגרת עד 5,000 ₪");
   if (j.loanPurpose === "רכב") reasons.push("מטרת ההלוואה: רכב");

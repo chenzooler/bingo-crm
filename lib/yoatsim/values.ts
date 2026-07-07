@@ -157,7 +157,7 @@ export function leadPatchFromValues(values: ClassicValues): Prisma.LeadUpdateInp
   const obligations = num(persisted.totalMonthlyPayment);
   if (obligations !== undefined) p.monthlyObligations = obligations;
 
-  // סמיילי — הגרוע מבין השניים משתקף לעמודה (לרשימות)
+  // רמזור — הגרוע מבין השניים משתקף לעמודה (לרשימות)
   const worst = (["red", "yellow", "green"] as const).find(
     (c) => persisted.smileyAuto === c || persisted.smileyManual === c,
   );

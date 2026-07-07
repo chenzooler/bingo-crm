@@ -99,6 +99,65 @@
   --radius-pill: 50px;   /* the signature pill */
 }
 
+/* ============================================================
+   Premium v2 — שפת החומרים והתנועה (card-concept v2)
+   שכבת הרחבה מעל Brand-True v3 — לא מחליפה שום קלאס קיים.
+   חומרים: זכוכית חלבית · אבסידיאן · פסטל עם נשימה · שמנת חמה.
+   תנועה: "הקפיץ של בינגו" cubic-bezier(.34,1.45,.5,1).
+   ============================================================ */
+:root {
+  /* שמנת חמה — הרקע החדש (לא לבן) */
+  --b-cream: #F6F4EF;
+  --b-cream-2: #EFECE5;
+
+  /* אבסידיאן — הבמה הכהה */
+  --b-obsidian-1: #3B3A34;
+  --b-obsidian-2: #211F1B;
+  --b-obsidian-3: #191813;
+
+  /* הקפיץ של בינגו — התנועה החתומה של המותג */
+  --b-spring: cubic-bezier(.34, 1.45, .5, 1);
+
+  /* הילה ירוקה — רגעי אמת בלבד */
+  --b-glow-green: rgba(80, 255, 10, .45);
+
+  /* זוגות גרדיאנט פסטל — רקעי סקשנים (עומק מהמעבר, לא מקווים) */
+  --b-tint-mint-1: #E8F6DE;  --b-tint-mint-2: #F6FBF1;
+  --b-tint-sky-1: #E7F0FA;   --b-tint-sky-2: #F4F8FD;
+  --b-tint-peach-1: #FDEEDC; --b-tint-peach-2: #FEF7EE;
+  --b-tint-lilac-1: #EEE9F9; --b-tint-lilac-2: #F8F5FD;
+  --b-tint-rose-1: #FAE8ED;  --b-tint-rose-2: #FDF4F7;
+  --b-tint-sand-1: #F4EFE4;  --b-tint-sand-2: #FAF7F0;
+
+  /* זכוכית חלבית */
+  --b-glass-bg: rgba(255, 255, 255, .62);
+  --b-glass-line: rgba(255, 255, 255, .85);
+
+  /* צללים של הקונספט */
+  --b-sh-sm: 0 1px 2px rgba(38,37,31,.05), 0 4px 14px -6px rgba(38,37,31,.09);
+  --b-sh-lg: 0 2px 4px rgba(38,37,31,.05), 0 24px 60px -24px rgba(38,37,31,.22);
+
+  /* גלואו אמביינטי לרקע האפליקציה (שקיפות כדי לשבת על השמנת) */
+  --b-ambient-mint: rgba(232, 246, 222, .8);
+  --b-ambient-sky: rgba(231, 240, 250, .8);
+}
+html.dark {
+  --b-cream: #171613;
+  --b-cream-2: #12110F;
+  --b-glass-bg: rgba(33, 31, 27, .6);
+  --b-glass-line: rgba(255, 255, 255, .08);
+  --b-sh-sm: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px -6px rgba(0,0,0,.5);
+  --b-sh-lg: 0 2px 4px rgba(0,0,0,.4), 0 24px 60px -24px rgba(0,0,0,.7);
+  --b-tint-mint-1: #22331C;  --b-tint-mint-2: #1B2617;
+  --b-tint-sky-1: #1D2C3B;   --b-tint-sky-2: #17222E;
+  --b-tint-peach-1: #3A2C1A; --b-tint-peach-2: #2C2215;
+  --b-tint-lilac-1: #2B2440; --b-tint-lilac-2: #221D32;
+  --b-tint-rose-1: #3A2229;  --b-tint-rose-2: #2C1B20;
+  --b-tint-sand-1: #2E2A20;  --b-tint-sand-2: #24211A;
+  --b-ambient-mint: rgba(34, 51, 28, .55);
+  --b-ambient-sky: rgba(29, 44, 59, .55);
+}
+
 /* ---------- Dark mode (kept minimal) ---------- */
 html.dark {
   --color-bingo-cream: #141413;
@@ -477,6 +536,104 @@ html.dark {
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.5s ease-in-out infinite;
     border-radius: 10px;
+  }
+
+  /* ============================================================
+     Premium v2 — שפת החומרים והתנועה · קלאסים
+     ============================================================ */
+
+  /* רקע האפליקציה — שמנת חמה + שני גלואים פסטליים אמביינטיים
+     (מנטה למעלה־ימין ותכלת מולו; ב-RTL זה top-left ויזואלית) */
+  .b-app-ambient {
+    background:
+      radial-gradient(1100px 500px at 85% -5%, var(--b-ambient-mint), transparent 60%),
+      radial-gradient(900px 480px at 0% 12%, var(--b-ambient-sky), transparent 55%),
+      linear-gradient(var(--b-cream), var(--b-cream-2));
+    background-attachment: fixed;
+  }
+
+  /* חומר 1 — זכוכית חלבית: פאנל צף עם blur, גבול־שיער בהיר וצל רך */
+  .b-glass {
+    background: var(--b-glass-bg);
+    border: 1px solid var(--b-glass-line);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    box-shadow: var(--b-sh-sm);
+  }
+
+  /* צ'יפ אייקון זכוכית — ה-.ico מהקונספט (משמש את GlassIcon) */
+  .b-glass-ico {
+    background: linear-gradient(160deg, rgba(255,255,255,.9), rgba(255,255,255,.35));
+    border: 1px solid var(--b-glass-line);
+    box-shadow: var(--b-sh-sm), inset 0 1px 0 rgba(255,255,255,.8);
+  }
+  html.dark .b-glass-ico {
+    background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.02));
+    box-shadow: var(--b-sh-sm);
+  }
+
+  /* חומר 3 — אבסידיאן בינגו: הבמה הכהה (רמזור, כפתור ראשי, ניווט) */
+  .b-obsidian {
+    background: linear-gradient(160deg, var(--b-obsidian-1), #1E1D19);
+    border: 1px solid rgba(255, 255, 255, .09);
+    box-shadow:
+      0 34px 70px -22px rgba(25, 24, 19, .65),
+      inset 0 1.5px 0 rgba(255, 255, 255, .14),
+      inset 0 -10px 24px rgba(0, 0, 0, .45);
+    color: #F1EFE9;
+  }
+
+  /* חומר 2 — פסטל עם נשימה: גרדיאנט עדין במקום צבע שטוח */
+  .b-tint-mint  { background: linear-gradient(150deg, var(--b-tint-mint-1),  var(--b-tint-mint-2)); }
+  .b-tint-sky   { background: linear-gradient(150deg, var(--b-tint-sky-1),   var(--b-tint-sky-2)); }
+  .b-tint-peach { background: linear-gradient(150deg, var(--b-tint-peach-1), var(--b-tint-peach-2)); }
+  .b-tint-lilac { background: linear-gradient(150deg, var(--b-tint-lilac-1), var(--b-tint-lilac-2)); }
+  .b-tint-rose  { background: linear-gradient(150deg, var(--b-tint-rose-1),  var(--b-tint-rose-2)); }
+  .b-tint-sand  { background: linear-gradient(150deg, var(--b-tint-sand-1),  var(--b-tint-sand-2)); }
+
+  /* ריחוף = הזמנה: -2px במעבר עכבר, כיווץ 4% בלחיצה — פידבק פיזי אחיד */
+  .b-lift {
+    transition:
+      transform 180ms var(--b-spring),
+      box-shadow 180ms ease;
+  }
+  .b-lift:hover { transform: translateY(-2px); box-shadow: var(--b-sh-sm); }
+  .b-lift:active { transform: scale(.96); }
+
+  /* כניסת אלמנט — הקפיץ של בינגו (אוברשוט עדין, כמו כדור שנוחת) */
+  @keyframes b-spring-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .b-spring-in { animation: b-spring-in 450ms var(--b-spring) both; }
+
+  /* פופ תוצאה — עדשת הרמזור שנדלקת */
+  @keyframes b-pop {
+    0%   { transform: scale(.82); }
+    60%  { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+  .b-pop { animation: b-pop 500ms var(--b-spring); }
+
+  /* סריקה — המתנה חיה, לא ספינר */
+  @keyframes b-scan {
+    from { filter: brightness(1); }
+    to   { filter: brightness(1.9); }
+  }
+  .b-scan { animation: b-scan 550ms ease-in-out infinite alternate; }
+
+  /* טבעת הילה ירוקה — רגעי אמת בלבד (רמזור ירוק, חתימה, תשלום) */
+  @keyframes b-pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 var(--b-glow-green); }
+    55%      { box-shadow: 0 0 0 10px transparent; }
+  }
+  .b-pulse-glow { animation: b-pulse-glow 1.5s infinite; }
+
+  /* כבוד למי שמסתחרר — reduced motion מבטל את כל התנועות */
+  @media (prefers-reduced-motion: reduce) {
+    .b-spring-in, .b-pop, .b-scan, .b-pulse-glow { animation: none; }
+    .b-spring-in { opacity: 1; transform: none; }
+    .b-lift, .b-lift:hover, .b-lift:active { transform: none; transition: box-shadow 180ms ease; }
   }
 
   /* misc utilities kept */

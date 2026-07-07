@@ -105,13 +105,13 @@ export function IndicatorSection() {
       {/* the two traffic lights */}
       <div className="space-y-8 py-2">
         <TrafficLight
-          label="סמיילי אוטומטי"
+          label="רמזור אוטומטי"
           icon={<Bot className="size-4" />}
           value={j.smileyAuto}
           onChange={(v) => patch({ smileyAuto: v })}
         />
         <TrafficLight
-          label="סמיילי ידני (שלך)"
+          label="רמזור ידני (שלך)"
           icon={<UserCheck className="size-4" />}
           value={j.smileyManual}
           onChange={(v) => patch({ smileyManual: v })}

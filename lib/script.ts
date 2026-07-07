@@ -71,8 +71,8 @@ export const SCRIPT: Record<SectionId, Beat[]> = {
       say: "\"שניה אחת, אני שולח לבדיקה…\" — מה החיווי האוטומטי שחזר?",
       done: "חיווי אוטומטי: {v}", internal: true },
     { key: "lightManual", section: "bdi", kind: "lights", fields: ["smileyManual"],
-      say: "ואיך הלקוח נשמע לך? (הסמיילי שלך — לא מקריאים)",
-      done: "הסמיילי שלי: {v}", internal: true },
+      say: "ואיך הלקוח נשמע לך? (הרמזור שלך — לא מקריאים)",
+      done: "הרמזור שלי: {v}", internal: true },
   ],
   personal: [
     { key: "marital", section: "personal", kind: "chips", fields: ["maritalStatus"],

@@ -29,7 +29,7 @@ const UNUSED_FIELDS = [
 ];
 
 const CUSTOM_SECTION_NOTES: Record<string, string> = {
-  "smiley-banner": "סקשן מיוחד — באנר סמיילי (מתעדכן מהבוט)",
+  "smiley-banner": "סקשן מיוחד — באנר רמזור (מתעדכן מהבוט)",
   "lenders": "סקשן מיוחד — טבלת גופי המימון (6 גופים + סה\"כ אוטומטי)",
   "source": "סקשן מיוחד — מקור הליד (מתמלא מהייבוא/API)",
   "forms": "סקשן מיוחד — טפסים וקבצים מצורפים",

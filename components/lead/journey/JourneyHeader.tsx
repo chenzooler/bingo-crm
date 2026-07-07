@@ -50,7 +50,7 @@ export function JourneyHeader() {
                   indicator === "green" ? "b-chip-green" : indicator === "yellow" ? "b-chip-orange" : "b-chip-red")}>
                   <span className={cn("size-2 rounded-full",
                     indicator === "green" ? "bg-bingo-green" : indicator === "yellow" ? "bg-status-yellow" : "bg-status-red")} />
-                  סמיילי {smileyLabel(indicator)}
+                  רמזור {smileyLabel(indicator)}
                 </span>
               )}
               {track === "general" && !j.comboVehicle && <span className="b-chip b-chip-green text-[11px]"><Banknote className="size-3" /> כל מטרה</span>}

@@ -1,11 +1,12 @@
-// כרטיס הלקוח — ברירת המחדל: השכפול הקלאסי של Yoatsim (1:1, עיצוב בינגו).
-// ?view=retzef → רֶצֶף (התסריט המדובר) · ?view=form → הטופס המונחה.
+// כרטיס הלקוח — ברירת המחדל: קוקפיט השיחה הפרימיום (card-concept v2).
+// ?view=classic → השכפול הקלאסי של Yoatsim · ?view=retzef → רֶצֶף · ?view=form → הטופס המונחה.
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { journeyFromLead } from "@/lib/journey-db";
 import { valuesFromLead } from "@/lib/yoatsim/values";
 import { JourneyCard } from "@/components/lead/journey/JourneyCard";
 import { ClassicLeadCard } from "@/components/classic/ClassicLeadCard";
+import { CockpitCard } from "@/components/lead/cockpit/CockpitCard";
 import { RecentlyViewedTracker } from "@/components/leads/RecentlyViewedTracker";
 
 export const dynamic = "force-dynamic";
@@ -16,13 +17,18 @@ export default async function LeadPage({ params, searchParams }: {
 }) {
   const { id } = await params;
   const sp = await searchParams;
-  const view = sp.view === "retzef" ? "retzef" : sp.view === "form" ? "form" : "classic";
+  const view =
+    sp.view === "retzef" ? "retzef"
+      : sp.view === "form" ? "form"
+        : sp.view === "classic" ? "classic"
+          : "cockpit";
   const idNum = Number(id);
 
   const include = {
     owner: { select: { name: true } },
     provider: { select: { name: true } },
     processes: { include: { responsible: { select: { id: true, name: true } } }, orderBy: { createdAt: "asc" as const } },
+    sentForms: { orderBy: { sentAt: "desc" as const } },
     activities: {
       orderBy: { createdAt: "desc" as const },
       take: 80,
@@ -45,7 +51,7 @@ export default async function LeadPage({ params, searchParams }: {
   }));
 
   /* ---------- רֶצֶף / הטופס המונחה ---------- */
-  if (view !== "classic") {
+  if (view === "retzef" || view === "form") {
     const { journey, prefilled } = journeyFromLead(lead);
     return (
       <><RecentlyViewedTracker id={lead.id} name={lead.fullName} />
@@ -73,36 +79,60 @@ export default async function LeadPage({ params, searchParams }: {
     );
   }
 
-  /* ---------- השכפול הקלאסי (ברירת מחדל) ---------- */
+  /* ---------- קוקפיט (ברירת מחדל) / השכפול הקלאסי ---------- */
   const users = await db.user.findMany({
     where: { active: true, role: { notIn: ["bot"] } },
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   });
 
+  const leadDTO = {
+    id: lead.id,
+    fullName: lead.fullName,
+    phone: lead.phone,
+    email: lead.email,
+    intakeDate: lead.intakeDate.toISOString(),
+    source: lead.source,
+    sourceText: lead.sourceText,
+    ownerName: lead.owner?.name ?? null,
+    cardKind: lead.cardKind,
+    parentLeadId: lead.parentLeadId,
+    archived: lead.archived,
+  };
+  const initialValues = valuesFromLead(lead);
+  const initialProcesses = lead.processes.map((p) => ({
+    id: p.id,
+    processKey: p.processKey,
+    statusKey: p.statusKey,
+    responsible: p.responsible,
+  }));
+
+  if (view === "classic") {
+    return (
+      <><RecentlyViewedTracker id={lead.id} name={lead.fullName} />
+      <ClassicLeadCard
+        lead={leadDTO}
+        initialValues={initialValues}
+        initialActivities={activities}
+        initialProcesses={initialProcesses}
+        users={users}
+      /></>
+    );
+  }
+
   return (
     <><RecentlyViewedTracker id={lead.id} name={lead.fullName} />
-    <ClassicLeadCard
-      lead={{
-        id: lead.id,
-        fullName: lead.fullName,
-        phone: lead.phone,
-        email: lead.email,
-        intakeDate: lead.intakeDate.toISOString(),
-        source: lead.source,
-        sourceText: lead.sourceText,
-        ownerName: lead.owner?.name ?? null,
-        cardKind: lead.cardKind,
-        parentLeadId: lead.parentLeadId,
-        archived: lead.archived,
-      }}
-      initialValues={valuesFromLead(lead)}
+    <CockpitCard
+      lead={{ ...leadDTO, stage: lead.stage }}
+      initialValues={initialValues}
       initialActivities={activities}
-      initialProcesses={lead.processes.map((p) => ({
-        id: p.id,
-        processKey: p.processKey,
-        statusKey: p.statusKey,
-        responsible: p.responsible,
+      initialProcesses={initialProcesses}
+      initialForms={lead.sentForms.map((f) => ({
+        id: f.id,
+        templateName: f.templateName,
+        status: f.status,
+        sentAt: f.sentAt.toISOString(),
+        signedAt: f.signedAt ? f.signedAt.toISOString() : null,
       }))}
       users={users}
     /></>
