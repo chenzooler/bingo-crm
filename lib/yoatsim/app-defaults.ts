@@ -33,6 +33,12 @@ export const ACTION_TEMPLATE_KINDS = ["פעולות", "משימות", "פגיש�
 export type ActionTemplateKind = (typeof ACTION_TEMPLATE_KINDS)[number];
 export type ActionTemplatesValue = Record<ActionTemplateKind, ActionTemplate[]>;
 
+/* ---------- טלפוניה (Voicenter) ---------- */
+export interface TelephonyConfig {
+  // סוד בנתיב ה-webhook של ה-CDR — מוחלף מהמסך (כפתור "צור סוד חדש")
+  webhookSecret: string;
+}
+
 /* ---------- קבלת לידים / API ---------- */
 export interface LeadIntakeConfig {
   apiKey: string;
@@ -96,6 +102,10 @@ export const APP_SETTING_DEFAULTS: Record<string, unknown> = {
     פגישות: [{ name: "פגישת זום נכסים" }],
     כספים: [{ name: "גביית שכר טרחה" }, { name: "חשבונית לקוח" }],
   } satisfies ActionTemplatesValue,
+
+  telephony: {
+    webhookSecret: "bingo-cdr-CHANGE-ME",
+  } satisfies TelephonyConfig,
 
   "lead-intake": {
     apiKey: "bingo-intake-demo-key",

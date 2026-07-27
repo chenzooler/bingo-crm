@@ -29,6 +29,7 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
   if (body.role !== undefined) data.role = body.role;
   if (body.permissionRole !== undefined) data.permissionRole = body.permissionRole || null;
   if (body.active !== undefined) data.active = Boolean(body.active);
+  if (body.sipExtension !== undefined) data.sipExtension = body.sipExtension?.trim() || null;
 
   if (Object.keys(data).length === 0) return NextResponse.json({ error: "אין שדות לעדכון" }, { status: 400 });
 

@@ -12,8 +12,9 @@ import * as React from "react";
 import Link from "next/link";
 import {
   Printer, Archive, ArchiveRestore, ChevronRight, Cloud, Loader2, CloudOff,
-  Copy, FlaskConical, Phone,
+  Copy, FlaskConical,
 } from "lucide-react";
+import { ClickToCallPhone } from "@/components/dialer/ClickToCallPhone";
 import { CARD_SECTIONS } from "@/lib/yoatsim/card-schema";
 import { cn, formatDate } from "@/lib/utils";
 import { Ramzor } from "@/components/ui/Ramzor";
@@ -150,7 +151,7 @@ export function CockpitCard(props: {
           <div className="min-w-0">
             <h1 className="text-[18px] font-bold text-bingo-black leading-tight truncate">{lead.fullName}</h1>
             <p className="text-[11.5px] text-bingo-gray-500 flex items-center gap-1.5 truncate">
-              {lead.phone && <><Phone className="size-3 shrink-0" /><span className="tabular-nums" dir="ltr">{lead.phone}</span></>}
+              {lead.phone && <ClickToCallPhone leadId={lead.id} phone={lead.phone} />}
               {(lead.sourceText || lead.source) && <span className="truncate">· {lead.sourceText || lead.source}</span>}
               <span className="tabular-nums">· נקלט {formatDate(lead.intakeDate)}</span>
             </p>

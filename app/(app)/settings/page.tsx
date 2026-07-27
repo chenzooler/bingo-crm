@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, ListTree, Workflow, ShieldCheck, Zap, MessageSquareText, Mail, Upload, KeyRound, Globe, ClipboardList, FileSignature, Bot, LayoutGrid } from "lucide-react";
+import { Users, ListTree, Workflow, ShieldCheck, Zap, MessageSquareText, Mail, Upload, KeyRound, Globe, ClipboardList, FileSignature, Bot, LayoutGrid, PhoneCall } from "lucide-react";
 
 /**
  * שכפול יועצים 1:1: מרכזיית ההגדרות = בדיוק סקשני §2 מהאפיון, בסדר המקורי.
@@ -17,6 +17,7 @@ const YOATSIM_SECTIONS = [
   { href: "/settings/forms", label: "טפסים", icon: FileSignature, tone: "b-icon-purple" },
   { href: "/settings/automations", label: "אוטומציות", icon: Zap, tone: "b-icon-red" },
   { href: "/settings/whatsapp-bot", label: "בוט ווטסאפ", icon: Bot, tone: "b-icon-green" },
+  { href: "/settings/telephony", label: "טלפוניה (Voicenter)", icon: PhoneCall, tone: "b-icon-blue" },
   { href: "/settings/modules", label: "מודולים", icon: LayoutGrid, tone: "b-icon-gray" },
   { href: "/admin/import", label: "ייבוא", icon: Upload, tone: "b-icon-gray" },
   { href: "/settings/permissions", label: "הרשאות", icon: ShieldCheck, tone: "b-icon-purple" },

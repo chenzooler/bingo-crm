@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
  */
 const NAV: Array<{ href: string; label: string; icon: React.ElementType; match?: string[] }> = [
   { href: "/leads", label: "ראשי", icon: Home, match: ["/leads"] },
+  { href: "/dialer", label: "תותח", icon: Rocket, match: ["/dialer"] },
 ];
 
 const NAV_BOTTOM: Array<{ href: string; label: string; icon: React.ElementType; match?: string[] }> = [
@@ -28,7 +29,6 @@ export const NAV_HIDDEN: Array<{ href: string; label: string; icon: React.Elemen
   { href: "/briefing",       label: "בוקר",     icon: Sun },
   { href: "/desk",           label: "רֶצֶף",     icon: Layers, match: ["/desk"] },
   { href: "/dashboard",      label: "הבית",     icon: Home },
-  { href: "/dialer/cockpit", label: "תותח",     icon: Rocket, match: ["/dialer"] },
   { href: "/inbox",          label: "הודעות",   icon: MessageCircle },
   { href: "/calls",          label: "שיחות",    icon: Phone },
   { href: "/calendar",       label: "יומן",     icon: Calendar },

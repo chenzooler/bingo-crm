@@ -19,6 +19,7 @@ const NAV = [
   { href: "/settings/forms", label: "טפסים", group: "הגדרות" },
   { href: "/settings/automations", label: "אוטומציות", group: "הגדרות" },
   { href: "/settings/whatsapp-bot", label: "בוט ווטסאפ", group: "הגדרות" },
+  { href: "/settings/telephony", label: "טלפוניה (Voicenter)", group: "הגדרות" },
   { href: "/settings/modules", label: "מודולים", group: "הגדרות" },
   { href: "/admin/import", label: "ייבוא", group: "הגדרות" },
 ];

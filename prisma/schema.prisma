@@ -35,6 +35,9 @@ model User {
   leadProcesses LeadProcess[]
   tasksFrom  Task[]     @relation("TaskFrom")
   tasksTo    Task[]     @relation("TaskTo")
+  calls      Call[]
+  // טלפוניה: מזהה SIP של השלוחה ב-Voicenter (מ-GetExtensions)
+  sipExtension String?
 }
 
 // ============ LEAD PROVIDERS — ספקי לידים ============
@@ -171,6 +174,7 @@ model Lead {
   processes LeadProcess[]
   tasks     Task[]
   sentForms SentForm[]
+  calls     Call[]
 
   // --- מטא ---
   intakeDate     DateTime  @default(now())
@@ -293,6 +297,29 @@ model MessageTemplate {
   watiJson  String? // JSON ל-WATI: template_name, broadcast_name, parameters, buttons
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ============ CALLS — שיחות טלפוניה דרך Voicenter ============
+// voicenterId = CALLID מ-Click2Call, זהה ל-ivruniqueid ב-CDR — מפתח ההתאמה.
+model Call {
+  id          Int       @id @default(autoincrement())
+  leadId      Int?
+  lead        Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  userId      Int?
+  user        User?     @relation(fields: [userId], references: [id])
+  voicenterId String?   @unique
+  direction   String    @default("click2call") // click2call | incoming | outgoing | dialer
+  status      String    @default("dialing") // dialing | ANSWER | BUSY | NOANSWER | CANCEL | ABANDONE | error
+  duration    Int? // שניות
+  recordUrl   String?
+  targetPhone String?
+  extension   String? // SIP של הנציג
+  disposition String? // סיווג הנציג בסוף שיחה: no-answer | callback | advanced | not-interested | ...
+  dialedAt    DateTime  @default(now())
+  endedAt     DateTime?
+
+  @@index([leadId])
+  @@index([userId, dialedAt])
 }
 
 // ============ APP SETTINGS — הגדרות מערכת (בוט ווטסאפ, מודולים, דפי נחיתה, API) ============
