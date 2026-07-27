@@ -13,6 +13,7 @@ export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string
     select: {
       id: true, status: true, duration: true, disposition: true,
       recordUrl: true, dialedAt: true, endedAt: true, leadId: true,
+      errorText: true,
     },
   });
   if (!call) return NextResponse.json({ error: "שיחה לא נמצאה" }, { status: 404 });

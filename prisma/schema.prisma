@@ -315,6 +315,7 @@ model Call {
   targetPhone String?
   extension   String? // SIP של הנציג
   disposition String? // סיווג הנציג בסוף שיחה: no-answer | callback | advanced | not-interested | ...
+  errorText   String? // הודעת השגיאה מ-Voicenter כשהחיוג נכשל
   dialedAt    DateTime  @default(now())
   endedAt     DateTime?
 

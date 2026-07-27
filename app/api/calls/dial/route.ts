@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   if (!result.ok) {
     await db.call.update({
       where: { id: call.id },
-      data: { status: "error", endedAt: new Date() },
+      data: { status: "error", errorText: result.error ?? null, endedAt: new Date() },
     });
     return NextResponse.json({ ok: false, error: result.error, callRowId: call.id }, { status: 502 });
   }
