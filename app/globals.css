@@ -542,9 +542,187 @@ html.dark {
      Premium v2 — שפת החומרים והתנועה · קלאסים
      ============================================================ */
 
-  /* רקע האפליקציה — נייר שטוח לפי ספר המותג (אין גרדיאנטים) */
+  /* ============================================================
+     נייר חשמלי (Electric Paper) — שפת 2080 · הוראת חן 03/08/26
+     נייר חם שהאור חי מתחתיו: אורורה + זכוכית + איי אובסידיאן
+     שבהם הליים זוהר כניאון. תנועה = transform+opacity בלבד.
+     ============================================================ */
+
+  /* רקע הבמה — נייר + שטיפת אורורה פסטלית (סטטי, לא מצויר מחדש) */
   .b-app-ambient {
-    background: #fafaf9;
+    background:
+      radial-gradient(1100px 620px at 85% -10%, rgba(218, 255, 203, 0.55), transparent 60%),
+      radial-gradient(900px 700px at -10% 30%, rgba(200, 232, 255, 0.4), transparent 55%),
+      radial-gradient(800px 600px at 55% 115%, rgba(255, 233, 214, 0.35), transparent 55%),
+      #fafaf9;
+  }
+
+  /* כדורי אור נודדים — שניים לכל היותר, transform בלבד */
+  .ep-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.5;
+    pointer-events: none;
+    will-change: transform;
+    z-index: 0;
+  }
+  .ep-orb--lime {
+    width: 480px; height: 480px;
+    inset-inline-end: -120px; top: -140px;
+    background: radial-gradient(circle, rgba(80, 255, 10, 0.18), transparent 70%);
+    animation: ep-drift1 26s ease-in-out infinite alternate;
+  }
+  .ep-orb--sky {
+    width: 380px; height: 380px;
+    inset-inline-start: -100px; top: 40%;
+    background: radial-gradient(circle, rgba(140, 200, 255, 0.2), transparent 70%);
+    animation: ep-drift2 34s ease-in-out infinite alternate;
+  }
+  @keyframes ep-drift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(-90px, 60px) scale(1.12); } }
+  @keyframes ep-drift2 { from { transform: translate(0, 0) scale(1.05); } to { transform: translate(70px, -50px) scale(0.95); } }
+
+  /* גרעין רעש — הורג את מראה "הגרדיאנט הזול". סטטי. */
+  .ep-grain {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    opacity: 0.025; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* משטח S2 — כרטיס זכוכית (סוס העבודה) */
+  .ep-glass {
+    position: relative;
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border: 1px solid rgba(41, 41, 41, 0.08);
+    border-radius: 24px;
+    box-shadow:
+      0 1px 2px rgba(41, 41, 41, 0.04),
+      0 8px 24px rgba(41, 41, 41, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+  @supports not (backdrop-filter: blur(1px)) {
+    .ep-glass { background: rgba(255, 255, 255, 0.92); }
+  }
+  /* קו-שיער אור עליון — החתימה של המשטחים */
+  .ep-glass::before {
+    content: "";
+    position: absolute; inset-inline: 12%; top: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+    pointer-events: none;
+  }
+
+  /* משטח S3 — זכוכית פעילה (השאלה שבאור הזרקורים) */
+  .ep-glass-active {
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow:
+      0 1px 2px rgba(41, 41, 41, 0.05),
+      0 12px 32px rgba(41, 41, 41, 0.08),
+      0 0 0 1px rgba(80, 255, 10, 0.25),
+      0 0 24px -4px rgba(80, 255, 10, 0.3);
+  }
+
+  /* משטח S4 — אי אובסידיאן: הבמה הכהה. ליים = ניאון אמיתי רק כאן. */
+  .ep-island {
+    position: relative;
+    background:
+      radial-gradient(600px 300px at 80% -20%, rgba(80, 255, 10, 0.14), transparent 60%),
+      linear-gradient(180deg, #2e2e2e, #1e1e1e);
+    color: #fafaf9;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 40px rgba(41, 41, 41, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  .ep-island::before {
+    content: "";
+    position: absolute; inset-inline: 12%; top: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(80, 255, 10, 0.35), transparent);
+    pointer-events: none;
+  }
+  .ep-neon { text-shadow: 0 0 18px rgba(80, 255, 10, 0.45); }
+
+  /* קרן גבול — סיבוב יחיד בהפעלה שמתעמעם, ואז טבעת סטטית שקטה נשארת */
+  @property --ep-beam { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+  .ep-beam {
+    position: relative;
+    box-shadow: inset 0 0 0 1.5px rgba(80, 255, 10, 0.35);
+  }
+  .ep-beam::before,
+  .ep-beam::after {
+    content: "";
+    position: absolute; inset: -1.5px;
+    border-radius: inherit;
+    z-index: -1;
+    background: conic-gradient(
+      from var(--ep-beam),
+      transparent 0deg, transparent 300deg,
+      rgba(80, 255, 10, 0.9) 330deg, #daffcb 345deg, transparent 360deg
+    );
+    animation: ep-beam-spin 1.2s ease-out 1 forwards;
+  }
+  .ep-beam::after { filter: blur(8px); opacity: 0.5; }
+  @keyframes ep-beam-spin { to { --ep-beam: 360deg; opacity: 0; } }
+
+  /* טבעת פוקוס נושמת — שתי פעימות ונרגעת */
+  .ep-input:focus-visible {
+    outline: none;
+    border-color: #50ff0a;
+    box-shadow: 0 0 0 4px rgba(80, 255, 10, 0.18);
+    animation: ep-focus-pulse 1.2s ease-out 2;
+  }
+  @keyframes ep-focus-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(80, 255, 10, 0.35); }
+    100% { box-shadow: 0 0 0 8px rgba(80, 255, 10, 0); }
+  }
+
+  /* זרקור עכבר על כרטיס — JS כותב רק ‎--mx/--my */
+  @media (hover: hover) {
+    .ep-spotlight::after {
+      content: "";
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(80, 255, 10, 0.07), transparent 65%);
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+    .ep-spotlight:hover::after { opacity: 1; }
+  }
+
+  /* זהויות צבע לשלבי התהליך — הליים הוא החשמל, הפסטלים הם החדרים */
+  .ep-step-mint   { --step-tint: #daffcb; --step-deep: #2e7a12; --step-dot: #50ff0a; }
+  .ep-step-sky    { --step-tint: #d6eeff; --step-deep: #1e5f8a; --step-dot: #6fc3ff; }
+  .ep-step-lilac  { --step-tint: #ebe3ff; --step-deep: #5b3fa0; --step-dot: #b49cff; }
+  .ep-step-peach  { --step-tint: #ffe6d6; --step-deep: #a05224; --step-dot: #ffb080; }
+  .ep-step-sand   { --step-tint: #f7efd8; --step-deep: #8a6d1e; --step-dot: #e8cf7a; }
+  .ep-step-rose   { --step-tint: #ffe0ea; --step-deep: #a03356; --step-dot: #ff9ebe; }
+  .ep-step-ice    { --step-tint: #d8fff4; --step-deep: #0f7a62; --step-dot: #5fe8c4; }
+
+  /* מיכל אייקון תלת-ממד — אריח כהה שהזוהר חי בו */
+  .ep-icon3d {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #101312;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 4px 12px rgba(16, 19, 18, 0.35), 0 0 16px -6px rgba(80, 255, 10, 0.5);
+    overflow: hidden;
+  }
+  .ep-icon3d > img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* הדגשת מילת מפתח בשאלה — מברשת טקסט שצומחת מימין */
+  .ep-mark {
+    background: linear-gradient(0deg, #daffcb, #daffcb) no-repeat;
+    background-size: 100% 42%;
+    background-position: bottom right;
+    border-radius: 4px;
+    padding-inline: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ep-orb, .ep-beam::before, .ep-beam::after { animation: none; }
+    .ep-beam::before { background: none; border: 1.5px solid rgba(80, 255, 10, 0.5); }
+    .ep-beam::after { display: none; }
   }
 
   /* חומר 1 — זכוכית חלבית: פאנל צף עם blur, גבול־שיער בהיר וצל רך */

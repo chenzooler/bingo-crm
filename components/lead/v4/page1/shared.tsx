@@ -6,7 +6,8 @@
 import * as React from "react";
 import type { ClassicValues } from "@/lib/yoatsim/values";
 import type { RamzorValue } from "@/components/ui/Ramzor";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { DrawnCheck, Icon3D, useSpotlight } from "./ep";
 
 /* ---------- עזרי ערכים ---------- */
 
@@ -64,51 +65,117 @@ export interface StepCardProps {
   done: boolean;
   /** שורת הסיכום כשהשלב מכווץ */
   summary?: React.ReactNode;
+  /** צביעת צ'יפ הסיכום לפי תוצאה (שלילי/חיובי) במקום גוון החדר */
+  summaryTone?: "good" | "bad";
   /** פתיחה מחדש ידנית של שלב שהושלם */
   forcedOpen: boolean;
   onToggle: (id: string) => void;
   children: React.ReactNode;
+  /** זהות צבע החדר — ep-step-* */
+  tone: string;
+  /** שם אייקון תלת-ממד מ-public/icons3d */
+  icon: string;
+  /** השלב שבאור הזרקורים — קרן גבול אחת במסך */
+  active: boolean;
+  /** קליק על שלב מעומעם מחזיר אליו את הפוקוס */
+  onFocus: (id: string) => void;
 }
 
-export function StepCard({ id, index, title, done, summary, forcedOpen, onToggle, children }: StepCardProps) {
-  const collapsed = done && !forcedOpen;
-  return (
-    <section id={`v4p1-step-${id}`} className="b-card v4p1-enter overflow-hidden" aria-label={title}>
-      {collapsed ? (
+export function StepCard({
+  id, index, title, done, summary, summaryTone, forcedOpen, onToggle, children,
+  tone, icon, active, onFocus,
+}: StepCardProps) {
+  /* כל עוד הפוקוס בתוך הכרטיס — לא מתכווצים אוטומטית (הקלדה באמצע שדה) */
+  const [holdsFocus, setHoldsFocus] = React.useState(false);
+  const collapsed = done && !holdsFocus && !forcedOpen;
+  const spotlight = useSpotlight();
+
+  if (collapsed) {
+    /* שלב שהושלם — שורת זכוכית דקה עם וי מצויר וצ'יפ סיכום בגוון החדר */
+    return (
+      <section id={`v4p1-step-${id}`} className={`${tone} v4p1-enter ${active ? "" : "v4p1-dim"}`} aria-label={title}>
         <button
           type="button"
-          onClick={() => onToggle(id)}
-          className="w-full flex items-center gap-3 px-6 py-4 text-start min-h-[44px] hover:bg-bingo-gray-50 transition-colors"
+          onClick={() => { onToggle(id); onFocus(id); }}
+          className="ep-glass w-full flex items-center gap-3 px-5 py-3 text-start min-h-[52px] transition-colors hover:bg-white/80"
         >
-          <span className="w-6 h-6 rounded-full bg-bingo-green-light text-bingo-green-deep flex items-center justify-center shrink-0">
-            <Check size={14} strokeWidth={2.25} />
+          <Icon3D name={icon} size={28} radius={9} />
+          <span
+            className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: "var(--step-tint)", color: "var(--step-deep)" }}
+          >
+            <DrawnCheck size={12} strokeWidth={3.5} />
           </span>
-          <span className="text-[14px] font-semibold text-bingo-black shrink-0">{title}</span>
-          <span className="text-[13px] text-bingo-gray-500 truncate flex-1 min-w-0">{summary}</span>
+          <span className="text-[14px] font-semibold shrink-0" style={{ color: "var(--step-deep)" }}>{title}</span>
+          {summary ? (
+            <span
+              className={`text-[12px] font-semibold px-3 py-1 rounded-full truncate min-w-0 ${
+                summaryTone === "bad"
+                  ? "bg-status-red-soft text-status-red"
+                  : summaryTone === "good"
+                    ? "bg-bingo-green-light text-bingo-green-deep"
+                    : ""
+              }`}
+              style={summaryTone ? undefined : { background: "var(--step-tint)", color: "var(--step-deep)" }}
+            >
+              {summary}
+            </span>
+          ) : null}
+          <span className="flex-1" />
           <ChevronDown size={16} className="text-bingo-gray-400 shrink-0" strokeWidth={1.75} />
         </button>
-      ) : (
-        <div className="p-6">
-          <header className="flex items-center gap-3 mb-5">
-            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 tabular-nums ${
-              done ? "bg-bingo-green-light text-bingo-green-deep" : "bg-bingo-gray-100 text-bingo-gray-600"
-            }`}>
-              {done ? <Check size={14} strokeWidth={2.25} /> : index}
-            </span>
-            <h3 className="text-[16px] font-bold text-bingo-black flex-1">{title}</h3>
-            {done && (
-              <button
-                type="button"
-                onClick={() => onToggle(id)}
-                className="text-[12px] text-bingo-gray-500 hover:text-bingo-black px-3 py-2 min-h-[44px] flex items-center"
-              >
-                כווץ
-              </button>
-            )}
-          </header>
-          {children}
-        </div>
-      )}
+      </section>
+    );
+  }
+
+  return (
+    <section
+      id={`v4p1-step-${id}`}
+      className={`${tone} v4p1-enter ${active ? "" : "v4p1-dim"}`}
+      aria-label={title}
+      onClick={active ? undefined : () => onFocus(id)}
+      onFocusCapture={() => setHoldsFocus(true)}
+      onBlurCapture={(e) => {
+        /* מתנקה רק כשהפוקוס באמת עזב את הכרטיס */
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHoldsFocus(false);
+      }}
+    >
+      <div
+        className={`ep-glass ep-spotlight relative p-6 ${active ? "ep-glass-active ep-beam" : ""}`}
+        onMouseMove={spotlight}
+      >
+        {/* פס הזהות של החדר — קצה פנימי בצד הפתיחה, רק בשלב הפעיל */}
+        {active && (
+          <span
+            aria-hidden="true"
+            className="absolute"
+            style={{
+              insetInlineStart: 0, top: 16, bottom: 16, width: 2,
+              background: "var(--step-dot)", borderRadius: 2,
+            }}
+          />
+        )}
+        <header className="flex items-center gap-3 mb-5">
+          <Icon3D name={icon} size={48} />
+          <h3 className="text-[18px] font-semibold flex-1" style={{ color: "var(--step-deep)" }}>{title}</h3>
+          <span
+            className="rounded-full px-3 py-1 text-[12px] font-bold tabular-nums shrink-0"
+            style={{ background: "var(--step-tint)", color: "var(--step-deep)" }}
+          >
+            שלב {index}
+          </span>
+          {done && (
+            <button
+              type="button"
+              onClick={() => { setHoldsFocus(false); onToggle(id); }}
+              className="text-[12px] text-bingo-gray-500 hover:text-bingo-black px-3 py-2 min-h-[44px] flex items-center"
+            >
+              כווץ
+            </button>
+          )}
+        </header>
+        {children}
+      </div>
     </section>
   );
 }
@@ -211,12 +278,12 @@ export function MoneyInput({ value, onChange, placeholder, id }: {
   id?: string;
 }) {
   return (
-    <div className="relative">
+    <div className="relative" dir="ltr">
       <input
         id={id}
         inputMode="numeric"
         dir="ltr"
-        className="b-input w-full text-start tabular-nums pe-8"
+        className="b-input ep-input w-full text-start tabular-nums pe-8"
         value={fmtMoney(value)}
         placeholder={placeholder ?? "0"}
         onChange={(e) => onChange(e.target.value.replace(/[^\d]/g, ""))}

@@ -4,12 +4,29 @@
  * פרטים אישיים, תעסוקה והכנסות, פנסיה, מגורים, רכב, ונתונים בנקאיים.
  */
 import * as React from "react";
+import { motion } from "framer-motion";
 import type { ClassicCardState } from "@/components/classic/useClassicCard";
 import { MARITAL_Y, HOUSING_Y, PENSION_Y } from "@/lib/yoatsim/card-schema";
 import { INSURERS } from "./insurers";
 import { BankFields } from "./BankFields";
 import { ChoicePills, Field, LogoBadge, MoneyInput, str } from "./shared";
+import { SPRING, SubSection, useEpSpring } from "./ep";
 import { ChevronDown, Check } from "lucide-react";
+
+/** חשיפה מותנית — קפיץ כניסה של נייר חשמלי */
+function Reveal({ children, className }: { children: React.ReactNode; className?: string }) {
+  const spring = useEpSpring();
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, x: 14, scale: 0.98 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      transition={spring(SPRING.entrance)}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 const SEIZED_BY = ["מימון ישיר", "פמה", "מזרחי טפחות", "שיעבוד אחר"];
 const OTHER_INSURER = "אחר";
@@ -35,7 +52,7 @@ function PensionCompanySelect({ state }: { state: ClassicCardState }) {
     return (
       <div className="flex gap-2">
         <input
-          className="b-input w-full"
+          className="b-input ep-input w-full"
           placeholder="שם החברה"
           value={value}
           autoFocus
@@ -59,7 +76,7 @@ function PensionCompanySelect({ state }: { state: ClassicCardState }) {
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="b-input w-full flex items-center gap-2 text-start cursor-pointer"
+        className="b-input ep-input w-full flex items-center gap-2 text-start cursor-pointer"
       >
         {known && <LogoBadge src={INSURERS.find((i) => i.name === value)?.logo} name={value} size={22} />}
         <span className={`flex-1 truncate ${value ? "text-bingo-black" : "text-bingo-gray-400"}`}>
@@ -112,20 +129,21 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
   const yearInvalid = vehicleYear !== "" && (Number.isNaN(yearNum) || yearNum < 2013 || yearNum > 2027);
 
   return (
-    <div className="space-y-6">
-      {/* פרטים אישיים */}
+    <div className="space-y-7">
+      {/* זהות ומשפחה */}
+      <SubSection icon="heart-ring" title="זהות ומשפחה">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Field label="תאריך הנפקת ת&quot;ז">
           <input
             type="date" dir="ltr"
-            className="b-input w-full tabular-nums"
+            className="b-input ep-input w-full tabular-nums"
             value={str(v.idIssueDate)}
             onChange={(e) => state.set("idIssueDate", e.target.value)}
           />
         </Field>
         <Field label="סטטוס משפחתי">
           <select
-            className="b-input w-full appearance-none cursor-pointer"
+            className="b-input ep-input w-full appearance-none cursor-pointer"
             value={str(v.maritalStatus)}
             onChange={(e) => state.set("maritalStatus", e.target.value)}
           >
@@ -136,18 +154,20 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
         <Field label="מספר ילדים מתחת לגיל 18">
           <input
             inputMode="numeric" dir="ltr"
-            className="b-input w-full tabular-nums text-start"
+            className="b-input ep-input w-full tabular-nums text-start"
             value={str(v.children)}
             onChange={(e) => state.set("children", e.target.value.replace(/[^\d]/g, ""))}
           />
         </Field>
       </div>
+      </SubSection>
 
-      {/* תעסוקה והכנסות */}
+      {/* תעסוקה והכנסה */}
+      <SubSection icon="briefcase" title="תעסוקה והכנסה">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="שם מקום עבודה או תפקיד">
           <input
-            className="b-input w-full"
+            className="b-input ep-input w-full"
             value={str(v.employerAndRole)}
             onChange={(e) => state.set("employerAndRole", e.target.value)}
           />
@@ -155,7 +175,7 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
         <Field label="ותק במקום העבודה בשנים">
           <input
             inputMode="numeric" dir="ltr"
-            className="b-input w-full tabular-nums text-start"
+            className="b-input ep-input w-full tabular-nums text-start"
             value={str(v.seniority)}
             onChange={(e) => state.set("seniority", e.target.value.replace(/[^\d.]/g, ""))}
           />
@@ -169,7 +189,7 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
       </div>
 
       {/* פנסיה */}
-      <div className="space-y-4">
+      <div className="space-y-4 pt-1">
         <Field label="קרן פנסיה/השתלמות">
           <ChoicePills
             options={PENSION_Y.filter((p) => p !== "צעיר").map((p) => ({ label: p, store: p }))}
@@ -178,18 +198,20 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
           />
         </Field>
         {hasPension && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 v4p1-enter">
+          <Reveal className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="באיזו חברת ביטוח">
               <PensionCompanySelect state={state} />
             </Field>
             <Field label="סכום משוער בקרנות">
               <MoneyInput value={str(v.pensionAmount)} onChange={(raw) => state.set("pensionAmount", raw)} />
             </Field>
-          </div>
+          </Reveal>
         )}
       </div>
+      </SubSection>
 
       {/* מגורים */}
+      <SubSection icon="house" title="מגורים">
       <div className="space-y-4">
         <Field label="סוג מגורים">
           <ChoicePills
@@ -199,16 +221,20 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
           />
         </Field>
         {needsHousingPayment && (
-          <Field label="החזר חודשי" className="v4p1-enter sm:max-w-64">
-            <MoneyInput
-              value={str(v.monthlyHousingPayment)}
-              onChange={(raw) => state.set("monthlyHousingPayment", raw)}
-            />
-          </Field>
+          <Reveal className="sm:max-w-64">
+            <Field label="החזר חודשי">
+              <MoneyInput
+                value={str(v.monthlyHousingPayment)}
+                onChange={(raw) => state.set("monthlyHousingPayment", raw)}
+              />
+            </Field>
+          </Reveal>
         )}
       </div>
+      </SubSection>
 
       {/* רכב */}
+      <SubSection icon="car" title="רכב">
       <div className="space-y-4">
         <Field label="רכב">
           <ChoicePills
@@ -218,7 +244,7 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
           />
         </Field>
         {hasVehicle && (
-          <div className="space-y-4 v4p1-enter">
+          <Reveal className="space-y-4">
             <Field label="שנת ייצור">
               <ChoicePills
                 options={["מעל 2013", "מתחת 2013"]}
@@ -227,23 +253,25 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
               />
             </Field>
             {yearBand === "מעל 2013" && (
-              <Field label="שנת הרכב המדויקת" className="v4p1-enter sm:max-w-64">
-                <div>
-                  <input
-                    inputMode="numeric" dir="ltr"
-                    className={`b-input w-full tabular-nums text-start ${yearInvalid ? "border-status-red" : ""}`}
-                    placeholder="2013-2027"
-                    value={vehicleYear}
-                    onChange={(e) => state.set("vehicleYear", e.target.value.replace(/[^\d]/g, "").slice(0, 4))}
-                  />
-                  {yearInvalid && (
-                    <p className="text-[12px] text-status-red mt-1.5">שנה בין 2013 ל-2027</p>
-                  )}
-                </div>
-              </Field>
+              <Reveal className="sm:max-w-64">
+                <Field label="שנת הרכב המדויקת">
+                  <div>
+                    <input
+                      inputMode="numeric" dir="ltr"
+                      className={`b-input ep-input w-full tabular-nums text-start ${yearInvalid ? "border-status-red" : ""}`}
+                      placeholder="2013-2027"
+                      value={vehicleYear}
+                      onChange={(e) => state.set("vehicleYear", e.target.value.replace(/[^\d]/g, "").slice(0, 4))}
+                    />
+                    {yearInvalid && (
+                      <p className="text-[12px] text-status-red mt-1.5">שנה בין 2013 ל-2027</p>
+                    )}
+                  </div>
+                </Field>
+              </Reveal>
             )}
             {seized && (
-              <div className="space-y-4 v4p1-enter">
+              <Reveal className="space-y-4">
                 <Field label="מאיפה השיעבוד">
                   <ChoicePills
                     options={SEIZED_BY}
@@ -252,19 +280,22 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
                   />
                 </Field>
                 {str(v.seizedBy) === "שיעבוד אחר" && (
-                  <Field label="פירוט השיעבוד" className="v4p1-enter sm:max-w-80">
-                    <input
-                      className="b-input w-full"
-                      value={str(v.seizedByOther)}
-                      onChange={(e) => state.set("seizedByOther", e.target.value)}
-                    />
-                  </Field>
+                  <Reveal className="sm:max-w-80">
+                    <Field label="פירוט השיעבוד">
+                      <input
+                        className="b-input ep-input w-full"
+                        value={str(v.seizedByOther)}
+                        onChange={(e) => state.set("seizedByOther", e.target.value)}
+                      />
+                    </Field>
+                  </Reveal>
                 )}
-              </div>
+              </Reveal>
             )}
-          </div>
+          </Reveal>
         )}
       </div>
+      </SubSection>
 
       <hr className="border-bingo-gray-150" />
 

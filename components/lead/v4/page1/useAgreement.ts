@@ -26,6 +26,8 @@ export interface AgreementApi {
   agreementForm: SentFormDTO | null;
   signed: boolean;
   sending: boolean;
+  /** כשל שליחה/עדכון אחרון — מתנקה בתחילת כל ניסיון חוזר */
+  error: string | null;
   templateName: string;
   sendAgreement: () => Promise<void>;
   markSigned: (id: number) => Promise<void>;
@@ -46,6 +48,7 @@ export function useAgreement(state: ClassicCardState, vehicleTrack: boolean): Ag
   const templateName = vehicleTrack ? VEHICLE_TEMPLATE : GENERAL_TEMPLATE;
   const [forms, setForms] = React.useState<SentFormDTO[] | null>(null);
   const [sending, setSending] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const refresh = React.useCallback(async () => {
     try {
@@ -79,6 +82,7 @@ export function useAgreement(state: ClassicCardState, vehicleTrack: boolean): Ag
   const sendAgreement = React.useCallback(async () => {
     if (sending) return;
     setSending(true);
+    setError(null);
     try {
       const res = await fetch("/api/forms", {
         method: "POST",
@@ -86,18 +90,27 @@ export function useAgreement(state: ClassicCardState, vehicleTrack: boolean): Ag
         body: JSON.stringify({ leadId, templateName }),
       });
       if (res.ok) await refresh();
+      else setError("שליחת ההסכם נכשלה - בדוק חיבור ונסה שוב");
+    } catch {
+      setError("שליחת ההסכם נכשלה - בדוק חיבור ונסה שוב");
     } finally {
       setSending(false);
     }
   }, [leadId, templateName, sending, refresh]);
 
   const markSigned = React.useCallback(async (id: number) => {
-    const res = await fetch("/api/forms", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status: "signed" }),
-    });
-    if (res.ok) await refresh();
+    setError(null);
+    try {
+      const res = await fetch("/api/forms", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: "signed" }),
+      });
+      if (res.ok) await refresh();
+      else setError("העדכון נכשל - נסה שוב");
+    } catch {
+      setError("העדכון נכשל - נסה שוב");
+    }
   }, [refresh]);
 
   /* ---------- וואטסאפ ---------- */
@@ -139,7 +152,7 @@ export function useAgreement(state: ClassicCardState, vehicleTrack: boolean): Ag
   }, [email, firstName, state]);
 
   return {
-    forms, agreementForm, signed: !!signed, sending, templateName,
+    forms, agreementForm, signed: !!signed, sending, error, templateName,
     sendAgreement, markSigned, openWhatsApp, openEmail,
     hasPhone: !!phone, hasEmail: !!email,
   };

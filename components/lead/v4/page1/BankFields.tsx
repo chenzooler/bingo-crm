@@ -9,6 +9,7 @@ import type { ClassicCardState } from "@/components/classic/useClassicCard";
 import { BANKS_Y, ACTIVE_LOANS_Y } from "@/lib/yoatsim/card-schema";
 import { AutocompleteInput, type AcSuggestion } from "./AutocompleteInput";
 import { Field, LogoBadge, MultiChips, str, arr } from "./shared";
+import { SubSection } from "./ep";
 import { ChevronDown, Check } from "lucide-react";
 
 interface BankRow { code: string; name: string; logo?: string | null }
@@ -87,15 +88,14 @@ export function BankFields({ state }: { state: ClassicCardState }) {
   }, [bankCode]);
 
   return (
-    <div className="space-y-4">
-      <p className="text-[14px] font-bold text-bingo-black">נתונים בנקאיים</p>
-
+    <div className="space-y-7">
+      <SubSection icon="bank" title="נתונים בנקאיים">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Field label="בנק">
           {banks === "error" || banks === null ? (
             /* נפילה: הרשימה הקבועה — הכרטיס לא נחסם */
             <select
-              className="b-input w-full appearance-none cursor-pointer"
+              className="b-input ep-input w-full appearance-none cursor-pointer"
               value={bankName}
               onChange={(e) => state.set("bankName", e.target.value)}
             >
@@ -109,7 +109,7 @@ export function BankFields({ state }: { state: ClassicCardState }) {
                 aria-haspopup="listbox"
                 aria-expanded={open}
                 onClick={() => setOpen((o) => !o)}
-                className="b-input w-full flex items-center gap-2 text-start cursor-pointer"
+                className="b-input ep-input w-full flex items-center gap-2 text-start cursor-pointer"
               >
                 {selectedBank && <LogoBadge src={selectedBank.logo} name={selectedBank.name} size={22} />}
                 <span className={`flex-1 truncate ${bankName ? "text-bingo-black" : "text-bingo-gray-400"}`}>
@@ -170,30 +170,35 @@ export function BankFields({ state }: { state: ClassicCardState }) {
           <input
             inputMode="numeric"
             dir="ltr"
-            className="b-input w-full tabular-nums text-start"
+            className="b-input ep-input w-full tabular-nums text-start"
             value={str(v.bankAccount)}
             onChange={(e) => state.set("bankAccount", e.target.value)}
           />
         </Field>
       </div>
+      </SubSection>
 
-      <Field label="הלוואות פעילות ומאיפה">
-        <MultiChips
-          options={[...ACTIVE_LOANS_Y]}
-          values={arr(v.activeLoansFrom)}
-          exclusive={["אין"]}
-          onChange={(next) => state.set("activeLoansFrom", next)}
-        />
-      </Field>
+      <SubSection icon="coins" title="הלוואות">
+      <div className="space-y-4">
+        <Field label="הלוואות פעילות ומאיפה">
+          <MultiChips
+            options={[...ACTIVE_LOANS_Y]}
+            values={arr(v.activeLoansFrom)}
+            exclusive={["אין"]}
+            onChange={(next) => state.set("activeLoansFrom", next)}
+          />
+        </Field>
 
-      <label className="block">
-        <span className="block text-[13px] font-semibold text-bingo-gray-600 mb-2">פירוט והערות</span>
-        <textarea
-          className="b-input w-full min-h-20 resize-y rounded-[16px]"
-          value={str(v.loansDetail)}
-          onChange={(e) => state.set("loansDetail", e.target.value)}
-        />
-      </label>
+        <label className="block">
+          <span className="block text-[13px] font-semibold text-bingo-gray-600 mb-2">פירוט והערות</span>
+          <textarea
+            className="b-input ep-input w-full min-h-20 resize-y rounded-[16px]"
+            value={str(v.loansDetail)}
+            onChange={(e) => state.set("loansDetail", e.target.value)}
+          />
+        </label>
+      </div>
+      </SubSection>
     </div>
   );
 }

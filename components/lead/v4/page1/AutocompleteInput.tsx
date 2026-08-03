@@ -95,7 +95,7 @@ export function AutocompleteInput({
   return (
     <div ref={rootRef} className="relative">
       <input
-        className="b-input w-full"
+        className="b-input ep-input w-full"
         dir={dirLtr ? "ltr" : undefined}
         role="combobox"
         aria-expanded={open}

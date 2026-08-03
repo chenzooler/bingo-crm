@@ -33,15 +33,15 @@ const str = (v: unknown): string => (typeof v === "string" ? v : "");
 const ENFORCEMENT_BAD = ["היו בעיות"];
 /** האם חזרו צ'קים / הוראות קבע / הלוואות / מסגרות בשנתיים? */
 const RETURNED_BAD = ["חזרו", "היו חזרות"];
-/** האם החשבון מוגבל כרגע או היה מוגבל בשנתיים? */
-const RESTRICTED_BAD = ["מוגבל / היה מוגבל", "חשבון מוגבל", "מוגבל"];
+/** האם החשבון מוגבל כרגע או היה מוגבל בשנתיים? (הערך הממוזג הישן נשמר לתאימות לאחור) */
+const RESTRICTED_BAD = ["מוגבל / היה מוגבל", "חשבון מוגבל", "מוגבל", "מוגבל כרגע", "היה מוגבל"];
 /** האם ביצעת מחיקה או שיפור ל-BDI? */
 const BDI_REPAIR_BAD = ["ביצעתי"];
 /** מסגרת אשראי מתחת ל-5,000 */
 const LIMIT_BAD = ["מתחת ל-5,000 ש\"ח", "מתחת ל-5,000"];
 
 /** כרטיסי אשראי: רק דיירקט או אין כרטיס בכלל = שלילי */
-function cardsNegative(values: Record<string, unknown>): boolean | null {
+export function cardsNegative(values: Record<string, unknown>): boolean | null {
   const raw = values.creditCards;
   const cards = Array.isArray(raw) ? (raw as string[]) : [];
   if (cards.length === 0) return null; // עוד לא נענה
@@ -79,9 +79,15 @@ export function screeningState(values: Record<string, unknown>): ScreeningState 
   check("returnedChecks", RETURNED_BAD, "חזרו צ'קים או הוראות קבע");
   check("accountRestricted", RESTRICTED_BAD, "חשבון מוגבל");
   check("bdiRepair", BDI_REPAIR_BAD, "בוצעה מחיקה או שיפור BDI");
-  check("cardLimit", LIMIT_BAD, "מסגרת אשראי מתחת ל-5,000 ש\"ח");
 
   const cards = cardsNegative(values);
+  if (cards === true) {
+    // אין כרטיס אמיתי - שאלת המסגרת לא רלוונטית: נספרת כנענתה ולא נבדקת
+    // (כדי שערך ישן של מסגרת לא יוסיף סיבה שלילית מטעה)
+    answered += 1;
+  } else {
+    check("cardLimit", LIMIT_BAD, "מסגרת אשראי מתחת ל-5,000 ש\"ח");
+  }
   if (cards !== null) {
     answered += 1;
     if (cards) reasons.push("אין כרטיס אשראי (או דיירקט בלבד)");

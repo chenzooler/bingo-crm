@@ -14,10 +14,17 @@ export interface CardV4Meta {
   source: string | null;
 }
 
+/** פעולה מהירה מהכותרת — מועברת לעמוד 1 כשהוא לא היה על המסך בזמן הלחיצה */
+export type CardV4QuickAction = "send-agreement" | "whatsapp" | "email";
+
 export interface CardV4PageProps {
   state: ClassicCardState;
   meta: CardV4Meta;
   catalog: CatalogResult;
+  /** פעולת כותרת שממתינה לביצוע אחרי ניווט לעמוד 1 (מסופקת רק לעמוד 1) */
+  pendingAction?: CardV4QuickAction | null;
+  /** עמוד 1 קורא לזה אחרי שביצע את הפעולה הממתינה */
+  onPendingActionConsumed?: () => void;
 }
 
 /* ---------- נתוני שרת נוספים (נבנים ב-page.tsx, בלי fetch בצד לקוח) ---------- */

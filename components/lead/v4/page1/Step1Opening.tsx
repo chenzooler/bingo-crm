@@ -13,7 +13,7 @@ export function Step1Opening({ state }: { state: ClassicCardState }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="שם פרטי">
           <input
-            className="b-input w-full"
+            className="b-input ep-input w-full"
             value={str(v.firstName)}
             onChange={(e) => state.set("firstName", e.target.value)}
             autoComplete="off"
@@ -21,7 +21,7 @@ export function Step1Opening({ state }: { state: ClassicCardState }) {
         </Field>
         <Field label="שם משפחה">
           <input
-            className="b-input w-full"
+            className="b-input ep-input w-full"
             value={str(v.lastName)}
             onChange={(e) => state.set("lastName", e.target.value)}
             autoComplete="off"
@@ -31,7 +31,7 @@ export function Step1Opening({ state }: { state: ClassicCardState }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="מטרת ההלוואה">
           <select
-            className="b-input w-full appearance-none cursor-pointer"
+            className="b-input ep-input w-full appearance-none cursor-pointer"
             value={str(v.loanPurpose)}
             onChange={(e) => state.set("loanPurpose", e.target.value)}
           >

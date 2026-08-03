@@ -17,9 +17,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <ToastProvider>
         <KeyboardShortcutsModal />
-        {/* Premium v2: שמנת חמה + גלואים פסטליים אמביינטיים (b-app-ambient ב-globals.css);
-            bg-bingo-cream נשאר כ-fallback מתחת לגרדיאנט */}
+        {/* נייר חשמלי: אורורה + כדורי אור נודדים + גרעין רעש (ep-* ב-globals.css) */}
         <div className="min-h-screen bg-bingo-cream b-app-ambient">
+          <div className="ep-orb ep-orb--lime" aria-hidden />
+          <div className="ep-orb ep-orb--sky" aria-hidden />
+          <div className="ep-grain" aria-hidden />
           <Header />
           <div className="flex">
             <NavRail />

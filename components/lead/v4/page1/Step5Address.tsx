@@ -124,7 +124,7 @@ export function Step5Address({ state }: { state: ClassicCardState }) {
           <input
             inputMode="numeric"
             dir="ltr"
-            className="b-input w-full tabular-nums text-start"
+            className="b-input ep-input w-full tabular-nums text-start"
             value={houseNum}
             onChange={(e) => state.set("houseNum", e.target.value)}
           />
@@ -134,7 +134,7 @@ export function Step5Address({ state }: { state: ClassicCardState }) {
             <input
               inputMode="numeric"
               dir="ltr"
-              className="b-input w-full tabular-nums text-start"
+              className="b-input ep-input w-full tabular-nums text-start"
               value={zip}
               onChange={(e) => { setZipAuto(false); state.set("zip", e.target.value.replace(/[^\d]/g, "")); }}
             />
