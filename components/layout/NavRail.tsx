@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import {
   Home, Users, Rocket, MessageCircle, Phone, Calendar,
   ListChecks, BarChart3, Tv, ShieldCheck, Settings, Sun, Database, Layers,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 const NAV: Array<{ href: string; label: string; icon: React.ElementType; match?: string[] }> = [
   { href: "/leads", label: "ראשי", icon: Home, match: ["/leads"] },
   { href: "/dialer", label: "תותח", icon: Rocket, match: ["/dialer"] },
+  { href: "/my-performance", label: "הביצועים שלי", icon: TrendingUp, match: ["/my-performance"] },
 ];
 
 const NAV_BOTTOM: Array<{ href: string; label: string; icon: React.ElementType; match?: string[] }> = [
@@ -52,7 +54,7 @@ function RailLink({ item, active }: { item: (typeof NAV)[number]; active: boolea
       )}
     >
       <Icon className={cn("size-[19px]", active && "text-bingo-green")} strokeWidth={active ? 2.4 : 2} />
-      <span className="text-[10px] font-semibold leading-none">{item.label}</span>
+      <span className="text-[10px] font-semibold leading-tight text-center px-0.5 text-balance">{item.label}</span>
     </Link>
   );
 }

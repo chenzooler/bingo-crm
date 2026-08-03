@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { readAppSetting } from "@/lib/yoatsim/app-settings";
 import type { TelephonyConfig } from "@/lib/yoatsim/app-defaults";
 import { callStatusHebrew, normalizePhone } from "@/lib/voicenter";
+import { processCall } from "@/lib/ai/pipeline";
 
 export const dynamic = "force-dynamic";
 
@@ -109,6 +110,19 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ secret: st
           text: `שיחה הסתיימה: ${callStatusHebrew(status)} · ${duration} שנ'`,
           metaJson: JSON.stringify({ recordUrl, callRowId: call.id, status, duration }),
         },
+      });
+    }
+
+    // --- הדק את צינור ה-AI, בלי לחסום את ה-200 ---
+    // Voicenter מצפה לתשובה מהירה, ותמלול+ניתוח לוקחים עשרות שניות. לכן
+    // יורים את התהליך ומוותרים על ה-Promise (void + catch). המחיר: אם תהליך
+    // ה-Node נסגר באמצע (deploy, scale-to-zero) העיבוד נקטע והשיחה נשארת
+    // ב-aiStatus שאינו "done". רשת הביטחון לכך היא POST /api/ai/process-pending
+    // שאוסף שיחות ממתינות/כושלות ומריץ אותן מחדש.
+    if (call.recordUrl && status === "ANSWER") {
+      const idForAi = call.id;
+      void processCall(idForAi).catch(() => {
+        // processCall כבר לא זורק; ה-catch כאן הוא רק חגורת ביטחון
       });
     }
   } catch {

@@ -16,8 +16,11 @@ import { cn, formatCurrency, relativeTime } from "@/lib/utils";
 import { Ramzor, type RamzorValue } from "@/components/ui/Ramzor";
 import { processByKey } from "@/lib/yoatsim/processes";
 import type { DialerQueueResult, QueueReason } from "@/lib/dialer/queue";
+import { LiveScript } from "./LiveScript";
+import { PostCallCard } from "./PostCallCard";
 
-type Phase = "ready" | "dialing" | "disposition";
+/** review = אחרי הסיווג, בזמן שהבינה מנתחת - חוסם את המעבר לליד הבא */
+type Phase = "ready" | "dialing" | "disposition" | "review";
 
 const REASON_LABEL = (reason: QueueReason, attempt: number | null): string => {
   if (reason === "callback") return "חוזר מתוזמן";
@@ -56,6 +59,7 @@ export function TotachCockpit({ user, initial }: {
   const [queue, setQueue] = React.useState<DialerQueueResult>(initial);
   const [phase, setPhase] = React.useState<Phase>("ready");
   const [callRowId, setCallRowId] = React.useState<number | null>(null);
+  const [callStartedAt, setCallStartedAt] = React.useState<number | null>(null);
   const [callEndStatus, setCallEndStatus] = React.useState<string | null>(null);
   const [turbo, setTurbo] = React.useState(false);
   const [loadingNext, setLoadingNext] = React.useState(false);
@@ -82,6 +86,7 @@ export function TotachCockpit({ user, initial }: {
       setQueue(data);
       setPhase("ready");
       setCallRowId(null);
+      setCallStartedAt(null);
       setCallEndStatus(null);
       setCallbackPicker(false);
       setSpringKey((k) => k + 1);
@@ -114,6 +119,7 @@ export function TotachCockpit({ user, initial }: {
         return;
       }
       setCallRowId(data.callRowId);
+      setCallStartedAt(Date.now());
       setPhase("dialing");
     } catch {
       setError("החיוג נכשל - בדוק חיבור");
@@ -168,9 +174,14 @@ export function TotachCockpit({ user, initial }: {
       if (disposition === "advanced") {
         window.open(`/leads/${lead.id}`, "_blank", "noopener");
       }
-      // הליד הבא — אחרי השהיה קצרה (spring-in); בטורבו גם מחייג
+      // משוב הבינה חוסם את המעבר: PostCallCard מגיש "המשך לליד הבא"
+      // (ובטורבו סופר לאחור לבד). ללא שיחה - ממשיכים כמו קודם.
       setCallbackPicker(false);
-      setTimeout(() => void fetchNext(turboRef.current), 800);
+      if (callRowId) {
+        setPhase("review");
+      } else {
+        setTimeout(() => void fetchNext(turboRef.current), 800);
+      }
     } catch {
       setError("שמירת הסיווג נכשלה");
     }
@@ -192,6 +203,9 @@ export function TotachCockpit({ user, initial }: {
       if (phase === "ready" && lead) {
         if (e.key === "Enter") { e.preventDefault(); void dial(); }
         if (e.key === "s" || e.key === "S" || e.key === "ד") { e.preventDefault(); skip(); }
+      } else if (phase === "review") {
+        // משוב הבינה פתוח — Enter ממשיך לליד הבא (מקשי הסיווג כבר לא פעילים)
+        if (e.key === "Enter") { e.preventDefault(); void fetchNext(turboRef.current); }
       } else if (phase === "disposition" && !callbackPicker) {
         if (e.key === "1") chooseDisposition("no-answer");
         if (e.key === "2") chooseDisposition("callback");
@@ -201,7 +215,7 @@ export function TotachCockpit({ user, initial }: {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [phase, lead, callbackPicker, dial, skip, chooseDisposition]);
+  }, [phase, lead, callbackPicker, dial, skip, chooseDisposition, fetchNext]);
 
   const stats = queue.stats;
   const ramzor: RamzorValue | null =
@@ -420,6 +434,9 @@ export function TotachCockpit({ user, initial }: {
               </div>
             )}
 
+            {/* התסריט החי - רק תוך כדי שיחה */}
+            <LiveScript active={phase === "dialing"} startedAt={callStartedAt} />
+
             {phase === "disposition" && !callbackPicker && (
               <div className="mt-7">
                 <div className="text-[12.5px] font-extrabold text-bingo-gray-500 mb-2.5">
@@ -492,6 +509,16 @@ export function TotachCockpit({ user, initial }: {
                   </button>
                 </div>
               </div>
+            )}
+
+            {/* משוב הבינה בין השיחות - שער המעבר לליד הבא */}
+            {phase === "review" && (
+              <PostCallCard
+                callId={callRowId}
+                leadId={lead.id}
+                turbo={turbo}
+                onNext={() => void fetchNext(turboRef.current)}
+              />
             )}
           </div>
         </div>

@@ -36,6 +36,10 @@ model User {
   tasksFrom  Task[]     @relation("TaskFrom")
   tasksTo    Task[]     @relation("TaskTo")
   calls      Call[]
+  alertsAsAgent   Alert[] @relation("AlertAgent")
+  alertsAsManager Alert[] @relation("AlertManager")
+  cardViews       CardView[]
+  invoicesCreated Invoice[]
   // טלפוניה: מזהה SIP של השלוחה ב-Voicenter (מ-GetExtensions)
   sipExtension String?
 }
@@ -174,6 +178,12 @@ model Lead {
   processes LeadProcess[]
   tasks     Task[]
   sentForms SentForm[]
+  cardViews CardView[]
+  invoices  Invoice[]
+
+  // --- קטלוג הלקוח (נגזר מהשאלון + הרמזור, מראה לסינון ולרשימות) ---
+  creditIndication String? // positive | negative | unknown - חיווי אשראי
+  clientColor      String? // green | blue | orange | red - הקטלוג בכותרת הכרטיס
   calls     Call[]
 
   // --- מטא ---
@@ -319,8 +329,103 @@ model Call {
   dialedAt    DateTime  @default(now())
   endedAt     DateTime?
 
+  // --- שכבת ה-AI ---
+  transcript CallTranscript?
+  analysis   CallAnalysis?
+  alerts     Alert[]
+  /** מצב הצינור: pending → transcribing → analyzing → done | failed | skipped */
+  aiStatus   String    @default("pending")
+  aiError    String?
+
   @@index([leadId])
   @@index([userId, dialedAt])
+  @@index([aiStatus])
+}
+
+// ============ AI: תמלול שיחות ============
+// segmentsJson: [{start,end,speaker:"agent"|"customer",text}] — דיאריזציה + חותמות זמן
+model CallTranscript {
+  id           Int      @id @default(autoincrement())
+  callId       Int      @unique
+  call         Call     @relation(fields: [callId], references: [id], onDelete: Cascade)
+  text         String // התמלול המלא (עברית)
+  segmentsJson String?
+  language     String   @default("he")
+  provider     String // elevenlabs | openai | voicenter | mock
+  durationSec  Int?
+  wordCount    Int?
+  createdAt    DateTime @default(now())
+}
+
+// ============ AI: ניתוח שיחה ============
+model CallAnalysis {
+  id     Int  @id @default(autoincrement())
+  callId Int  @unique
+  call   Call @relation(fields: [callId], references: [id], onDelete: Cascade)
+
+  score       Int? // 0-100 ציון איכות השיחה
+  summary     String? // סיכום בעברית, 2-3 משפטים
+  sentiment   String? // positive | neutral | negative
+  outcomeGuess String? // הערכת המנוע: advanced | callback | not-interested | no-answer
+
+  /** [{ruleId,ruleName,severity,passed,evidence,explanation}] — תוצאות הצ'קליסט */
+  complianceJson String?
+  /** [{type,quote,response}] — התנגדויות הלקוח ואיך הנציג הגיב */
+  objectionsJson String?
+  /** {amountRequested,monthlyIncome,employment,hasVehicle,...} — נתונים שנשלפו לכרטיס */
+  extractedJson  String?
+  /** [{title,detail,priority}] — הערות אימון לנציג */
+  coachingJson   String?
+  /** [{label,quote}] — רגעי מפתח לניווט בהקלטה */
+  momentsJson    String?
+
+  violationCount Int      @default(0)
+  model          String? // claude-opus-5
+  tokensIn       Int?
+  tokensOut      Int?
+  createdAt      DateTime @default(now())
+
+  @@index([score])
+}
+
+// ============ AI: כללי בקרה — מה הנציג חייב (ואסור) לומר ============
+model ComplianceRule {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String? // מה בודקים, בשפה של הנציג
+  kind        String   @default("required") // required | forbidden
+  /** ההנחיה שהמנוע בודק מולה, בעברית חופשית */
+  criterion   String
+  severity    String   @default("medium") // low | medium | high | critical
+  alertManager Boolean @default(true)
+  active      Boolean  @default(true)
+  /** מתי הכלל חל: all | first-call | ramzor | closing */
+  appliesTo   String   @default("all")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============ AI: התראות למנהלים ============
+model Alert {
+  id        Int      @id @default(autoincrement())
+  type      String // compliance | quality | opportunity | risk
+  severity  String   @default("medium")
+  title     String
+  body      String?
+  callId    Int?
+  call      Call?    @relation(fields: [callId], references: [id], onDelete: Cascade)
+  leadId    Int?
+  agentId   Int? // הנציג שהשיחה שלו
+  agent     User?    @relation("AlertAgent", fields: [agentId], references: [id])
+  managerId Int? // למי ההתראה מיועדת (null = לכל המנהלים)
+  manager   User?    @relation("AlertManager", fields: [managerId], references: [id])
+  readAt    DateTime?
+  resolvedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([managerId, readAt])
+  @@index([createdAt])
 }
 
 // ============ APP SETTINGS — הגדרות מערכת (בוט ווטסאפ, מודולים, דפי נחיתה, API) ============
@@ -331,6 +436,41 @@ model AppSetting {
 }
 
 // ============ SENT FORMS — "טפסים וקבצים": טפסים שנשלחו/נחתמו ============
+// ============ CARD VIEWS - מי נכנס לכרטיס ומתי ============
+model CardView {
+  id       Int      @id @default(autoincrement())
+  leadId   Int
+  lead     Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  userId   Int?
+  user     User?    @relation(fields: [userId], references: [id])
+  viewedAt DateTime @default(now())
+
+  @@index([leadId, viewedAt])
+}
+
+// ============ INVOICES - חשבוניות ומסמכים כספיים ללקוח ============
+// מסמך פנימי ממוספר (לא חשבונית מס רשמית - זו דורשת ספק מאושר רשות המסים).
+model Invoice {
+  id        Int       @id @default(autoincrement())
+  number    Int       @unique // מספור רץ
+  leadId    Int
+  lead      Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  title     String    @default("שכר טרחה - תיווך אשראי")
+  amount    Float // לפני מע"מ
+  vatRate   Float     @default(18)
+  status    String    @default("draft") // draft | issued | paid | cancelled
+  notes     String?
+  issuedAt  DateTime?
+  paidAt    DateTime?
+  createdById Int?
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([leadId])
+  @@index([status])
+}
+
 model SentForm {
   id           Int       @id @default(autoincrement())
   leadId       Int

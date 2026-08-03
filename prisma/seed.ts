@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { AUTOMATIONS } from "../lib/yoatsim/automations";
 import { TEMPLATES } from "../lib/yoatsim/templates";
+import { DEFAULT_COMPLIANCE_RULES } from "../lib/ai/default-rules";
 
 const dbUrl = process.env.DATABASE_URL || "file:./prisma/dev.db";
 const db = new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: dbUrl }) });
@@ -120,6 +121,24 @@ async function main() {
     });
   }
 
+  // כללי בקרת שיחות (AI) — upsert לפי שם; עריכות ב-UI לא נדרסות
+  for (const r of DEFAULT_COMPLIANCE_RULES) {
+    await db.complianceRule.upsert({
+      where: { name: r.name },
+      update: {}, // לא דורסים עריכות UI
+      create: {
+        name: r.name,
+        description: r.description,
+        kind: r.kind,
+        criterion: r.criterion,
+        severity: r.severity,
+        alertManager: r.alertManager,
+        appliesTo: r.appliesTo,
+        sortOrder: r.sortOrder,
+      },
+    });
+  }
+
   // משימות דמו — כמו הדוגמאות החיות מהאודיט (רק אם אין משימות בכלל)
   if ((await db.task.count()) === 0) {
     const chen = await db.user.findUnique({ where: { externalId: "12394" } });
@@ -144,7 +163,8 @@ async function main() {
   const automations = await db.automation.count();
   const templates = await db.messageTemplate.count();
   const tasks = await db.task.count();
-  console.log(`Seeded: ${users} users, ${lenders} lenders, ${automations} automations, ${templates} templates, ${tasks} tasks`);
+  const rules = await db.complianceRule.count();
+  console.log(`Seeded: ${users} users, ${lenders} lenders, ${automations} automations, ${templates} templates, ${tasks} tasks, ${rules} compliance rules`);
 }
 
 main().finally(() => db.$disconnect());
