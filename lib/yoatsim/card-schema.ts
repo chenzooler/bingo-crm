@@ -48,7 +48,7 @@ export const CHECKED_BEFORE_Y = [
 ] as const;
 export const MARITAL_Y = ["רווק/ה", "נשוי/אה", "גרוש/ה", "אלמן/ה", "ידועים בציבור"] as const;
 export const EMPLOYMENT_Y = ["שכיר", "עצמאי", "מקבל קצבה", "לא עובד", "פנסיונר"] as const;
-export const PENSION_Y = ["כן", "לא", "לא ידוע", "צעיר"] as const;
+export const PENSION_Y = ["כן", "לא", "לא ידוע", "לקוח צעיר", "צעיר"] as const;
 export const HOUSING_Y = ["שכירות", "בעלות", "בעלות + משכנתא", "אצל ההורים"] as const;
 export const BANKS_Y = [
   "הפועלים (12)", "לאומי (10)", "דיסקונט (11)", "מזרחי טפחות (20)", "הבינלאומי (31)",

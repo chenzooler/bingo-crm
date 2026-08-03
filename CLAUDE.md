@@ -19,7 +19,13 @@
 
 ## ⚡ הקשר מהיר לסשן חדש
 - זה פרויקט **Next.js 16 + React 19 + Tailwind v4 + TypeScript + Prisma (SQLite)**.
-- מריצים מ-`/Users/zooler/Desktop/בינגו crm`. `npm run dev` (פורט 7800 בד"כ).
+- מריצים מ-`/Users/zooler-krannot/Desktop/bingo-crm/crm2026` (הועבר לנתיב אנגלי
+  03/08/26 — תיקון הקבע למוקש Turbopack עם עברית). `npm run dev` (פורט 7800).
+- **כרטיס לקוח v4 (03/08/26)** — ברירת המחדל ב-`/leads/[id]`: 4 עמודים (שאלון
+  מונחה עם התניות · בדיקות זכאות · תיעוד · כספים/חשבוניות), קטלוג לקוח אוטומטי
+  (`lib/catalog.ts` — חיווי/רמזור/צבע נשמרים ב-Lead.creditIndication/clientColor),
+  נתוני ישראל (`lib/israel-data/` — ערים/רחובות/סניפים/מיקוד דואר ישראל).
+  הכרטיסים הישנים: `?view=cockpit` · `?view=classic`.
 - פרוס אוטומטית ב-**Coolify** על `crm.bingoisrael.co.il` בכל `git push` ל-main.
 - **מודל:** Fable 5. אם מנגנון הבטיחות מסמן ומחליף ל-Opus — זה צד-שרת, לא באג בקוד.
   כדי להימנע: בקוד השתמש במונחים ניטרליים (screening/indicator) במקום

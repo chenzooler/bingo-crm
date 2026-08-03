@@ -542,14 +542,9 @@ html.dark {
      Premium v2 — שפת החומרים והתנועה · קלאסים
      ============================================================ */
 
-  /* רקע האפליקציה — שמנת חמה + שני גלואים פסטליים אמביינטיים
-     (מנטה למעלה־ימין ותכלת מולו; ב-RTL זה top-left ויזואלית) */
+  /* רקע האפליקציה — נייר שטוח לפי ספר המותג (אין גרדיאנטים) */
   .b-app-ambient {
-    background:
-      radial-gradient(1100px 500px at 85% -5%, var(--b-ambient-mint), transparent 60%),
-      radial-gradient(900px 480px at 0% 12%, var(--b-ambient-sky), transparent 55%),
-      linear-gradient(var(--b-cream), var(--b-cream-2));
-    background-attachment: fixed;
+    background: #fafaf9;
   }
 
   /* חומר 1 — זכוכית חלבית: פאנל צף עם blur, גבול־שיער בהיר וצל רך */
