@@ -1289,3 +1289,18 @@ html.dark [data-client] {
   .epv6-portrait-row.is-filled { animation: epv6-row-in 240ms var(--epv5-ease) both; }
   @media (prefers-reduced-motion: reduce) { .epv6-portrait-row.is-filled { animation: none; } }
 }
+
+@layer utilities {
+  /* קוקפיט 6: השאלה הפעילה מקבלת את הבמה — טבעת בצבע הלקוח + הרמה עדינה */
+  .epv6-q-stage {
+    border-color: color-mix(in srgb, var(--cc-neon, #50FF0A) 30%, transparent) !important;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cc-neon, #50FF0A) 16%, transparent),
+                0 14px 44px -20px var(--cc-aura, rgba(0,0,0,.4));
+  }
+  .epv6-stage .logo-tile { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.12); color: #FAFAF9; }
+  .epv6-stage .logo-tile:hover { border-color: rgba(255,255,255,.28); }
+  .epv6-stage .logo-tile[aria-pressed="true"] {
+    border-color: color-mix(in srgb, var(--cc-neon, #50FF0A) 55%, transparent);
+    background: color-mix(in srgb, var(--cc-neon, #50FF0A) 10%, transparent);
+  }
+}

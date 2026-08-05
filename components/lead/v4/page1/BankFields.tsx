@@ -91,7 +91,7 @@ export function BankFields({ state }: { state: ClassicCardState }) {
     <div className="space-y-7">
       <SubSection icon="bank" title="נתונים בנקאיים">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Field label="בנק">
+        <Field label="בנק" className={bankName && !open ? undefined : "sm:col-span-3"}>
           {banks === "error" || banks === null ? (
             /* נפילה: הרשימה הקבועה — הכרטיס לא נחסם */
             <select
@@ -102,50 +102,46 @@ export function BankFields({ state }: { state: ClassicCardState }) {
               <option value="">בחירת בנק</option>
               {BANKS_Y.map((b) => <option key={b} value={b}>{b}</option>)}
             </select>
-          ) : (
-            <div ref={rootRef} className="relative">
-              <button
-                type="button"
-                aria-haspopup="listbox"
-                aria-expanded={open}
-                onClick={() => setOpen((o) => !o)}
-                className="b-input ep-input w-full flex items-center gap-2 text-start cursor-pointer"
-              >
-                {selectedBank && <LogoBadge src={selectedBank.logo} name={selectedBank.name} size={22} />}
-                <span className={`flex-1 truncate ${bankName ? "text-bingo-black" : "text-bingo-gray-400"}`}>
-                  {bankName || "בחירת בנק"}
-                </span>
-                <ChevronDown size={15} strokeWidth={1.75} className="text-bingo-gray-400 shrink-0" />
+          ) : bankName && !open ? (
+            /* נבחר — צ'יפ לוגו קומפקטי, "שנה" פותח את הגריד מחדש */
+            <div className="flex items-center gap-2">
+              <div className="b-input ep-input flex-1 flex items-center gap-2.5 !cursor-default">
+                {selectedBank && <LogoBadge src={selectedBank.logo} name={selectedBank.name} size={24} />}
+                <span className="flex-1 truncate font-semibold">{bankName}</span>
+                <Check size={15} strokeWidth={2} className="text-bingo-green-dark shrink-0" />
+              </div>
+              <button type="button" onClick={() => setOpen(true)}
+                className="text-[12px] font-semibold text-bingo-gray-400 hover:text-bingo-gray-600 shrink-0">
+                שנה
               </button>
-              {open && (
-                <ul role="listbox" className="absolute z-30 top-full mt-1 w-full bg-white border border-bingo-gray-150 rounded-[16px] shadow-lg py-1 max-h-72 overflow-y-auto" style={{ insetInlineStart: 0 }}>
-                  {banks.map((b) => {
-                    const stored = storedBankName(b);
-                    const selected = stored === bankName;
-                    return (
-                      <li key={b.code} role="option" aria-selected={selected}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            state.set("bankName", stored);
-                            state.set("bankBranch", "");
-                            setBranchLabel("");
-                            setOpen(false);
-                          }}
-                          className={`w-full flex items-center gap-2.5 px-4 py-2.5 min-h-[44px] text-start text-[14px] ${
-                            selected ? "bg-bingo-gray-100" : "hover:bg-bingo-gray-50"
-                          }`}
-                        >
-                          <LogoBadge src={b.logo} name={b.name} size={24} />
-                          <span className="text-bingo-black flex-1">{b.name}</span>
-                          <span className="text-[12px] text-bingo-gray-400 tabular-nums">{parseInt(b.code, 10) || b.code}</span>
-                          {selected && <Check size={14} strokeWidth={2} className="text-bingo-green-dark" />}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+            </div>
+          ) : (
+            /* גריד הלוגואים — כל הבנקים על השולחן, קליק אחד */
+            <div ref={rootRef} className="logo-grid" role="listbox" aria-label="בחירת בנק">
+              {banks.map((b) => {
+                const stored = storedBankName(b);
+                const selected = stored === bankName;
+                return (
+                  <button
+                    key={b.code}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    aria-pressed={selected}
+                    onClick={() => {
+                      state.set("bankName", stored);
+                      state.set("bankBranch", "");
+                      setBranchLabel("");
+                      setOpen(false);
+                    }}
+                    className="logo-tile"
+                  >
+                    <LogoBadge src={b.logo} name={b.name} size={24} />
+                    <span className="flex-1 truncate text-start">{b.name}</span>
+                    <span className="text-[11px] text-bingo-gray-400 tabular-nums shrink-0">{parseInt(b.code, 10) || b.code}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </Field>

@@ -291,7 +291,7 @@ export function Step2Screening({ state }: { state: ClassicCardState }) {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={spring(SPRING.entrance)}
-              className="rounded-[20px] bg-white/70 border border-bingo-gray-150 p-6"
+              className="epv6-q-stage rounded-[20px] bg-white/70 border border-bingo-gray-150 p-6"
             >
               <p className="text-[27px] leading-[1.25] font-bold text-bingo-black mb-6">
                 <span className="text-bingo-gray-300 tabular-nums me-2 text-[20px] font-semibold">{i + 1}.</span>
