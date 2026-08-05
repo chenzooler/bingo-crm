@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>כיוון C · Bold Energy — בינגו CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#50FF0A;
+    --ink:#292929;
+    --cream:#FAFAF9;
+    --blue:#1F81D6;
+    --paper:#F1F0EC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{background:var(--paper);}
+  body{
+    font-family:'Heebo',sans-serif;
+    color:var(--ink);
+    background:
+      linear-gradient(var(--paper),var(--paper)),
+      var(--paper);
+    background-color:var(--paper);
+    min-height:100vh;
+    padding:36px 0 48px;
+  }
+  /* subtle dot grid for texture without gradients */
+  body{
+    background-image:radial-gradient(var(--ink) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-position:0 0;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background:var(--paper);
+    opacity:.94;
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{
+    position:relative;z-index:1;
+    width:1380px;max-width:calc(100% - 40px);
+    margin:0 auto;
+  }
+
+  /* ============ TOP BRAND STRIP ============ */
+  .brandstrip{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .logo{
+    display:inline-flex;align-items:center;gap:12px;
+  }
+  .logo .mark{
+    width:44px;height:44px;background:var(--green);
+    border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);
+    display:grid;place-items:center;
+    font-weight:900;font-size:24px;
+    transform:rotate(-4deg);
+  }
+  .logo .word{
+    font-weight:900;font-size:22px;letter-spacing:-.5px;
+  }
+  .logo .word span{color:var(--blue);}
+  .crumbs{
+    font-weight:700;font-size:13px;
+    background:var(--ink);color:var(--cream);
+    padding:8px 16px;
+    border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--green);
+  }
+  .crumbs b{color:var(--green);}
+
+  /* ============ IDENTITY BAR ============ */
+  .idbar{
+    background:var(--cream);
+    border:3px solid var(--ink);
+    box-shadow:8px 8px 0 var(--ink);
+    display:flex;align-items:center;gap:22px;
+    padding:20px 26px;
+    margin-bottom:26px;
+    position:relative;
+  }
+  .idbar::after{
+    content:"ליד #4821";
+    position:absolute;top:-16px;left:34px;
+    background:var(--blue);color:var(--cream);
+    font-weight:800;font-size:13px;
+    padding:5px 14px;
+    border:3px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);
+    transform:rotate(3deg);
+  }
+  .avatar-big{
+    width:64px;height:64px;flex:none;
+    background:var(--green);
+    border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);
+    display:grid;place-items:center;
+    font-weight:900;font-size:26px;
+  }
+  .idmain{display:flex;flex-direction:column;gap:4px;min-width:0;}
+  .idname{
+    font-weight:900;font-size:30px;line-height:1;letter-spacing:-.5px;
+  }
+  .idphone{
+    font-weight:700;font-size:16px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .idphone .num{direction:ltr;unicode-bidi:embed;}
+  .verdict{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--green);
+    border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);
+    padding:10px 18px;
+    font-weight:900;font-size:16px;
+    transform:rotate(-2deg);
+    white-space:nowrap;
+  }
+  .verdict .dot{
+    width:14px;height:14px;border-radius:50%;
+    background:var(--ink);
+    position:relative;flex:none;
+  }
+  .verdict .dot::after{
+    content:"";position:absolute;inset:3px;border-radius:50%;
+    background:var(--green);
+  }
+  .idactions{
+    margin-inline-start:auto;
+    display:flex;align-items:center;gap:14px;
+  }
+  .btn{
+    font-family:'Heebo',sans-serif;
+    font-weight:800;font-size:16px;
+    border:3px solid var(--ink);
+    background:var(--cream);color:var(--ink);
+    padding:12px 22px;
+    box-shadow:5px 5px 0 var(--ink);
+    cursor:pointer;
+    display:inline-flex;align-items:center;gap:9px;
+    transition:transform .08s ease, box-shadow .08s ease;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
+  .btn:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink);}
+  .btn.primary{background:var(--ink);color:var(--green);box-shadow:5px 5px 0 var(--green);}
+  .btn.primary:hover{box-shadow:7px 7px 0 var(--green);}
+  .btn.primary:active{box-shadow:2px 2px 0 var(--green);}
+  .btn.blue{background:var(--blue);color:var(--cream);}
+  .btn svg{width:18px;height:18px;flex:none;}
+
+  /* ============ HERO ============ */
+  .hero{
+    background:var(--green);
+    border:3px solid var(--ink);
+    box-shadow:10px 10px 0 var(--ink);
+    padding:34px 40px 38px;
+    margin-bottom:26px;
+    display:flex;align-items:flex-end;gap:36px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero .stripes{
+    position:absolute;inset-inline-start:auto;inset-inline-end:-40px;top:-40px;
+    width:340px;height:340px;
+    background:repeating-linear-gradient(-45deg,var(--ink) 0 10px,transparent 10px 30px);
+    opacity:.10;
+    pointer-events:none;
+  }
+  .hero-label{
+    display:inline-block;
+    background:var(--ink);color:var(--green);
+    font-weight:900;font-size:18px;letter-spacing:2px;
+    padding:8px 20px;
+    border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--cream);
+    margin-bottom:16px;
+    transform:rotate(-1.5deg);
+  }
+  .hero-amount{
+    font-weight:900;
+    font-size:118px;
+    line-height:.9;
+    letter-spacing:-4px;
+    display:flex;align-items:baseline;gap:14px;
+  }
+  .hero-amount .shekel{font-size:64px;letter-spacing:0;}
+  .hero-chip{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--cream);
+    border:3px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);
+    font-weight:900;font-size:20px;
+    padding:14px 26px;
+    transform:rotate(2deg);
+    margin-bottom:14px;
+    position:relative;z-index:1;
+  }
+  .hero-chip::before{
+    content:"";width:16px;height:16px;flex:none;
+    background:var(--blue);
+    border:3px solid var(--ink);
+  }
+  .hero-side{margin-inline-start:auto;display:flex;flex-direction:column;align-items:flex-start;gap:0;position:relative;z-index:1;}
+
+  /* ============ META LINE ============ */
+  .meta{
+    display:flex;align-items:stretch;gap:0;
+    border:3px solid var(--ink);
+    background:var(--cream);
+    box-shadow:6px 6px 0 var(--ink);
+    margin-bottom:30px;
+    font-weight:600;font-size:15px;
+  }
+  .meta .cell{
+    flex:1;
+    display:flex;align-items:center;gap:10px;
+    padding:14px 20px;
+    border-inline-start:3px solid var(--ink);
+  }
+  .meta .cell:first-child{border-inline-start:none;}
+  .meta .k{
+    font-weight:900;font-size:12px;
+    background:var(--ink);color:var(--cream);
+    padding:3px 9px;
+    flex:none;
+  }
+  .meta .cell.task .k{background:var(--blue);}
+  .meta .cell.eye .k{background:var(--green);color:var(--ink);}
+
+  /* ============ TABS ============ */
+  .tabs{
+    display:flex;gap:14px;
+    margin-bottom:-3px;
+    position:relative;z-index:2;
+    padding:0 22px;
+  }
+  .tab{
+    font-weight:800;font-size:17px;
+    border:3px solid var(--ink);
+    background:var(--cream);
+    padding:13px 26px 15px;
+    cursor:pointer;
+    position:relative;
+    box-shadow:4px -4px 0 rgba(41,41,41,.12);
+    transition:transform .08s ease;
+  }
+  .tab:hover{transform:translateY(-3px);}
+  .tab .count{
+    display:inline-grid;place-items:center;
+    min-width:24px;height:24px;
+    background:var(--blue);color:var(--cream);
+    font-size:13px;font-weight:900;
+    border:2px solid var(--ink);
+    margin-inline-start:8px;
+    padding:0 4px;
+  }
+  .tab.active{
+    background:var(--ink);color:var(--green);
+    box-shadow:none;
+    padding-bottom:18px;
+  }
+  .tab.active .count{background:var(--green);color:var(--ink);}
+
+  /* ============ MAIN GRID ============ */
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 400px;
+    gap:28px;
+    align-items:start;
+  }
+  .panel{
+    background:var(--cream);
+    border:3px solid var(--ink);
+    box-shadow:10px 10px 0 var(--ink);
+    padding:32px;
+  }
+
+  /* question card */
+  .qcard{
+    border:3px solid var(--ink);
+    background:var(--cream);
+    box-shadow:7px 7px 0 var(--blue);
+    padding:30px 30px 34px;
+    margin-bottom:26px;
+    position:relative;
+  }
+  .qcard .qtag{
+    position:absolute;top:-17px;inset-inline-start:24px;
+    background:var(--green);
+    border:3px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);
+    font-weight:900;font-size:13px;letter-spacing:1px;
+    padding:5px 14px;
+    transform:rotate(-2deg);
+  }
+  .qnum{
+    font-weight:900;font-size:60px;line-height:1;
+    color:transparent;
+    -webkit-text-stroke:2.5px var(--ink);
+    position:absolute;top:18px;inset-inline-end:26px;
+    opacity:.9;
+  }
+  .qtext{
+    font-weight:900;font-size:34px;letter-spacing:-.5px;line-height:1.2;
+    margin:14px 90px 26px 0;
+    max-width:640px;
+  }
+  html[dir="rtl"] .qtext{margin:14px 0 26px 0;padding-inline-end:90px;}
+  .answers{display:flex;gap:18px;flex-wrap:wrap;}
+  .pill{
+    font-family:'Heebo',sans-serif;
+    font-weight:900;font-size:22px;
+    border:3px solid var(--ink);
+    padding:20px 44px;
+    cursor:pointer;
+    display:inline-flex;align-items:center;gap:12px;
+    box-shadow:6px 6px 0 var(--ink);
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  .pill:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink);}
+  .pill:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink);}
+  .pill.ok{background:var(--green);color:var(--ink);}
+  .pill.bad{background:var(--cream);color:var(--ink);}
+  .pill.bad:hover{background:var(--ink);color:var(--cream);}
+  .pill .box{
+    width:20px;height:20px;flex:none;
+    border:3px solid var(--ink);
+    background:var(--cream);
+  }
+  .pill.ok .box{background:var(--ink);position:relative;}
+  .pill.ok .box::after{
+    content:"✓";color:var(--green);font-size:14px;font-weight:900;
+    position:absolute;inset:0;display:grid;place-items:center;line-height:1;
+  }
+
+  /* answered rows */
+  .donehead{
+    display:flex;align-items:center;gap:12px;
+    font-weight:900;font-size:14px;letter-spacing:2px;
+    margin:30px 0 14px;
+  }
+  .donehead::after{content:"";flex:1;height:3px;background:var(--ink);}
+  .row-done{
+    display:flex;align-items:center;gap:16px;
+    border:3px solid var(--ink);
+    background:var(--cream);
+    padding:15px 20px;
+    margin-bottom:14px;
+    box-shadow:4px 4px 0 rgba(41,41,41,.18);
+  }
+  .row-done .check{
+    width:30px;height:30px;flex:none;
+    background:var(--green);
+    border:3px solid var(--ink);
+    display:grid;place-items:center;
+    font-weight:900;font-size:16px;
+  }
+  .row-done .q{font-weight:700;font-size:16px;flex:1;}
+  .row-done .a{
+    font-weight:900;font-size:15px;
+    background:var(--ink);color:var(--green);
+    padding:6px 14px;
+    white-space:nowrap;
+  }
+  .row-done .a.blue{color:var(--cream);background:var(--blue);}
+
+  /* bank picker */
+  .bankhead{
+    display:flex;align-items:center;gap:12px;
+    font-weight:900;font-size:14px;letter-spacing:2px;
+    margin:30px 0 16px;
+  }
+  .bankhead::after{content:"";flex:1;height:3px;background:var(--ink);}
+  .banks{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .bank{
+    border:3px solid var(--ink);
+    background:var(--cream);
+    box-shadow:5px 5px 0 var(--ink);
+    padding:18px 14px 16px;
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+    cursor:pointer;
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  .bank:hover{transform:translate(-2px,-3px);box-shadow:8px 8px 0 var(--ink);}
+  .bank:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink);}
+  .bank .mono{
+    width:52px;height:52px;
+    border:3px solid var(--ink);
+    display:grid;place-items:center;
+    font-weight:900;font-size:24px;
+    color:#fff;
+  }
+  .bank .bname{font-weight:800;font-size:15px;}
+  .mono.leumi{background:#1B3C8C;}
+  .mono.poalim{background:#D8232A;}
+  .mono.discount{background:#00744A;}
+  .mono.mizrahi{background:#F0A100;color:var(--ink) !important;}
+
+  /* ============ SIDE PANEL ============ */
+  .side{
+    background:var(--ink);
+    border:3px solid var(--ink);
+    box-shadow:10px 10px 0 var(--green);
+    color:var(--cream);
+    padding:0;
+    position:relative;
+  }
+  .side-head{
+    background:var(--green);
+    color:var(--ink);
+    border-bottom:3px solid var(--ink);
+    padding:16px 24px;
+    font-weight:900;font-size:15px;letter-spacing:3px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .side-head .tick{
+    width:14px;height:14px;background:var(--ink);
+    transform:rotate(45deg);
+  }
+  .side-id{
+    display:flex;align-items:center;gap:18px;
+    padding:26px 24px 22px;
+    border-bottom:3px solid rgba(250,250,249,.15);
+  }
+  .side-avatar{
+    width:70px;height:70px;flex:none;
+    background:var(--blue);
+    border:3px solid var(--cream);
+    box-shadow:5px 5px 0 var(--green);
+    display:grid;place-items:center;
+    font-weight:900;font-size:28px;color:var(--cream);
+    transform:rotate(-3deg);
+  }
+  .side-name{font-weight:900;font-size:24px;line-height:1.1;color:var(--cream);}
+  .side-verdict{
+    display:inline-flex;align-items:center;gap:8px;
+    margin-top:9px;
+    background:var(--green);color:var(--ink);
+    border:2px solid var(--cream);
+    font-weight:900;font-size:13px;
+    padding:5px 12px;
+  }
+  .side-verdict .dot{
+    width:9px;height:9px;border-radius:50%;background:var(--ink);flex:none;
+  }
+  .facts{padding:10px 0 8px;}
+  .fact{
+    display:flex;align-items:center;gap:16px;
+    padding:15px 24px;
+    border-bottom:2px solid rgba(250,250,249,.12);
+  }
+  .fact:last-child{border-bottom:none;}
+  .fact .icon{
+    width:38px;height:38px;flex:none;
+    border:2.5px solid var(--cream);
+    display:grid;place-items:center;
+    background:transparent;
+  }
+  .fact .icon svg{width:19px;height:19px;stroke:var(--green);fill:none;stroke-width:2.4;stroke-linecap:square;stroke-linejoin:miter;}
+  .fact .txt{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .fact .lbl{
+    font-weight:700;font-size:12px;letter-spacing:1.5px;
+    color:rgba(250,250,249,.55);
+  }
+  .fact .val{font-weight:800;font-size:17px;color:var(--cream);}
+  .fact .val em{font-style:normal;color:var(--green);}
+  .fact .val .muted{color:rgba(250,250,249,.4);font-weight:700;}
+  .fact.hot .icon{background:var(--green);}
+  .fact.hot .icon svg{stroke:var(--ink);}
+
+  .side-cta{
+    margin:8px 24px 26px;
+  }
+  .side-cta .btn{
+    width:100%;justify-content:center;
+    background:var(--green);color:var(--ink);
+    box-shadow:5px 5px 0 var(--blue);
+    font-size:17px;
+  }
+  .side-cta .btn:hover{box-shadow:7px 7px 0 var(--blue);}
+  .side-cta .btn:active{box-shadow:2px 2px 0 var(--blue);}
+
+  /* ============ FOOTER ============ */
+  footer{
+    margin-top:40px;
+    display:flex;align-items:center;justify-content:center;gap:14px;
+    font-weight:800;font-size:14px;
+  }
+  footer .stamp{
+    background:var(--cream);
+    border:3px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);
+    padding:8px 20px;
+    transform:rotate(-1deg);
+  }
+  footer .stamp b{color:var(--blue);}
+  footer .sq{width:12px;height:12px;background:var(--green);border:3px solid var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- brand strip -->
+  <div class="brandstrip">
+    <div class="logo">
+      <div class="mark">B</div>
+      <div class="word">בינגו <span>CRM</span></div>
+    </div>
+    <div class="crumbs">לידים חמים ← <b>ישראל ישראלי</b></div>
+  </div>
+
+  <!-- identity bar -->
+  <div class="idbar">
+    <div class="avatar-big">יי</div>
+    <div class="idmain">
+      <div class="idname">ישראל ישראלי</div>
+      <div class="idphone">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#292929" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span class="num">050-1234567</span>
+      </div>
+    </div>
+    <div class="verdict"><span class="dot"></span>לקוח תקין · ירוק</div>
+    <div class="idactions">
+      <button class="btn primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        חייג
+      </button>
+      <button class="btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        וואטסאפ
+      </button>
+      <button class="btn blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>
+        שלח הסכם
+      </button>
+      <button class="btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="4" width="20" height="16"/><path d="m22 6-10 7L2 6"/></svg>
+        מייל
+      </button>
+    </div>
+  </div>
+
+  <!-- hero -->
+  <div class="hero">
+    <div class="stripes"></div>
+    <div>
+      <div class="hero-label">ביקש</div>
+      <div class="hero-amount">45,000<span class="shekel">₪</span></div>
+    </div>
+    <div class="hero-side">
+      <div class="hero-chip">כיסוי חוב</div>
+    </div>
+  </div>
+
+  <!-- meta line -->
+  <div class="meta">
+    <div class="cell"><span class="k">שיחה אחרונה</span>לפני שעה</div>
+    <div class="cell task"><span class="k">משימה פתוחה</span>לבדוק מול ישראכרט</div>
+    <div class="cell eye"><span class="k">נצפה לאחרונה</span>חן צולר</div>
+  </div>
+
+  <!-- tabs -->
+  <div class="tabs">
+    <button class="tab active">שיחה ושאלון <span class="count">3</span></button>
+    <button class="tab">בדיקות זכאות</button>
+    <button class="tab">תיעוד <span class="count">7</span></button>
+    <button class="tab">כספים</button>
+  </div>
+
+  <!-- main grid -->
+  <div class="grid">
+    <div class="panel">
+
+      <!-- active question -->
+      <div class="qcard">
+        <div class="qtag">שאלה פעילה</div>
+        <div class="qnum">03</div>
+        <div class="qtext">האם היו בעיות בהוצאה לפועל?</div>
+        <div class="answers">
+          <button class="pill ok"><span class="box"></span>הכל תקין</button>
+          <button class="pill bad"><span class="box"></span>היו בעיות</button>
+        </div>
+      </div>
+
+      <!-- answered -->
+      <div class="donehead">נענו כבר</div>
+      <div class="row-done">
+        <div class="check">✓</div>
+        <div class="q">האם חזרו צ'קים בשנתיים האחרונות?</div>
+        <div class="a">תקין</div>
+      </div>
+      <div class="row-done">
+        <div class="check">✓</div>
+        <div class="q">מה גובה מסגרת האשראי?</div>
+        <div class="a blue">מעל 5,000 ₪</div>
+      </div>
+
+      <!-- banks -->
+      <div class="bankhead">באיזה בנק מתנהל החשבון?</div>
+      <div class="banks">
+        <button class="bank"><span class="mono leumi">ל</span><span class="bname">לאומי</span></button>
+        <button class="bank"><span class="mono poalim">פ</span><span class="bname">הפועלים</span></button>
+        <button class="bank"><span class="mono discount">ד</span><span class="bname">דיסקונט</span></button>
+        <button class="bank"><span class="mono mizrahi">מ</span><span class="bname">מזרחי</span></button>
+      </div>
+
+    </div>
+
+    <!-- side panel -->
+    <aside class="side">
+      <div class="side-head">דיוקן הלקוח <span class="tick"></span></div>
+      <div class="side-id">
+        <div class="side-avatar">יי</div>
+        <div>
+          <div class="side-name">ישראל ישראלי</div>
+          <div class="side-verdict"><span class="dot"></span>לקוח תקין · ירוק</div>
+        </div>
+      </div>
+      <div class="facts">
+        <div class="fact hot">
+          <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.8 1.8 0 0 1 0 3.6h-3a1.8 1.8 0 0 0 0 3.6h4.5"/></svg></div>
+          <div class="txt"><span class="lbl">סכום ומטרה</span><span class="val">45,000 ₪ · כיסוי חוב</span></div>
+        </div>
+        <div class="fact">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 19 10 12l4 4 6-8"/><path d="M15 8h5v5"/></svg></div>
+          <div class="txt"><span class="lbl">חיווי אשראי</span><span class="val"><em>חיובי</em></span></div>
+        </div>
+        <div class="fact">
+          <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12"/><path d="M8 8V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3"/></svg></div>
+          <div class="txt"><span class="lbl">תעסוקה</span><span class="val">שכיר</span></div>
+        </div>
+        <div class="fact">
+          <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13"/><path d="M3 10h18"/><path d="M7 15h4"/></svg></div>
+          <div class="txt"><span class="lbl">נטו</span><span class="val">9,500 ₪</span></div>
+        </div>
+        <div class="fact">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-11a7 7 0 0 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+          <div class="txt"><span class="lbl">כתובת</span><span class="val">כפר יונה</span></div>
+        </div>
+        <div class="fact">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 15l1.5-5A2 2 0 0 1 7.4 8.5h9.2a2 2 0 0 1 1.9 1.5L20 15"/><rect x="3" y="15" width="18" height="4"/><circle cx="7.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/></svg></div>
+          <div class="txt"><span class="lbl">רכב</span><span class="val">יש · 2020</span></div>
+        </div>
+        <div class="fact">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 10 12 4l9 6"/><path d="M5 10v9M9.5 10v9M14.5 10v9M19 10v9"/><path d="M3 19h18"/></svg></div>
+          <div class="txt"><span class="lbl">בנק</span><span class="val"><span class="muted">—</span></span></div>
+        </div>
+      </div>
+      <div class="side-cta">
+        <button class="btn">המשך שאלון ←</button>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <span class="sq"></span>
+    <div class="stamp">כיוון <b>C</b> · Bold Energy — בינגו CRM</div>
+    <span class="sq"></span>
+  </footer>
+
+</div>
+</body>
+</html>

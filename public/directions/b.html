@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>כיוון B · Aurora Glass — בינגו CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#060915;
+  --bg1:#0a1128;
+  --neon:#50FF0A;
+  --neon-soft:rgba(80,255,10,.16);
+  --violet:#7c5cff;
+  --emerald:#18e0a8;
+  --glass:rgba(255,255,255,.045);
+  --glass-strong:rgba(255,255,255,.08);
+  --stroke:rgba(255,255,255,.10);
+  --stroke-bright:rgba(255,255,255,.18);
+  --text:#eef2ff;
+  --text-dim:rgba(230,238,255,.62);
+  --text-faint:rgba(230,238,255,.40);
+  --radius:22px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:'Heebo',sans-serif;
+  background:var(--bg0);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- AURORA ATMOSPHERE ---------- */
+.aurora{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(1100px 700px at 85% -10%, rgba(124,92,255,.30), transparent 60%),
+    radial-gradient(900px 650px at 8% 12%, rgba(24,224,168,.14), transparent 60%),
+    radial-gradient(1300px 900px at 50% 115%, rgba(80,255,10,.10), transparent 55%),
+    radial-gradient(800px 500px at 110% 70%, rgba(46,110,255,.18), transparent 60%),
+    linear-gradient(165deg,#070b1c 0%,#0a1128 45%,#081020 100%);
+}
+.aurora::before{
+  content:"";position:absolute;inset:-30%;
+  background:
+    conic-gradient(from 210deg at 30% 40%, transparent 0deg, rgba(124,92,255,.10) 60deg, transparent 130deg, rgba(80,255,10,.06) 200deg, transparent 280deg);
+  filter:blur(60px);
+  animation:drift 26s ease-in-out infinite alternate;
+}
+.aurora::after{
+  content:"";position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.35) .6px, transparent .6px);
+  background-size:180px 180px;
+  opacity:.10;
+  mask-image:radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+}
+@keyframes drift{
+  from{transform:translate3d(-2%,-1%,0) rotate(0deg)}
+  to{transform:translate3d(2%,2%,0) rotate(8deg)}
+}
+
+/* ---------- LAYOUT ---------- */
+.wrap{
+  position:relative;z-index:1;
+  max-width:1440px;margin:0 auto;
+  padding:40px 48px 32px;
+}
+
+/* ---------- GLASS PRIMITIVE ---------- */
+.glass{
+  background:linear-gradient(150deg, rgba(255,255,255,.085), rgba(255,255,255,.028) 45%, rgba(255,255,255,.05));
+  border:1px solid var(--stroke);
+  border-radius:var(--radius);
+  backdrop-filter:blur(22px) saturate(140%);
+  -webkit-backdrop-filter:blur(22px) saturate(140%);
+  box-shadow:
+    0 24px 60px -24px rgba(3,6,20,.85),
+    inset 0 1px 0 rgba(255,255,255,.14);
+  position:relative;
+}
+.glass::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(120deg, rgba(255,255,255,.10), transparent 30%);
+  opacity:.5;
+}
+
+/* ---------- IDENTITY BAR ---------- */
+.idbar{
+  display:flex;align-items:center;gap:20px;
+  padding:18px 26px;
+}
+.id-name{font-size:24px;font-weight:800;letter-spacing:-.3px}
+.id-phone{
+  font-size:15px;color:var(--text-dim);font-weight:500;
+  direction:ltr;unicode-bidi:embed;
+  padding-top:3px;
+}
+.verdict{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:8px 18px;border-radius:999px;
+  background:rgba(80,255,10,.08);
+  border:1px solid rgba(80,255,10,.32);
+  box-shadow:0 0 24px -4px rgba(80,255,10,.35), inset 0 0 14px rgba(80,255,10,.06);
+  font-size:14px;font-weight:700;color:#c9ffb0;
+  white-space:nowrap;
+}
+.dot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--neon);
+  box-shadow:0 0 10px 2px rgba(80,255,10,.8), 0 0 26px 6px rgba(80,255,10,.35);
+  animation:pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 10px 2px rgba(80,255,10,.8),0 0 26px 6px rgba(80,255,10,.35)}
+  50%{box-shadow:0 0 14px 3px rgba(80,255,10,.95),0 0 36px 10px rgba(80,255,10,.5)}
+}
+.id-actions{margin-inline-start:auto;display:flex;gap:10px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 22px;border-radius:14px;
+  font-family:inherit;font-size:14.5px;font-weight:700;
+  color:var(--text);
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--stroke);
+  cursor:pointer;
+  transition:all .22s ease;
+  backdrop-filter:blur(8px);
+}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:hover{
+  background:rgba(255,255,255,.11);
+  border-color:var(--stroke-bright);
+  transform:translateY(-1px);
+  box-shadow:0 10px 24px -10px rgba(0,0,0,.6);
+}
+.btn-primary{
+  color:#04120a;
+  background:linear-gradient(140deg,#6dff35,#3fe000);
+  border:1px solid rgba(80,255,10,.6);
+  box-shadow:0 0 28px -4px rgba(80,255,10,.55), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.btn-primary:hover{
+  background:linear-gradient(140deg,#83ff53,#4cf20a);
+  box-shadow:0 0 42px -2px rgba(80,255,10,.7), inset 0 1px 0 rgba(255,255,255,.55);
+  transform:translateY(-1px);
+}
+
+/* ---------- HERO ---------- */
+.hero{
+  margin-top:22px;
+  padding:38px 46px 34px;
+  display:flex;align-items:center;gap:44px;
+  overflow:hidden;
+}
+.hero::after{
+  content:"";position:absolute;inset-inline-start:-15%;top:-70%;
+  width:60%;height:240%;pointer-events:none;
+  background:radial-gradient(closest-side, rgba(80,255,10,.13), transparent 70%);
+  filter:blur(10px);
+}
+.hero-label{
+  font-size:15px;font-weight:600;color:var(--text-dim);
+  letter-spacing:.14em;
+  margin-bottom:6px;
+}
+.hero-amount{
+  font-size:96px;font-weight:900;line-height:1;
+  letter-spacing:-2.5px;
+  background:linear-gradient(175deg,#ffffff 20%,#c9ffb0 55%,var(--neon) 95%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  filter:drop-shadow(0 0 34px rgba(80,255,10,.30));
+  white-space:nowrap;
+}
+.hero-chip{
+  align-self:flex-end;margin-bottom:14px;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 22px;border-radius:999px;
+  font-size:15.5px;font-weight:700;
+  color:#e6dcff;
+  background:linear-gradient(140deg,rgba(124,92,255,.22),rgba(124,92,255,.08));
+  border:1px solid rgba(150,120,255,.4);
+  box-shadow:0 0 26px -6px rgba(124,92,255,.5), inset 0 1px 0 rgba(255,255,255,.15);
+}
+.hero-meta{
+  margin-inline-start:auto;align-self:flex-end;
+  text-align:start;
+  font-size:13.5px;line-height:2.05;color:var(--text-faint);
+  font-weight:500;
+}
+.hero-meta b{color:var(--text-dim);font-weight:600}
+.hero-meta .sep{margin:0 8px;opacity:.4}
+
+/* ---------- TABS ---------- */
+.tabs{
+  margin-top:26px;
+  display:flex;gap:6px;
+  padding:6px;
+  border-radius:18px;
+  width:max-content;
+}
+.tab{
+  padding:11px 26px;border-radius:13px;
+  font-size:15px;font-weight:600;color:var(--text-dim);
+  cursor:pointer;transition:all .2s ease;
+  position:relative;
+}
+.tab:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.tab.active{
+  color:#031008;font-weight:800;
+  background:linear-gradient(140deg,#6dff35,#3fe000);
+  box-shadow:0 0 24px -4px rgba(80,255,10,.55), inset 0 1px 0 rgba(255,255,255,.45);
+}
+
+/* ---------- GRID ---------- */
+.grid{
+  margin-top:22px;
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:22px;
+  align-items:start;
+}
+
+/* ---------- QUESTION CARD ---------- */
+.main-col{display:flex;flex-direction:column;gap:18px}
+.qcard{padding:36px 40px}
+.qcard::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:0 0 0 1px rgba(80,255,10,.10), 0 0 60px -20px rgba(80,255,10,.25) inset;
+}
+.q-eyebrow{
+  font-size:12.5px;font-weight:700;letter-spacing:.2em;
+  color:var(--neon);opacity:.85;margin-bottom:14px;
+  text-shadow:0 0 18px rgba(80,255,10,.6);
+}
+.q-title{
+  font-size:33px;font-weight:800;letter-spacing:-.4px;
+  margin-bottom:30px;line-height:1.25;
+}
+.answers{display:flex;gap:16px}
+.pill{
+  flex:1;
+  padding:22px 30px;border-radius:18px;
+  font-family:inherit;font-size:19px;font-weight:800;
+  cursor:pointer;transition:all .22s ease;
+  text-align:center;
+}
+.pill-ok{
+  color:#dfffcd;
+  background:linear-gradient(150deg,rgba(80,255,10,.13),rgba(80,255,10,.04));
+  border:1px solid rgba(80,255,10,.42);
+  box-shadow:0 0 30px -10px rgba(80,255,10,.45), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.pill-ok:hover{
+  background:linear-gradient(150deg,rgba(80,255,10,.24),rgba(80,255,10,.09));
+  box-shadow:0 0 48px -8px rgba(80,255,10,.65), inset 0 1px 0 rgba(255,255,255,.18);
+  transform:translateY(-2px);
+}
+.pill-bad{
+  color:#ffd9d3;
+  background:linear-gradient(150deg,rgba(255,90,70,.10),rgba(255,90,70,.03));
+  border:1px solid rgba(255,110,90,.35);
+  box-shadow:0 0 30px -12px rgba(255,90,70,.35), inset 0 1px 0 rgba(255,255,255,.10);
+}
+.pill-bad:hover{
+  background:linear-gradient(150deg,rgba(255,90,70,.20),rgba(255,90,70,.07));
+  box-shadow:0 0 44px -8px rgba(255,90,70,.5), inset 0 1px 0 rgba(255,255,255,.15);
+  transform:translateY(-2px);
+}
+
+/* ---------- ANSWERED ROWS ---------- */
+.answered{padding:8px 12px}
+.arow{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;
+  border-radius:14px;
+  transition:background .2s ease;
+}
+.arow:hover{background:rgba(255,255,255,.035)}
+.arow + .arow{border-top:1px solid rgba(255,255,255,.055)}
+.acheck{
+  width:26px;height:26px;flex:none;border-radius:50%;
+  display:grid;place-items:center;
+  background:rgba(80,255,10,.10);
+  border:1px solid rgba(80,255,10,.4);
+  box-shadow:0 0 14px -4px rgba(80,255,10,.6);
+}
+.acheck svg{width:13px;height:13px}
+.a-q{font-size:15.5px;font-weight:500;color:var(--text-dim)}
+.a-v{
+  margin-inline-start:auto;
+  font-size:14.5px;font-weight:700;color:#b8ff8e;
+  white-space:nowrap;
+}
+
+/* ---------- BANK STRIP ---------- */
+.banks{padding:24px 28px}
+.banks-title{
+  font-size:13px;font-weight:700;letter-spacing:.16em;
+  color:var(--text-faint);margin-bottom:18px;
+}
+.bank-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.bank{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:20px 12px 16px;
+  border-radius:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  cursor:pointer;transition:all .22s ease;
+}
+.bank:hover{
+  background:rgba(255,255,255,.07);
+  border-color:var(--stroke-bright);
+  transform:translateY(-3px);
+  box-shadow:0 14px 30px -14px rgba(0,0,0,.7);
+}
+.mono{
+  width:52px;height:52px;border-radius:50%;
+  display:grid;place-items:center;
+  font-size:21px;font-weight:900;color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 8px 20px -8px rgba(0,0,0,.7);
+}
+.mono-leumi{background:linear-gradient(145deg,#2f6bff,#123a9e)}
+.mono-poalim{background:linear-gradient(145deg,#ff5a5a,#a81f2c)}
+.mono-discount{background:linear-gradient(145deg,#1fd08a,#0c7a4e)}
+.mono-mizrahi{background:linear-gradient(145deg,#ffb63d,#c46a00)}
+.bank-name{font-size:14px;font-weight:600;color:var(--text-dim)}
+.bank:hover .bank-name{color:var(--text)}
+
+/* ---------- SIDE PANEL ---------- */
+.side{padding:30px 28px;position:sticky;top:24px}
+.side::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(400px 200px at 50% -10%, rgba(124,92,255,.12), transparent 70%);
+}
+.side-title{
+  font-size:13px;font-weight:700;letter-spacing:.18em;
+  color:var(--text-faint);margin-bottom:24px;
+}
+.persona{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:26px}
+.avatar{
+  width:92px;height:92px;border-radius:50%;
+  display:grid;place-items:center;
+  font-size:32px;font-weight:900;color:#eaffdb;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,.22), transparent 45%),
+    linear-gradient(150deg,#233a6e,#101a3a);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:
+    0 0 0 5px rgba(80,255,10,.07),
+    0 0 0 1px rgba(80,255,10,.35),
+    0 0 40px -8px rgba(80,255,10,.4),
+    inset 0 2px 6px rgba(255,255,255,.12);
+  position:relative;
+}
+.persona-name{font-size:21px;font-weight:800;letter-spacing:-.2px}
+.facts{display:flex;flex-direction:column}
+.fact{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 4px;
+}
+.fact + .fact{border-top:1px solid rgba(255,255,255,.06)}
+.ficon{
+  width:36px;height:36px;flex:none;border-radius:11px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+}
+.ficon svg{width:17px;height:17px}
+.fk{font-size:12.5px;font-weight:600;color:var(--text-faint);margin-bottom:2px}
+.fv{font-size:15px;font-weight:700;color:var(--text)}
+.fv .pos{color:#b8ff8e;text-shadow:0 0 14px rgba(80,255,10,.35)}
+.fv .muted{color:var(--text-faint);font-weight:500}
+
+/* ---------- FOOTER ---------- */
+footer{
+  margin-top:30px;text-align:center;
+  font-size:12.5px;font-weight:500;color:var(--text-faint);
+  letter-spacing:.08em;
+  padding-bottom:8px;
+}
+footer b{color:var(--text-dim)}
+</style>
+</head>
+<body>
+
+<div class="aurora"></div>
+
+<div class="wrap">
+
+  <!-- IDENTITY BAR -->
+  <header class="glass idbar">
+    <div>
+      <div class="id-name">ישראל ישראלי</div>
+    </div>
+    <div class="id-phone">050-1234567</div>
+    <div class="verdict"><span class="dot"></span>לקוח תקין · ירוק</div>
+    <div class="id-actions">
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        חייג
+      </button>
+      <button class="btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.87 9.87 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.86 9.86 0 0 0 12.04 2zm0 18.13c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.24 8.24 0 0 1-1.26-4.36c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.21-8.23 8.21zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.13-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.13.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29z"/></svg>
+        וואטסאפ
+      </button>
+      <button class="btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        שלח הסכם
+      </button>
+      <button class="btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+        מייל
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="glass hero">
+    <div>
+      <div class="hero-label">ביקש</div>
+      <div class="hero-amount">45,000&nbsp;₪</div>
+    </div>
+    <div class="hero-chip">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      כיסוי חוב
+    </div>
+    <div class="hero-meta">
+      <div><b>שיחה אחרונה:</b> לפני שעה<span class="sep">·</span><b>משימה פתוחה:</b> לבדוק מול ישראכרט</div>
+      <div><b>נצפה לאחרונה:</b> חן צולר</div>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <nav class="glass tabs">
+    <div class="tab active">שיחה ושאלון</div>
+    <div class="tab">בדיקות זכאות</div>
+    <div class="tab">תיעוד</div>
+    <div class="tab">כספים</div>
+  </nav>
+
+  <!-- GRID -->
+  <div class="grid">
+    <div class="main-col">
+
+      <!-- ACTIVE QUESTION -->
+      <section class="glass qcard">
+        <div class="q-eyebrow">שאלה פעילה</div>
+        <h2 class="q-title">האם היו בעיות בהוצאה לפועל?</h2>
+        <div class="answers">
+          <button class="pill pill-ok">הכל תקין</button>
+          <button class="pill pill-bad">היו בעיות</button>
+        </div>
+      </section>
+
+      <!-- ANSWERED -->
+      <section class="glass answered">
+        <div class="arow">
+          <span class="acheck"><svg viewBox="0 0 24 24" fill="none" stroke="#50FF0A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="a-q">האם חזרו צ'קים בשנתיים האחרונות?</span>
+          <span class="a-v">תקין</span>
+        </div>
+        <div class="arow">
+          <span class="acheck"><svg viewBox="0 0 24 24" fill="none" stroke="#50FF0A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="a-q">מה גובה מסגרת האשראי?</span>
+          <span class="a-v">מעל 5,000 ₪</span>
+        </div>
+      </section>
+
+      <!-- BANKS -->
+      <section class="glass banks">
+        <div class="banks-title">באיזה בנק מתנהל החשבון?</div>
+        <div class="bank-row">
+          <div class="bank"><span class="mono mono-leumi">ל</span><span class="bank-name">לאומי</span></div>
+          <div class="bank"><span class="mono mono-poalim">פ</span><span class="bank-name">הפועלים</span></div>
+          <div class="bank"><span class="mono mono-discount">ד</span><span class="bank-name">דיסקונט</span></div>
+          <div class="bank"><span class="mono mono-mizrahi">מ</span><span class="bank-name">מזרחי</span></div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- SIDE PANEL -->
+    <aside class="glass side">
+      <div class="side-title">דיוקן הלקוח</div>
+      <div class="persona">
+        <div class="avatar">יי</div>
+        <div class="persona-name">ישראל ישראלי</div>
+        <div class="verdict" style="font-size:12.5px;padding:6px 14px"><span class="dot"></span>לקוח תקין · ירוק</div>
+      </div>
+      <div class="facts">
+        <div class="fact">
+          <span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="#50FF0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          <div><div class="fk">סכום ומטרה</div><div class="fv"><span class="pos">45,000 ₪</span> · כיסוי חוב</div></div>
+        </div>
+        <div class="fact">
+          <span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="#18e0a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+          <div><div class="fk">חיווי אשראי</div><div class="fv"><span class="pos">חיובי</span></div></div>
+        </div>
+        <div class="fact">
+          <span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="#9d86ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
+          <div><div class="fk">תעסוקה</div><div class="fv">שכיר</div></div>
+        </div>
+        <div class="fact">
+          <span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="#5aa7ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
+          <div><div class="fk">נטו</div><div class="fv">9,500 ₪</div></div>
+        </div>
+        <div class="fact">
+          <span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffb63d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <div><div class="fk">כתובת</div><div class="fv">כפר יונה</div></div>
+        </div>
+        <div class="fact">
+          <span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="#ff8f7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg></span>
+          <div><div class="fk">רכב</div><div class="fv">יש · 2020</div></div>
+        </div>
+        <div class="fact">
+          <span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="#8fa3c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg></span>
+          <div><div class="fk">בנק</div><div class="fv"><span class="muted">—</span></div></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>כיוון <b>B</b> · Aurora Glass — <b>בינגו CRM</b></footer>
+</div>
+
+</body>
+</html>

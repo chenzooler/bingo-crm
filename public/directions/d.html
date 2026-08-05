@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>כיוון D · Private Banking — בינגו CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --espresso:#1B1611;
+    --charcoal:#231D16;
+    --charcoal-2:#2B241B;
+    --cream:#F7F2E9;
+    --cream-2:#FBF8F1;
+    --cream-3:#EFE8DA;
+    --ink:#2A241C;
+    --ink-soft:#6B6152;
+    --ink-faint:#9A8F7D;
+    --gold:#C9A961;
+    --gold-soft:#D9C08A;
+    --gold-deep:#A88B47;
+    --gold-line:rgba(201,169,97,.38);
+    --gold-line-soft:rgba(201,169,97,.20);
+    --emerald:#1E6B4F;
+    --emerald-deep:#14513B;
+    --burgundy:#7A2E38;
+    --bingo:#00A651;
+    --shadow-lg:0 30px 80px rgba(15,11,6,.55);
+    --shadow-md:0 10px 34px rgba(24,18,10,.10);
+    --shadow-sm:0 3px 12px rgba(24,18,10,.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{
+    font-family:'Heebo',sans-serif;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(201,169,97,.07), transparent 60%),
+      radial-gradient(900px 500px at 10% 110%, rgba(201,169,97,.05), transparent 55%),
+      linear-gradient(180deg,#191410 0%, #1B1611 40%, #171310 100%);
+    min-height:100vh;
+    color:var(--ink);
+    padding:44px 0 56px;
+  }
+  /* fine noise texture on the dark shell */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.02) 0 1px, transparent 1px 4px);
+  }
+  .stage{max-width:1440px;margin:0 auto;padding:0 48px;position:relative}
+
+  /* ============ TOP IDENTITY BAR (dark) ============ */
+  .identity{
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+    padding:26px 38px;
+    border:1px solid var(--gold-line-soft);
+    border-bottom:none;
+    border-radius:14px 14px 0 0;
+    background:linear-gradient(180deg, #262019 0%, #201A14 100%);
+    position:relative;
+  }
+  .identity::after{
+    content:"";position:absolute;inset-inline:0;bottom:0;height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold) 18%, var(--gold-soft) 50%, var(--gold) 82%, transparent);
+    opacity:.75;
+  }
+  .who{display:flex;align-items:center;gap:20px;min-width:0}
+  .crest{
+    width:54px;height:54px;border-radius:50%;
+    display:grid;place-items:center;flex-shrink:0;
+    background:radial-gradient(circle at 32% 28%, #35342b, #1e1a13 70%);
+    border:1px solid var(--gold-line);
+    box-shadow:inset 0 0 0 4px rgba(201,169,97,.08), 0 4px 14px rgba(0,0,0,.4);
+    font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:21px;color:var(--gold-soft);
+    letter-spacing:.02em;
+  }
+  .who h1{
+    font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:27px;color:#F2EBDD;
+    letter-spacing:.01em;line-height:1.1;
+  }
+  .who .phone{
+    color:#B9AD98;font-size:14.5px;font-weight:300;letter-spacing:.06em;margin-top:5px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .who .phone svg{opacity:.6}
+  .verdict{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:9px 18px;border-radius:100px;
+    border:1px solid rgba(30,107,79,.55);
+    background:linear-gradient(180deg, rgba(30,107,79,.16), rgba(20,81,59,.22));
+    color:#8FD6B4;font-size:13.5px;font-weight:500;letter-spacing:.03em;
+    white-space:nowrap;
+  }
+  .verdict .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #4CD98F, var(--bingo));
+    box-shadow:0 0 0 3px rgba(0,166,81,.18), 0 0 10px rgba(0,166,81,.5);
+  }
+  .actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .btn{
+    font-family:'Heebo',sans-serif;font-size:14px;font-weight:500;letter-spacing:.02em;
+    padding:11px 22px;border-radius:9px;cursor:pointer;
+    transition:all .22s ease;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:8px;
+    border:1px solid var(--gold-line);
+    background:transparent;color:#DDD2BC;
+  }
+  .btn:hover{border-color:var(--gold);color:#F2E8D2;background:rgba(201,169,97,.07);transform:translateY(-1px)}
+  .btn-primary{
+    background:linear-gradient(180deg, #D9C08A 0%, #C9A961 55%, #B3924E 100%);
+    color:#221B10;border:1px solid #E3CE9E;font-weight:600;
+    box-shadow:0 4px 16px rgba(201,169,97,.32), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .btn-primary:hover{
+    background:linear-gradient(180deg, #E4CF9E 0%, #D4B570 55%, #BD9C57 100%);
+    box-shadow:0 7px 22px rgba(201,169,97,.42), inset 0 1px 0 rgba(255,255,255,.4);
+    transform:translateY(-1px);color:#1B1509;
+  }
+  .btn svg{flex-shrink:0}
+
+  /* ============ PAPER SHEET ============ */
+  .sheet{
+    background:
+      repeating-linear-gradient(-45deg, rgba(160,140,100,.016) 0 2px, transparent 2px 5px),
+      radial-gradient(1200px 500px at 50% -8%, #FDFAF4, transparent 55%),
+      linear-gradient(180deg, var(--cream-2) 0%, var(--cream) 100%);
+    border:1px solid var(--gold-line-soft);
+    border-top:none;
+    border-radius:0 0 14px 14px;
+    box-shadow:var(--shadow-lg);
+    overflow:hidden;
+  }
+
+  /* ---- hero ---- */
+  .hero{
+    padding:52px 56px 40px;
+    display:flex;align-items:flex-end;justify-content:space-between;gap:36px;
+    border-bottom:1px solid var(--gold-line-soft);
+    position:relative;
+  }
+  .hero::before{ /* corner flourish */
+    content:"";position:absolute;top:26px;inset-inline-start:56px;width:52px;height:1px;
+    background:linear-gradient(90deg, var(--gold), transparent);
+  }
+  .ask-label{
+    font-size:12.5px;font-weight:600;letter-spacing:.34em;color:var(--gold-deep);
+    text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:14px;
+  }
+  .ask-label::after{content:"";width:38px;height:1px;background:var(--gold-line)}
+  .amount{
+    font-family:'Frank Ruhl Libre',serif;font-weight:700;
+    font-size:96px;line-height:.95;color:var(--ink);
+    letter-spacing:-.01em;
+    display:flex;align-items:baseline;gap:16px;
+  }
+  .amount .shekel{
+    font-size:44px;font-weight:400;color:var(--gold-deep);position:relative;top:-4px;
+  }
+  .purpose-chip{
+    display:inline-flex;align-items:center;gap:9px;
+    margin-top:22px;padding:9px 20px;border-radius:100px;
+    border:1px solid var(--gold-line);
+    background:linear-gradient(180deg, rgba(201,169,97,.10), rgba(201,169,97,.05));
+    color:#7C6636;font-size:14px;font-weight:500;letter-spacing:.04em;
+  }
+  .purpose-chip svg{opacity:.75}
+  .meta{
+    text-align:start;color:var(--ink-faint);font-size:13.5px;font-weight:400;
+    line-height:2.05;max-width:340px;letter-spacing:.015em;
+    border-inline-start:1px solid var(--gold-line-soft);
+    padding-inline-start:26px;align-self:center;
+  }
+  .meta b{color:var(--ink-soft);font-weight:500}
+  .meta .sep{color:var(--gold);margin:0 2px}
+
+  /* ---- tabs ---- */
+  .tabs{
+    display:flex;gap:6px;padding:0 56px;
+    border-bottom:1px solid var(--gold-line-soft);
+    background:linear-gradient(180deg, rgba(201,169,97,.045), transparent);
+  }
+  .tab{
+    padding:19px 26px 17px;font-size:15px;font-weight:500;color:var(--ink-faint);
+    position:relative;cursor:pointer;letter-spacing:.02em;transition:color .2s ease;
+  }
+  .tab:hover{color:var(--ink-soft)}
+  .tab.active{color:var(--ink);font-weight:600}
+  .tab.active::after{
+    content:"";position:absolute;inset-inline:20px;bottom:-1px;height:2px;
+    background:linear-gradient(90deg, transparent, var(--gold-deep) 20%, var(--gold) 50%, var(--gold-deep) 80%, transparent);
+  }
+
+  /* ============ BODY GRID ============ */
+  .body-grid{
+    display:grid;grid-template-columns:1fr 372px;gap:0;
+    min-height:520px;
+  }
+  .main{padding:44px 56px 48px;border-inline-end:1px solid var(--gold-line-soft)}
+
+  .section-label{
+    font-size:11.5px;font-weight:600;letter-spacing:.30em;color:var(--gold-deep);
+    text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:14px;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg, var(--gold-line-soft), transparent)}
+
+  /* active question card */
+  .q-card{
+    background:linear-gradient(180deg, #FFFEFB, #FBF7EE);
+    border:1px solid var(--gold-line);
+    border-radius:12px;
+    padding:36px 38px 34px;
+    box-shadow:var(--shadow-md);
+    position:relative;
+    margin-bottom:34px;
+  }
+  .q-card::before{
+    content:"";position:absolute;top:0;inset-inline:38px;height:2px;
+    background:linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold-soft) 50%, var(--gold) 70%, transparent);
+    border-radius:0 0 2px 2px;
+  }
+  .q-kicker{
+    font-size:12px;font-weight:600;letter-spacing:.22em;color:var(--gold-deep);
+    text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;
+  }
+  .q-kicker .num{
+    font-family:'Frank Ruhl Libre',serif;font-size:15px;font-weight:700;color:var(--gold);
+  }
+  .q-title{
+    font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:29px;color:var(--ink);
+    line-height:1.3;margin-bottom:28px;
+  }
+  .answers{display:flex;gap:16px}
+  .pill{
+    flex:1;padding:19px 26px;border-radius:11px;cursor:pointer;
+    font-family:'Heebo',sans-serif;font-size:16.5px;font-weight:600;letter-spacing:.02em;
+    text-align:center;transition:all .22s ease;
+    display:flex;align-items:center;justify-content:center;gap:11px;
+  }
+  .pill-ok{
+    border:1px solid rgba(30,107,79,.4);
+    background:linear-gradient(180deg, #F2F8F4, #E9F3ED);
+    color:var(--emerald-deep);
+  }
+  .pill-ok:hover{
+    background:linear-gradient(180deg, var(--emerald) 0%, var(--emerald-deep) 100%);
+    color:#EAF7F0;border-color:var(--emerald-deep);
+    box-shadow:0 8px 24px rgba(20,81,59,.28);transform:translateY(-2px);
+  }
+  .pill-bad{
+    border:1px solid rgba(122,46,56,.35);
+    background:linear-gradient(180deg, #FAF3F3, #F4EAEA);
+    color:var(--burgundy);
+  }
+  .pill-bad:hover{
+    background:linear-gradient(180deg, #8A3742, var(--burgundy));
+    color:#F8ECEC;border-color:#5F232B;
+    box-shadow:0 8px 24px rgba(122,46,56,.28);transform:translateY(-2px);
+  }
+  .pill svg{transition:inherit}
+
+  /* answered rows */
+  .answered{margin-bottom:36px}
+  .a-row{
+    display:flex;align-items:center;gap:16px;
+    padding:16px 6px;
+    border-bottom:1px solid rgba(160,140,100,.16);
+    color:var(--ink-soft);font-size:14.5px;
+    transition:background .2s ease;
+  }
+  .a-row:hover{background:rgba(201,169,97,.05)}
+  .a-check{
+    width:24px;height:24px;border-radius:50%;flex-shrink:0;
+    display:grid;place-items:center;
+    background:linear-gradient(180deg, rgba(30,107,79,.12), rgba(30,107,79,.08));
+    border:1px solid rgba(30,107,79,.35);color:var(--emerald);
+  }
+  .a-q{flex:1;font-weight:400;color:var(--ink-soft)}
+  .a-v{
+    font-weight:600;color:var(--emerald-deep);font-size:14px;letter-spacing:.02em;
+    display:flex;align-items:center;gap:7px;
+  }
+  .a-v::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--bingo)}
+
+  /* bank strip */
+  .banks{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .bank{
+    background:linear-gradient(180deg, #FFFEFB, #F8F3E9);
+    border:1px solid rgba(160,140,100,.24);
+    border-radius:11px;padding:22px 14px 18px;
+    display:flex;flex-direction:column;align-items:center;gap:13px;
+    cursor:pointer;transition:all .22s ease;
+  }
+  .bank:hover{
+    border-color:var(--gold);transform:translateY(-3px);
+    box-shadow:0 10px 26px rgba(24,18,10,.12);
+    background:linear-gradient(180deg, #FFFEFB, #FBF6EA);
+  }
+  .medallion{
+    width:52px;height:52px;border-radius:50%;
+    display:grid;place-items:center;
+    font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:20px;
+    border:1px solid var(--gold-line);
+    box-shadow:inset 0 0 0 3px rgba(255,255,255,.5), 0 3px 10px rgba(24,18,10,.12);
+    transition:all .22s ease;
+  }
+  .bank:hover .medallion{box-shadow:inset 0 0 0 3px rgba(255,255,255,.6), 0 5px 16px rgba(24,18,10,.2)}
+  .m-leumi{background:radial-gradient(circle at 32% 28%, #33517E, #1E3A63);color:#DCE6F5}
+  .m-poalim{background:radial-gradient(circle at 32% 28%, #B04A4A, #8C3030);color:#F8E5E5}
+  .m-discount{background:radial-gradient(circle at 32% 28%, #2E6E52, #1C4F38);color:#DFF0E7}
+  .m-mizrahi{background:radial-gradient(circle at 32% 28%, #B5822F, #8F6420);color:#FAF0DC}
+  .bank span{font-size:13.5px;font-weight:500;color:var(--ink-soft);letter-spacing:.02em}
+
+  /* ============ SIDE PANEL ============ */
+  .side{
+    background:
+      repeating-linear-gradient(45deg, rgba(160,140,100,.02) 0 2px, transparent 2px 6px),
+      linear-gradient(180deg, #F4EDDF 0%, var(--cream-3) 100%);
+    padding:40px 34px 36px;
+  }
+  .side-title{
+    font-size:11.5px;font-weight:600;letter-spacing:.30em;color:var(--gold-deep);
+    text-transform:uppercase;text-align:center;margin-bottom:26px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .side-title::before,.side-title::after{content:"";flex:1;height:1px;background:var(--gold-line-soft)}
+  .portrait{
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+    padding-bottom:26px;margin-bottom:24px;
+    border-bottom:1px solid var(--gold-line-soft);
+  }
+  .avatar{
+    width:88px;height:88px;border-radius:50%;
+    display:grid;place-items:center;
+    background:radial-gradient(circle at 34% 26%, #3A3227, #221C13 72%);
+    border:1px solid var(--gold-line);
+    box-shadow:0 0 0 5px rgba(201,169,97,.10), 0 0 0 6px rgba(201,169,97,.22), 0 8px 24px rgba(24,18,10,.22);
+    font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:32px;color:var(--gold-soft);
+  }
+  .portrait h2{
+    font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:22px;color:var(--ink);margin-top:4px;
+  }
+  .portrait .v-small{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 15px;border-radius:100px;font-size:12.5px;font-weight:600;letter-spacing:.03em;
+    border:1px solid rgba(30,107,79,.35);
+    background:linear-gradient(180deg, rgba(30,107,79,.10), rgba(30,107,79,.06));
+    color:var(--emerald-deep);
+  }
+  .portrait .v-small .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #4CD98F, var(--bingo));
+    box-shadow:0 0 6px rgba(0,166,81,.5);
+  }
+  .facts{display:flex;flex-direction:column}
+  .fact{
+    display:flex;align-items:center;gap:14px;
+    padding:13.5px 4px;
+    border-bottom:1px solid rgba(160,140,100,.15);
+    transition:background .2s ease;
+  }
+  .fact:last-child{border-bottom:none}
+  .fact:hover{background:rgba(201,169,97,.06)}
+  .f-icon{
+    width:34px;height:34px;border-radius:9px;flex-shrink:0;
+    display:grid;place-items:center;
+    background:linear-gradient(180deg, rgba(201,169,97,.14), rgba(201,169,97,.07));
+    border:1px solid var(--gold-line-soft);
+    color:var(--gold-deep);
+  }
+  .f-body{flex:1;min-width:0}
+  .f-label{font-size:11.5px;font-weight:500;letter-spacing:.08em;color:var(--ink-faint);margin-bottom:2px}
+  .f-value{font-size:14.5px;font-weight:600;color:var(--ink);letter-spacing:.01em}
+  .f-value .amount-serif{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:15.5px}
+  .f-value .pos{color:var(--emerald-deep)}
+  .f-value .dash{color:var(--ink-faint);font-weight:400}
+
+  /* footer */
+  .foot{
+    margin-top:26px;text-align:center;
+    color:rgba(220,205,170,.5);font-size:12.5px;font-weight:300;letter-spacing:.22em;
+    display:flex;align-items:center;justify-content:center;gap:18px;
+  }
+  .foot::before,.foot::after{content:"";width:70px;height:1px;background:linear-gradient(90deg, transparent, rgba(201,169,97,.35), transparent)}
+  .foot .green{color:var(--bingo);font-weight:500}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- identity bar -->
+  <header class="identity">
+    <div class="who">
+      <div class="crest">י״י</div>
+      <div>
+        <h1>ישראל ישראלי</h1>
+        <div class="phone">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          050-1234567
+        </div>
+      </div>
+      <span class="verdict"><span class="dot"></span>לקוח תקין · ירוק</span>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        חייג
+      </button>
+      <button class="btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        וואטסאפ
+      </button>
+      <button class="btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        שלח הסכם
+      </button>
+      <button class="btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        מייל
+      </button>
+    </div>
+  </header>
+
+  <!-- paper sheet -->
+  <div class="sheet">
+
+    <!-- hero -->
+    <section class="hero">
+      <div>
+        <div class="ask-label">ביקש</div>
+        <div class="amount">45,000<span class="shekel">₪</span></div>
+        <div class="purpose-chip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          כיסוי חוב
+        </div>
+      </div>
+      <div class="meta">
+        <div><b>שיחה אחרונה:</b> לפני שעה</div>
+        <div><b>משימה פתוחה:</b> לבדוק מול ישראכרט</div>
+        <div><b>נצפה לאחרונה:</b> חן צולר</div>
+      </div>
+    </section>
+
+    <!-- tabs -->
+    <nav class="tabs">
+      <div class="tab active">שיחה ושאלון</div>
+      <div class="tab">בדיקות זכאות</div>
+      <div class="tab">תיעוד</div>
+      <div class="tab">כספים</div>
+    </nav>
+
+    <!-- body -->
+    <div class="body-grid">
+      <main class="main">
+
+        <div class="q-card">
+          <div class="q-kicker"><span class="num">03</span> שאלה נוכחית</div>
+          <h3 class="q-title">האם היו בעיות בהוצאה לפועל?</h3>
+          <div class="answers">
+            <div class="pill pill-ok">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              הכל תקין
+            </div>
+            <div class="pill pill-bad">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              היו בעיות
+            </div>
+          </div>
+        </div>
+
+        <div class="answered">
+          <div class="section-label">נענו</div>
+          <div class="a-row">
+            <div class="a-check">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="a-q">האם חזרו צ'קים בשנתיים האחרונות?</div>
+            <div class="a-v">תקין</div>
+          </div>
+          <div class="a-row">
+            <div class="a-check">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="a-q">מה גובה מסגרת האשראי?</div>
+            <div class="a-v">מעל 5,000 ₪</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-label">בחירת בנק</div>
+          <div class="banks">
+            <div class="bank"><div class="medallion m-leumi">ל</div><span>לאומי</span></div>
+            <div class="bank"><div class="medallion m-poalim">פ</div><span>הפועלים</span></div>
+            <div class="bank"><div class="medallion m-discount">ד</div><span>דיסקונט</span></div>
+            <div class="bank"><div class="medallion m-mizrahi">מ</div><span>מזרחי</span></div>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- side -->
+      <aside class="side">
+        <div class="side-title">דיוקן הלקוח</div>
+        <div class="portrait">
+          <div class="avatar">י״י</div>
+          <h2>ישראל ישראלי</h2>
+          <span class="v-small"><span class="dot"></span>לקוח תקין · ירוק</span>
+        </div>
+        <div class="facts">
+
+          <div class="fact">
+            <div class="f-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="f-body">
+              <div class="f-label">סכום ומטרה</div>
+              <div class="f-value"><span class="amount-serif">45,000 ₪</span> · כיסוי חוב</div>
+            </div>
+          </div>
+
+          <div class="fact">
+            <div class="f-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="f-body">
+              <div class="f-label">חיווי אשראי</div>
+              <div class="f-value"><span class="pos">חיובי</span></div>
+            </div>
+          </div>
+
+          <div class="fact">
+            <div class="f-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div class="f-body">
+              <div class="f-label">תעסוקה</div>
+              <div class="f-value">שכיר</div>
+            </div>
+          </div>
+
+          <div class="fact">
+            <div class="f-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
+            </div>
+            <div class="f-body">
+              <div class="f-label">נטו</div>
+              <div class="f-value"><span class="amount-serif">9,500 ₪</span></div>
+            </div>
+          </div>
+
+          <div class="fact">
+            <div class="f-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="f-body">
+              <div class="f-label">כתובת</div>
+              <div class="f-value">כפר יונה</div>
+            </div>
+          </div>
+
+          <div class="fact">
+            <div class="f-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
+            </div>
+            <div class="f-body">
+              <div class="f-label">רכב</div>
+              <div class="f-value">יש · 2020</div>
+            </div>
+          </div>
+
+          <div class="fact">
+            <div class="f-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+            </div>
+            <div class="f-body">
+              <div class="f-label">בנק</div>
+              <div class="f-value"><span class="dash">—</span></div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="foot">כיוון D · Private Banking — <span class="green">בינגו</span> CRM</div>
+</div>
+</body>
+</html>

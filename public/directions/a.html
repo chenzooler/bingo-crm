@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>כיוון A · iOS Luxury — בינגו CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#292929;
+    --ink-soft:#6e6e73;
+    --ink-faint:#9a9aa0;
+    --money:#50FF0A;
+    --money-deep:#2fbf00;
+    --money-ink:#1a7a00;
+    --bg:#f5f5f7;
+    --card:#ffffff;
+    --mint:#e8faf1;   --mint-sat:#00c46a;
+    --sky:#e9f4ff;    --sky-sat:#0a84ff;
+    --peach:#fff1e8;  --peach-sat:#ff7a30;
+    --lilac:#f2edff;  --lilac-sat:#7a5cff;
+    --r-lg:28px;
+    --r-md:24px;
+    --r-sm:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  body{
+    font-family:'Heebo',-apple-system,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(80,255,10,.07), transparent 60%),
+      radial-gradient(1000px 700px at 0% 15%, rgba(10,132,255,.06), transparent 55%),
+      radial-gradient(900px 600px at 50% 110%, rgba(122,92,255,.05), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    padding:40px clamp(24px,4vw,64px) 32px;
+  }
+  .shell{max-width:1440px;margin:0 auto;}
+
+  /* ───── identity bar ───── */
+  .idbar{
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(24px) saturate(1.4);
+    border:1px solid rgba(255,255,255,.9);
+    border-radius:var(--r-lg);
+    box-shadow:0 24px 60px -24px rgba(41,41,41,.18), 0 2px 8px rgba(41,41,41,.04);
+    padding:22px 32px;
+    display:flex;align-items:center;gap:20px;
+    margin-bottom:28px;
+  }
+  .avatar-sm{
+    width:56px;height:56px;border-radius:50%;flex:none;
+    background:linear-gradient(145deg,#dff9e8,#c2f2d4);
+    display:grid;place-items:center;
+    font-weight:800;font-size:20px;color:#0c7a3a;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.8), 0 6px 16px -6px rgba(0,196,106,.45);
+  }
+  .idname{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .idname h1{font-size:22px;font-weight:800;letter-spacing:-.3px;}
+  .idname .phone{
+    font-size:14.5px;color:var(--ink-soft);font-weight:500;
+    display:flex;align-items:center;gap:6px;direction:ltr;justify-content:flex-end;
+  }
+  .verdict{
+    display:inline-flex;align-items:center;gap:9px;
+    background:linear-gradient(180deg,#effff0,#e2ffe0);
+    border:1px solid rgba(80,255,10,.35);
+    color:var(--money-ink);
+    font-weight:700;font-size:14px;
+    padding:9px 18px;border-radius:999px;
+    box-shadow:0 8px 24px -8px rgba(80,255,10,.5);
+    margin-inline-start:8px;flex:none;
+  }
+  .dot{
+    width:10px;height:10px;border-radius:50%;flex:none;
+    background:var(--money);
+    box-shadow:0 0 0 4px rgba(80,255,10,.22), 0 0 14px 2px rgba(80,255,10,.75);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{box-shadow:0 0 0 4px rgba(80,255,10,.22),0 0 14px 2px rgba(80,255,10,.75);}
+    50%{box-shadow:0 0 0 7px rgba(80,255,10,.10),0 0 20px 4px rgba(80,255,10,.9);}
+  }
+  .actions{display:flex;gap:10px;margin-inline-start:auto;flex:none;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:inherit;font-weight:700;font-size:15px;
+    padding:12px 24px;border-radius:999px;border:none;cursor:pointer;
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, background .18s ease;
+    color:var(--ink);
+    background:#fff;
+    box-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 8px 20px -10px rgba(41,41,41,.25), 0 0 0 1px rgba(41,41,41,.06);
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 14px 28px -10px rgba(41,41,41,.3),0 0 0 1px rgba(41,41,41,.08);}
+  .btn:active{transform:translateY(0) scale(.97);}
+  .btn svg{width:17px;height:17px;flex:none;}
+  .btn-primary{
+    color:#0d3a00;
+    background:linear-gradient(180deg,#7dff4d 0%, var(--money) 45%, #3fe600 100%);
+    box-shadow:0 1px 0 rgba(255,255,255,.55) inset, 0 14px 32px -10px rgba(80,255,10,.65), 0 0 0 1px rgba(47,191,0,.35);
+  }
+  .btn-primary:hover{box-shadow:0 1px 0 rgba(255,255,255,.55) inset,0 20px 40px -12px rgba(80,255,10,.8),0 0 0 1px rgba(47,191,0,.45);}
+  .btn-wa{color:#0b6e4f;background:linear-gradient(180deg,#f2fff8,#e2f9ee);box-shadow:0 1px 0 #fff inset,0 8px 20px -10px rgba(0,196,106,.4),0 0 0 1px rgba(0,196,106,.2);}
+  .btn-doc{color:#5a3df0;background:linear-gradient(180deg,#faf8ff,#efeaff);box-shadow:0 1px 0 #fff inset,0 8px 20px -10px rgba(122,92,255,.4),0 0 0 1px rgba(122,92,255,.18);}
+  .btn-mail{color:#0a6ed1;background:linear-gradient(180deg,#f6fbff,#e6f2ff);box-shadow:0 1px 0 #fff inset,0 8px 20px -10px rgba(10,132,255,.4),0 0 0 1px rgba(10,132,255,.18);}
+
+  /* ───── hero ───── */
+  .hero{
+    background:linear-gradient(160deg,#ffffff 0%,#fbfffb 55%,#f4fff0 100%);
+    border:1px solid rgba(255,255,255,.9);
+    border-radius:var(--r-lg);
+    box-shadow:0 32px 80px -30px rgba(47,191,0,.28), 0 2px 10px rgba(41,41,41,.04);
+    padding:38px 44px 34px;
+    margin-bottom:28px;
+    position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;inset-inline-start:-120px;top:-140px;
+    width:380px;height:380px;border-radius:50%;
+    background:radial-gradient(circle, rgba(80,255,10,.14), transparent 65%);
+    pointer-events:none;
+  }
+  .hero-row{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;position:relative;}
+  .hero-label{
+    font-size:15px;font-weight:700;color:var(--ink-faint);
+    text-transform:none;letter-spacing:.5px;margin-bottom:6px;
+  }
+  .amount{
+    font-size:clamp(64px,7vw,96px);
+    font-weight:900;letter-spacing:-3px;line-height:1;
+    background:linear-gradient(160deg,#292929 30%,#1a7a00 130%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    background:linear-gradient(180deg,var(--peach),#ffe6d4);
+    color:#b34a0a;font-weight:700;font-size:15px;
+    padding:10px 20px;border-radius:999px;
+    box-shadow:0 10px 24px -10px rgba(255,122,48,.5), 0 0 0 1px rgba(255,122,48,.15);
+    margin-bottom:14px;
+  }
+  .chip svg{width:16px;height:16px;}
+  .meta{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    margin-top:26px;position:relative;
+    font-size:14.5px;color:var(--ink-soft);font-weight:500;
+  }
+  .meta .sep{color:#d3d3d8;font-weight:400;}
+  .meta b{color:var(--ink);font-weight:700;}
+  .meta svg{width:15px;height:15px;vertical-align:-2px;margin-inline-end:5px;color:var(--ink-faint);}
+
+  /* ───── tabs ───── */
+  .tabs{
+    display:inline-flex;gap:6px;
+    background:rgba(255,255,255,.7);
+    backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.9);
+    padding:7px;border-radius:999px;
+    box-shadow:0 14px 36px -18px rgba(41,41,41,.22);
+    margin-bottom:28px;
+  }
+  .tab{
+    font-family:inherit;border:none;cursor:pointer;background:transparent;
+    font-size:15px;font-weight:600;color:var(--ink-soft);
+    padding:11px 26px;border-radius:999px;
+    transition:color .15s ease, background .15s ease;
+  }
+  .tab:hover{color:var(--ink);background:rgba(41,41,41,.05);}
+  .tab.active{
+    color:#fff;font-weight:700;
+    background:linear-gradient(180deg,#3a3a3c,#232325);
+    box-shadow:0 10px 22px -8px rgba(41,41,41,.55);
+  }
+
+  /* ───── layout ───── */
+  .grid{display:grid;grid-template-columns:1fr 400px;gap:28px;align-items:start;}
+
+  /* ───── question card ───── */
+  .qcard{
+    background:linear-gradient(165deg,#ffffff 0%,var(--sky) 130%);
+    border:1px solid rgba(255,255,255,.95);
+    border-radius:var(--r-lg);
+    box-shadow:0 28px 70px -28px rgba(10,132,255,.35), 0 2px 8px rgba(41,41,41,.04);
+    padding:36px 40px;
+    margin-bottom:24px;
+  }
+  .q-eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:700;color:var(--sky-sat);
+    background:rgba(10,132,255,.09);
+    padding:7px 15px;border-radius:999px;margin-bottom:18px;
+  }
+  .q-eyebrow svg{width:14px;height:14px;}
+  .qcard h2{font-size:30px;font-weight:800;letter-spacing:-.5px;line-height:1.25;margin-bottom:26px;}
+  .answers{display:flex;gap:14px;}
+  .pill{
+    flex:1;font-family:inherit;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    font-size:18px;font-weight:800;
+    padding:19px 28px;border-radius:999px;border:none;
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease;
+  }
+  .pill:hover{transform:translateY(-3px);}
+  .pill:active{transform:translateY(0) scale(.97);}
+  .pill svg{width:20px;height:20px;}
+  .pill-ok{
+    color:#0d3a00;
+    background:linear-gradient(180deg,#8bff61 0%,var(--money) 50%,#3ede00 100%);
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 18px 40px -12px rgba(80,255,10,.7), 0 0 0 1px rgba(47,191,0,.3);
+  }
+  .pill-ok:hover{box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 24px 50px -14px rgba(80,255,10,.85),0 0 0 1px rgba(47,191,0,.4);}
+  .pill-bad{
+    color:#b33a2a;
+    background:linear-gradient(180deg,#fff,#fff4f1);
+    box-shadow:0 1px 0 #fff inset, 0 14px 32px -14px rgba(255,90,60,.4), 0 0 0 1.5px rgba(255,90,60,.28);
+  }
+  .pill-bad:hover{box-shadow:0 1px 0 #fff inset,0 20px 40px -14px rgba(255,90,60,.5),0 0 0 1.5px rgba(255,90,60,.4);}
+
+  /* ───── answered rows ───── */
+  .answered{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+  .arow{
+    display:flex;align-items:center;gap:16px;
+    background:rgba(255,255,255,.75);
+    border:1px solid rgba(255,255,255,.95);
+    border-radius:var(--r-sm);
+    box-shadow:0 10px 26px -18px rgba(41,41,41,.25);
+    padding:16px 22px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .arow:hover{transform:translateY(-1px);box-shadow:0 14px 30px -18px rgba(41,41,41,.32);}
+  .acheck{
+    width:34px;height:34px;border-radius:50%;flex:none;
+    background:linear-gradient(180deg,var(--mint),#d4f6e4);
+    display:grid;place-items:center;color:var(--mint-sat);
+    box-shadow:0 6px 14px -6px rgba(0,196,106,.5);
+  }
+  .acheck svg{width:16px;height:16px;}
+  .arow .q{font-size:15px;font-weight:600;color:var(--ink-soft);flex:1;}
+  .arow .a{
+    font-size:14px;font-weight:800;color:var(--money-ink);
+    background:rgba(80,255,10,.12);
+    padding:6px 14px;border-radius:999px;flex:none;
+  }
+
+  /* ───── bank strip ───── */
+  .banks{
+    background:linear-gradient(165deg,#ffffff 0%,var(--lilac) 140%);
+    border:1px solid rgba(255,255,255,.95);
+    border-radius:var(--r-md);
+    box-shadow:0 24px 60px -28px rgba(122,92,255,.35), 0 2px 8px rgba(41,41,41,.04);
+    padding:26px 30px;
+  }
+  .banks h3{font-size:16px;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:9px;}
+  .banks h3 svg{width:18px;height:18px;color:var(--lilac-sat);}
+  .bank-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .bank{
+    background:#fff;border:none;cursor:pointer;font-family:inherit;
+    border-radius:20px;padding:20px 14px 16px;
+    display:flex;flex-direction:column;align-items:center;gap:11px;
+    box-shadow:0 10px 26px -14px rgba(41,41,41,.22), 0 0 0 1px rgba(41,41,41,.05);
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease;
+  }
+  .bank:hover{transform:translateY(-4px);box-shadow:0 18px 36px -14px rgba(41,41,41,.3),0 0 0 1.5px rgba(122,92,255,.35);}
+  .mono{
+    width:52px;height:52px;border-radius:50%;
+    display:grid;place-items:center;
+    font-size:21px;font-weight:900;color:#fff;
+    box-shadow:inset 0 -6px 12px rgba(0,0,0,.15), inset 0 2px 4px rgba(255,255,255,.35);
+  }
+  .m-leumi{background:linear-gradient(150deg,#2f6fed,#1b3f9e);}
+  .m-poalim{background:linear-gradient(150deg,#ff5a4e,#c81e2e);}
+  .m-discount{background:linear-gradient(150deg,#25c48b,#0d8a5f);}
+  .m-mizrahi{background:linear-gradient(150deg,#ffb428,#e07800);}
+  .bank span{font-size:14px;font-weight:700;color:var(--ink);}
+
+  /* ───── side panel ───── */
+  .side{
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(24px) saturate(1.3);
+    border:1px solid rgba(255,255,255,.95);
+    border-radius:var(--r-lg);
+    box-shadow:0 32px 80px -32px rgba(41,41,41,.25), 0 2px 10px rgba(41,41,41,.04);
+    padding:32px 30px 26px;
+    position:sticky;top:32px;
+  }
+  .side-head{display:flex;flex-direction:column;align-items:center;text-align:center;padding-bottom:24px;border-bottom:1px solid rgba(41,41,41,.07);margin-bottom:8px;}
+  .side-title{
+    align-self:flex-start;
+    font-size:13px;font-weight:800;color:var(--ink-faint);letter-spacing:1px;
+    margin-bottom:22px;
+  }
+  .avatar-lg{
+    width:88px;height:88px;border-radius:50%;
+    background:linear-gradient(150deg,#e8faf1,#c9f3da 60%,#aef0c8);
+    display:grid;place-items:center;
+    font-size:30px;font-weight:900;color:#0c7a3a;
+    box-shadow:0 16px 36px -12px rgba(0,196,106,.55), inset 0 0 0 3px rgba(255,255,255,.85);
+    margin-bottom:16px;
+  }
+  .side-head h3{font-size:21px;font-weight:800;letter-spacing:-.3px;margin-bottom:10px;}
+  .facts{list-style:none;}
+  .fact{
+    display:flex;align-items:center;gap:14px;
+    padding:14px 4px;
+    border-bottom:1px solid rgba(41,41,41,.06);
+  }
+  .fact:last-child{border-bottom:none;}
+  .ficon{
+    width:38px;height:38px;border-radius:12px;flex:none;
+    display:grid;place-items:center;
+  }
+  .ficon svg{width:18px;height:18px;}
+  .f-mint{background:var(--mint);color:var(--mint-sat);}
+  .f-sky{background:var(--sky);color:var(--sky-sat);}
+  .f-peach{background:var(--peach);color:var(--peach-sat);}
+  .f-lilac{background:var(--lilac);color:var(--lilac-sat);}
+  .fbody{display:flex;flex-direction:column;gap:1px;min-width:0;}
+  .fbody .k{font-size:12.5px;font-weight:600;color:var(--ink-faint);}
+  .fbody .v{font-size:15px;font-weight:700;color:var(--ink);}
+  .fbody .v.pos{color:var(--money-ink);}
+  .fbody .v.empty{color:#c4c4ca;font-weight:600;}
+
+  /* ───── footer ───── */
+  footer{
+    text-align:center;margin-top:44px;
+    font-size:13px;font-weight:600;color:var(--ink-faint);letter-spacing:.4px;
+  }
+  footer b{color:var(--ink-soft);}
+  footer .g{color:var(--money-deep);}
+
+  @media (max-width:1180px){
+    .grid{grid-template-columns:1fr;}
+    .side{position:static;}
+    .actions{flex-wrap:wrap;}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- identity bar -->
+  <header class="idbar">
+    <div class="avatar-sm">יי</div>
+    <div class="idname">
+      <h1>ישראל ישראלי</h1>
+      <span class="phone">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        050-1234567
+      </span>
+    </div>
+    <span class="verdict"><span class="dot"></span>לקוח תקין · ירוק</span>
+    <div class="actions">
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        חייג
+      </button>
+      <button class="btn btn-wa">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        וואטסאפ
+      </button>
+      <button class="btn btn-doc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="9" y1="11" x2="13" y2="11"/></svg>
+        שלח הסכם
+      </button>
+      <button class="btn btn-mail">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        מייל
+      </button>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <section class="hero">
+    <div class="hero-row">
+      <div>
+        <div class="hero-label">ביקש</div>
+        <div class="amount">45,000&nbsp;₪</div>
+      </div>
+      <span class="chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        כיסוי חוב
+      </span>
+    </div>
+    <div class="meta">
+      <span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        שיחה אחרונה: <b>לפני שעה</b>
+      </span>
+      <span class="sep">·</span>
+      <span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        משימה פתוחה: <b>לבדוק מול ישראכרט</b>
+      </span>
+      <span class="sep">·</span>
+      <span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        נצפה לאחרונה: <b>חן צולר</b>
+      </span>
+    </div>
+  </section>
+
+  <!-- tabs -->
+  <nav class="tabs">
+    <button class="tab active">שיחה ושאלון</button>
+    <button class="tab">בדיקות זכאות</button>
+    <button class="tab">תיעוד</button>
+    <button class="tab">כספים</button>
+  </nav>
+
+  <!-- main grid -->
+  <div class="grid">
+    <main>
+      <!-- active question -->
+      <section class="qcard">
+        <span class="q-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          שאלה פעילה · 3 מתוך 8
+        </span>
+        <h2>האם היו בעיות בהוצאה לפועל?</h2>
+        <div class="answers">
+          <button class="pill pill-ok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            הכל תקין
+          </button>
+          <button class="pill pill-bad">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            היו בעיות
+          </button>
+        </div>
+      </section>
+
+      <!-- answered -->
+      <div class="answered">
+        <div class="arow">
+          <span class="acheck">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="q">האם חזרו צ'קים בשנתיים האחרונות?</span>
+          <span class="a">תקין</span>
+        </div>
+        <div class="arow">
+          <span class="acheck">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="q">מה גובה מסגרת האשראי?</span>
+          <span class="a">מעל 5,000 ₪</span>
+        </div>
+      </div>
+
+      <!-- banks -->
+      <section class="banks">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+          באיזה בנק מתנהל החשבון?
+        </h3>
+        <div class="bank-grid">
+          <button class="bank"><span class="mono m-leumi">ל</span><span>לאומי</span></button>
+          <button class="bank"><span class="mono m-poalim">פ</span><span>הפועלים</span></button>
+          <button class="bank"><span class="mono m-discount">ד</span><span>דיסקונט</span></button>
+          <button class="bank"><span class="mono m-mizrahi">מ</span><span>מזרחי</span></button>
+        </div>
+      </section>
+    </main>
+
+    <!-- side panel -->
+    <aside class="side">
+      <span class="side-title">דיוקן הלקוח</span>
+      <div class="side-head">
+        <div class="avatar-lg">יי</div>
+        <h3>ישראל ישראלי</h3>
+        <span class="verdict" style="margin-inline-start:0;"><span class="dot"></span>לקוח תקין · ירוק</span>
+      </div>
+      <ul class="facts">
+        <li class="fact">
+          <span class="ficon f-mint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </span>
+          <span class="fbody"><span class="k">סכום ומטרה</span><span class="v">45,000 ₪ · כיסוי חוב</span></span>
+        </li>
+        <li class="fact">
+          <span class="ficon f-sky">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </span>
+          <span class="fbody"><span class="k">חיווי אשראי</span><span class="v pos">חיובי</span></span>
+        </li>
+        <li class="fact">
+          <span class="ficon f-peach">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </span>
+          <span class="fbody"><span class="k">תעסוקה</span><span class="v">שכיר</span></span>
+        </li>
+        <li class="fact">
+          <span class="ficon f-mint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </span>
+          <span class="fbody"><span class="k">נטו חודשי</span><span class="v">9,500 ₪</span></span>
+        </li>
+        <li class="fact">
+          <span class="ficon f-lilac">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </span>
+          <span class="fbody"><span class="k">כתובת</span><span class="v">כפר יונה</span></span>
+        </li>
+        <li class="fact">
+          <span class="ficon f-sky">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h-2v-6l2-5h9l4 5h3a1 1 0 0 1 1 1v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+          </span>
+          <span class="fbody"><span class="k">רכב</span><span class="v">יש · 2020</span></span>
+        </li>
+        <li class="fact">
+          <span class="ficon f-lilac">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+          </span>
+          <span class="fbody"><span class="k">בנק</span><span class="v empty">—</span></span>
+        </li>
+      </ul>
+    </aside>
+  </div>
+
+  <footer>כיוון <b>A</b> · <b>iOS Luxury</b> — בינגו <span class="g">CRM</span></footer>
+</div>
+</body>
+</html>
