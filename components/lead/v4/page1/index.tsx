@@ -22,6 +22,7 @@ import { hasVehicleAnswer, screeningState } from "@/lib/catalog";
 import { str, arr, StepCard, fmtMoney } from "./shared";
 import { ParticleBurst, SPRING } from "./ep";
 import { TasksWidget } from "./TasksWidget";
+import { LivePortrait } from "./LivePortrait";
 import { Step1Opening } from "./Step1Opening";
 import { Step2Screening } from "./Step2Screening";
 import { Step3Vehicle } from "./Step3Vehicle";
@@ -296,7 +297,7 @@ export default function Page1Talk(props: CardV4PageProps & PendingActionProps) {
   });
 
   return (
-    <div className="flex gap-5 items-start">
+    <div className="epv6-stage flex gap-5 items-start">
       <style dangerouslySetInnerHTML={{ __html: STYLE }} />
 
       <ProgressConstellation steps={visibleSteps} activeId={activeId} bursts={bursts} onJump={jump} />
@@ -424,6 +425,14 @@ export default function Page1Talk(props: CardV4PageProps & PendingActionProps) {
           </StepCard>
         )}
       </div>
+
+      {/* דיוקן הלקוח החי — נבנה תוך כדי שיחה, תמיד מול העיניים */}
+      <LivePortrait
+        values={v}
+        catalog={catalog}
+        fullName={state.lead.fullName}
+        phone={state.lead.phone}
+      />
     </div>
   );
 }

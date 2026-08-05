@@ -1200,3 +1200,92 @@ html.dark [data-client] {
     .epv5-reveal, .epv5-reveal > *, .epv5-wash { transition: none; }
   }
 }
+
+/* ================================================================
+   EPv6 — קוקפיט מלא (בחירת חן 05/08): כל הכרטיס על במה כהה.
+   הטריק: משקפים את משתני הדארק לתוך .epv6-stage — כל יוטיליטי
+   של Tailwind בפנים מתהפך אוטומטית, בלי לגעת ב-40 קומפוננטות.
+   ================================================================ */
+.epv6-stage {
+  --color-bingo-cream: #141413;
+  --color-bingo-paper: #1b1b1a;
+  --color-bingo-mist: #242423;
+  --color-bingo-gray-50: #1b1b1a;
+  --color-bingo-gray-100: #242423;
+  --color-bingo-gray-150: #2c2c2b;
+  --color-bingo-gray-200: #383836;
+  --color-bingo-gray-300: #4c4c4a;
+  --color-bingo-gray-400: #74746F;
+  --color-bingo-gray-500: #9c9c98;
+  --color-bingo-gray-600: #c9c9c5;
+  --color-bingo-gray-700: #e0e0dd;
+  --color-bingo-gray-800: #f1f1ef;
+  --color-bingo-black: #FAFAF9;
+  --color-bingo-charcoal: #ECECEA;
+  --color-bingo-onyx: #ECECEA;
+  background:
+    radial-gradient(900px 320px at 82% -8%, var(--cc-aura, transparent), transparent 60%),
+    linear-gradient(180deg, #171715 0%, #121210 100%);
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,.07);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 24px 60px -30px rgba(0,0,0,.55);
+  padding: 22px;
+}
+@layer utilities {
+  /* חדר על הבמה הכהה — זכוכית שחורה, לא לבנה */
+  .epv6-stage .ep-glass {
+    background: rgba(255,255,255,.045);
+    border-color: rgba(255,255,255,.09);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .epv6-stage .ep-glass-active {
+    background: rgba(255,255,255,.07);
+    border-color: color-mix(in srgb, var(--cc-neon, #50FF0A) 38%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08),
+                0 0 0 1px color-mix(in srgb, var(--cc-neon, #50FF0A) 22%, transparent),
+                0 12px 40px -18px var(--cc-aura, transparent);
+  }
+  .epv6-stage .b-input, .epv6-stage .ep-input, .epv6-stage textarea.b-input {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.13);
+    color: #FAFAF9;
+  }
+  .epv6-stage .b-input::placeholder, .epv6-stage .ep-input::placeholder { color: rgba(250,250,249,.35); }
+  .epv6-stage .b-input:focus, .epv6-stage .ep-input:focus {
+    border-color: color-mix(in srgb, var(--cc-neon, #50FF0A) 55%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-neon, #50FF0A) 18%, transparent);
+  }
+  /* שלבים שלא בפוקוס: שקטים אבל לגמרי קריאים — לא "סגורים" */
+  .epv6-stage .v4p1-dim { opacity: .82; filter: none; }
+  .epv6-stage .v4p1-dim:hover { opacity: 1; }
+
+  /* ---------- דיוקן הלקוח החי ---------- */
+  .epv6-portrait {
+    position: sticky; top: 96px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 22px; padding: 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .epv6-portrait-row {
+    display: flex; align-items: center; gap: 10px;
+    min-height: 38px; padding: 4px 2px;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .epv6-portrait-row:last-child { border-bottom: none; }
+  .epv6-portrait-ico {
+    width: 26px; height: 26px; border-radius: 8px; flex: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.07); color: rgba(250,250,249,.75);
+  }
+  .epv6-portrait-label { font-size: 11px; color: rgba(250,250,249,.45); }
+  .epv6-portrait-value { font-size: 13.5px; font-weight: 700; color: #FAFAF9; }
+  .epv6-portrait-ghost { font-size: 13px; color: rgba(250,250,249,.22); font-weight: 400; }
+  .epv6-portrait-row.is-filled .epv6-portrait-ico {
+    background: color-mix(in srgb, var(--cc-neon, #50FF0A) 14%, transparent);
+    color: var(--cc-neon, #C9C9C5);
+  }
+  @keyframes epv6-row-in { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+  .epv6-portrait-row.is-filled { animation: epv6-row-in 240ms var(--epv5-ease) both; }
+  @media (prefers-reduced-motion: reduce) { .epv6-portrait-row.is-filled { animation: none; } }
+}
