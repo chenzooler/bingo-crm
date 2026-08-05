@@ -6,7 +6,11 @@
 import * as React from "react";
 import type { ClassicValues } from "@/lib/yoatsim/values";
 import type { RamzorValue } from "@/components/ui/Ramzor";
-import { ChevronDown } from "lucide-react";
+import {
+  ChevronDown, Coins, Target, IdCard, UserRound, Cake, CalendarDays, Users, Baby,
+  Briefcase, Hourglass, Wallet, HeartHandshake, PiggyBank, ShieldCheck, MapPin,
+  Signpost, Mailbox, Home, Receipt, Car, Landmark, Hash, CreditCard, StickyNote,
+} from "lucide-react";
 import { DrawnCheck, Icon3D } from "./ep";
 
 /* ---------- עזרי ערכים ---------- */
@@ -43,14 +47,56 @@ export function normalizePhoneIL(phone: string | null): string | null {
   return digits;
 }
 
-/* ---------- תווית שדה ---------- */
+/* ---------- תווית שדה + אייקון אוטומטי ----------
+   חוקת חן §3: "כל שדה עם אייקון מעוצב". במקום 40 עריכות — התווית
+   עצמה בוחרת אייקון דרך מפת מילות-מפתח. אפשר לדרוס עם icon={...}. */
 
-export function Field({ label, children, className }: {
-  label: string; children: React.ReactNode; className?: string;
+const LABEL_ICONS: Array<[RegExp, React.ElementType]> = [
+  [/סכום|הלוואה המבוקש/, Coins],
+  [/מטרת/, Target],
+  [/תעודת זהות|ת\.ז/, IdCard],
+  [/שם פרטי|שם משפחה|שם מלא/, UserRound],
+  [/לידה/, Cake],
+  [/הנפקה/, CalendarDays],
+  [/משפחתי/, Users],
+  [/ילדים/, Baby],
+  [/תעסוק|עבודה|תפקיד/, Briefcase],
+  [/ותק/, Hourglass],
+  [/הכנסה|נטו|תלוש/, Wallet],
+  [/בן\/בת זוג/, HeartHandshake],
+  [/פנסיה|השתלמות|קרן/, PiggyBank],
+  [/ביטוח/, ShieldCheck],
+  [/עיר/, MapPin],
+  [/רחוב|כתובת/, Signpost],
+  [/מיקוד/, Mailbox],
+  [/מגורים|נכס|דירה/, Home],
+  [/החזר|משכנתא|שכירות/, Receipt],
+  [/רכב|שיעבוד|שנת ייצור/, Car],
+  [/בנק/, Landmark],
+  [/סניף/, Hash],
+  [/חשבון/, CreditCard],
+  [/מסגרת|כרטיס/, CreditCard],
+  [/הערות|פירוט/, StickyNote],
+  [/תאריך/, CalendarDays],
+];
+
+function iconForLabel(label: string): React.ElementType | null {
+  for (const [re, Cmp] of LABEL_ICONS) if (re.test(label)) return Cmp;
+  return null;
+}
+
+export function Field({ label, children, className, icon }: {
+  label: string; children: React.ReactNode; className?: string; icon?: React.ReactNode;
 }) {
+  const Auto = icon === undefined ? iconForLabel(label) : null;
   return (
     <label className={`block ${className ?? ""}`}>
-      <span className="block text-[13px] font-semibold text-bingo-gray-600 mb-2">{label}</span>
+      <span className="flex items-center text-[13px] font-semibold text-bingo-gray-600 mb-2">
+        {icon !== undefined ? icon : Auto && (
+          <span className="lbl-ico"><Auto className="size-3.5" strokeWidth={1.75} /></span>
+        )}
+        {label}
+      </span>
       {children}
     </label>
   );
