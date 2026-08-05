@@ -1466,3 +1466,163 @@ html.dark [data-client] {
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+/* ============================================================
+   מרכז השליטה (cmd-) — כרטיס הלקוח בכיוון E, 05/08/26.
+   שפת חומרים: אובסידיאן #0D0F12, פאנל #151920, קו-שיער לבן 7%,
+   אקסנט ליים יחיד. גלואו = רק מצב חי/חיובי. transform+opacity בלבד.
+   ============================================================ */
+.cmd-root {
+  --cmd-bg: #0D0F12;
+  --cmd-panel: #151920;
+  --cmd-panel2: #1A1F28;
+  --cmd-line: rgba(255, 255, 255, .07);
+  --cmd-tx: #F2F4F6;
+  --cmd-tx2: #8B93A1;
+  --cmd-tx3: #555D6B;
+  --cmd-lime: #50FF0A;
+  --cmd-blue: #3D9BFF;
+  --cmd-amber: #FFB224;
+  --cmd-red: #FF5D5D;
+  --cmd-mint: rgba(80, 255, 10, .12);
+  background:
+    radial-gradient(900px 480px at 82% -10%, rgba(80, 255, 10, .05), transparent 60%),
+    radial-gradient(760px 420px at 8% 108%, rgba(61, 155, 255, .05), transparent 60%),
+    var(--cmd-bg);
+  color: var(--cmd-tx);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, .05);
+  box-shadow: 0 24px 64px -24px rgba(0, 0, 0, .5);
+}
+
+/* ---------- פאנל בנטו + זרקור עכבר (בסגנון Aceternity card-spotlight) ---------- */
+.cmd-panel {
+  position: relative;
+  background: var(--cmd-panel);
+  border: 1px solid var(--cmd-line);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+.cmd-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  background: radial-gradient(320px 320px at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .055), transparent 70%);
+}
+.cmd-panel:hover { border-color: rgba(255, 255, 255, .13); }
+.cmd-panel:hover::before { opacity: 1; }
+
+/* אריח-הגיבור: מסגרת קונית זוהרת שנושמת (glowing conic border) */
+.cmd-panel--hero { background: linear-gradient(160deg, #171C24, #12161C); }
+.cmd-panel--hero::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: conic-gradient(from var(--cmd-angle, 0deg),
+      rgba(80, 255, 10, .5), transparent 24%, transparent 68%,
+      rgba(61, 155, 255, .35), rgba(80, 255, 10, .5));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: cmd-spin 9s linear infinite;
+}
+@property --cmd-angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+@keyframes cmd-spin { to { --cmd-angle: 360deg; } }
+
+/* ---------- כותרות פאנל ---------- */
+.cmd-h {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cmd-tx3);
+  letter-spacing: .04em;
+}
+.cmd-h .ico {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  background: var(--cmd-panel2);
+  color: var(--cmd-tx2);
+}
+
+/* ---------- שדות כהים ---------- */
+.cmd-input {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--cmd-line);
+  background: rgba(255, 255, 255, .04);
+  color: var(--cmd-tx);
+  font: inherit;
+  font-size: 13px;
+  padding: 0 14px;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.cmd-input::placeholder { color: var(--cmd-tx3); }
+.cmd-input:hover { border-color: rgba(255, 255, 255, .16); }
+.cmd-input:focus-visible {
+  outline: 2px solid var(--cmd-lime);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+select.cmd-input { cursor: pointer; }
+select.cmd-input option { background: var(--cmd-panel2); color: var(--cmd-tx); }
+
+/* ---------- נקודה חיה + סריקה ---------- */
+.cmd-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.cmd-dot--live { background: var(--cmd-lime); box-shadow: 0 0 12px var(--cmd-lime); animation: cmd-pulse 2.2s infinite; }
+@keyframes cmd-pulse { 50% { opacity: .45; } }
+.cmd-scan { animation: cmd-pulse 1.6s infinite; }
+
+/* ---------- ברי הבדיקות ---------- */
+.cmd-bar { flex: 1; height: 7px; border-radius: 6px; background: var(--cmd-panel2); overflow: hidden; }
+.cmd-bar i { display: block; height: 100%; border-radius: 6px; transform-origin: right; animation: cmd-sweep 1.4s cubic-bezier(.2, 1, .3, 1) both; }
+@keyframes cmd-sweep { from { transform: scaleX(0); } }
+
+/* ---------- פיד: מסכת דהייה בתחתית ---------- */
+.cmd-feedmask { position: relative; overflow: hidden; }
+.cmd-feedmask::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 42px;
+  pointer-events: none;
+  background: linear-gradient(transparent, var(--cmd-panel));
+}
+
+/* ---------- קשת המד (ציון תיק) ---------- */
+.cmd-arc-val { animation: cmd-arc 1.3s cubic-bezier(.2, 1, .3, 1) both; }
+@keyframes cmd-arc { from { stroke-dashoffset: 188; } }
+
+/* ---------- קיצור מקלדת על כפתור ---------- */
+.cmd-kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .1);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cmd-tx2);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmd-panel--hero::after { animation: none; }
+  .cmd-dot--live, .cmd-scan { animation: none; }
+  .cmd-bar i, .cmd-arc-val { animation: none; }
+}

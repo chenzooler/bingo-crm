@@ -54,3 +54,4 @@ prisma/dev.db
 prisma/dev.db-journal
 *.db-wal
 *.db-shm
+.playwright-mcp/

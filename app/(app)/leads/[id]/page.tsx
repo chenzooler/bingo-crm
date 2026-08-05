@@ -1,6 +1,6 @@
-// כרטיס הלקוח — ברירת המחדל: Card v4 (כרטיס הדגל החדש).
-// ?view=cockpit → קוקפיט השיחה · ?view=classic → השכפול הקלאסי של Yoatsim ·
-// ?view=retzef → רֶצֶף · ?view=form → הטופס המונחה.
+// כרטיס הלקוח — ברירת המחדל: מרכז השליטה (כיוון E, docs/command-center-research.md).
+// ?view=v4 → כרטיס הדגל הקודם · ?view=cockpit → קוקפיט השיחה ·
+// ?view=classic → השכפול הקלאסי של Yoatsim · ?view=retzef → רֶצֶף · ?view=form → הטופס המונחה.
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { journeyFromLead } from "@/lib/journey-db";
@@ -9,6 +9,7 @@ import { JourneyCard } from "@/components/lead/journey/JourneyCard";
 import { ClassicLeadCard } from "@/components/classic/ClassicLeadCard";
 import { CockpitCard } from "@/components/lead/cockpit/CockpitCard";
 import { CardV4 } from "@/components/lead/v4/CardV4";
+import { CommandCenter } from "@/components/lead/command/CommandCenter";
 import type { CardV4Summary, TimelineItem } from "@/components/lead/v4/types";
 import { RecentlyViewedTracker } from "@/components/leads/RecentlyViewedTracker";
 
@@ -25,7 +26,8 @@ export default async function LeadPage({ params, searchParams }: {
       : sp.view === "form" ? "form"
         : sp.view === "classic" ? "classic"
           : sp.view === "cockpit" ? "cockpit"
-            : "v4";
+            : sp.view === "v4" ? "v4"
+              : "command";
   const idNum = Number(id);
 
   const include = {
@@ -208,10 +210,56 @@ export default async function LeadPage({ params, searchParams }: {
     })),
   ].sort((x, y) => (x.at < y.at ? 1 : -1));
 
+  const cardProps = {
+    lead: leadDTO,
+    initialValues,
+    initialActivities: activities,
+    initialProcesses,
+    users,
+    summary,
+    timeline,
+    invoices: invoices.map((inv) => ({
+      id: inv.id,
+      number: inv.number,
+      title: inv.title,
+      amount: inv.amount,
+      vatRate: inv.vatRate,
+      status: inv.status,
+      notes: inv.notes,
+      issuedAt: inv.issuedAt ? inv.issuedAt.toISOString() : null,
+      paidAt: inv.paidAt ? inv.paidAt.toISOString() : null,
+      createdAt: inv.createdAt.toISOString(),
+    })),
+  };
+
+  if (view === "command") {
+    return (
+      <><RecentlyViewedTracker id={lead.id} name={lead.fullName} />
+      <CommandCenter
+        {...cardProps}
+        meta={{
+          stage: lead.stage,
+          cardKind: lead.cardKind,
+          archived: lead.archived,
+          ownerName: lead.owner?.name ?? null,
+          intakeDate: lead.intakeDate.toISOString(),
+          source: lead.sourceText ?? lead.source,
+        }}
+        initialForms={lead.sentForms.map((f) => ({
+          id: f.id,
+          templateName: f.templateName,
+          status: f.status,
+          sentAt: f.sentAt.toISOString(),
+          signedAt: f.signedAt ? f.signedAt.toISOString() : null,
+        }))}
+      /></>
+    );
+  }
+
   return (
     <><RecentlyViewedTracker id={lead.id} name={lead.fullName} />
     <CardV4
-      lead={leadDTO}
+      {...cardProps}
       meta={{
         stage: lead.stage,
         cardKind: lead.cardKind,
@@ -220,24 +268,6 @@ export default async function LeadPage({ params, searchParams }: {
         intakeDate: lead.intakeDate.toISOString(),
         source: lead.sourceText ?? lead.source,
       }}
-      initialValues={initialValues}
-      initialActivities={activities}
-      initialProcesses={initialProcesses}
-      users={users}
-      summary={summary}
-      timeline={timeline}
-      invoices={invoices.map((inv) => ({
-        id: inv.id,
-        number: inv.number,
-        title: inv.title,
-        amount: inv.amount,
-        vatRate: inv.vatRate,
-        status: inv.status,
-        notes: inv.notes,
-        issuedAt: inv.issuedAt ? inv.issuedAt.toISOString() : null,
-        paidAt: inv.paidAt ? inv.paidAt.toISOString() : null,
-        createdAt: inv.createdAt.toISOString(),
-      }))}
     /></>
   );
 }
