@@ -40,6 +40,21 @@
   כדי להימנע: בקוד השתמש במונחים ניטרליים (screening/indicator) במקום
   "אשראי/BDI/סמיילי" בשמות משתנים כשאפשר. `switchModelsOnFlag: false` כבר מוגדר.
 
+
+## 🎨 ארגז כלי העיצוב (הותקן 05/08/26 — "בלי פשרות")
+- **סקילים** (‎.claude/skills, נטענים אוטומטית): ui-ux-pro-max (84 סגנונות/192 פלטות/98 כללי UX)
+  + design-system, ui-styling, brand, banner-design.
+- **MCP** (‎.mcp.json): **Magic 21st.dev** (12K קומפוננטות; מפתח ב-settings.local.json)
+  · **Playwright** (לולאת אימות ויזואלי: צילומי מסך מלאים בכל רזולוציה — לא הפאנל הקטן).
+- **ספריות וואו (חינם, להתקין עם shadcn CLI לפי הצורך)**: shadcn/ui (בסיס) ·
+  **Aceternity UI** (200+ אפקטים: 3D cards, beams, particles) · **Magic UI** (150+ אנימציות:
+  bento, marquee, text effects) · react-bits · Origin UI · Tremor (דשבורדים/גרפים) · GSAP (חינם מלא).
+- **בתשלום (חן אישר, בלי לחסוך)**: 21st.dev Builder+AI $15/חודש · Tailwind Plus $299 ·
+  Mobbin Pro (השראה). Figma MCP — אופציה בהמשך אם רוצים לוח עיצוב דו-כיווני.
+- **שיטת עבודה מחייבת**: כל מסך = חוקי הסקיל + קומפוננטות מהספריות + לולאת
+  screenshot→תיקון עם Playwright + אישור עיניים של חן. הכיוון הנבחר: **מרכז שליטה**
+  (public/directions/e.html) — צפוף, חי, מדיד.
+
 ## 📚 מסמכי אפיון — קרא לפני שבונים כרטיס/תהליכים
 - **`docs/yoatsim-full-spec.md`** ⭐ — האפיון המלא של Yoatsim (כרטיס לקוח מלא,
   15 תהליכים + כל הסטטוסים, 21 אוטומציות, 42 תבניות הודעה, 27 משתמשים + 9 הרשאות).
