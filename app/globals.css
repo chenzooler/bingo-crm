@@ -168,7 +168,7 @@ html.dark {
   --color-bingo-gray-150: #2c2c2b;
   --color-bingo-gray-200: #383836;
   --color-bingo-gray-300: #4c4c4a;
-  --color-bingo-gray-400: #77777;
+  --color-bingo-gray-400: #74746F;
   --color-bingo-gray-500: #9c9c98;
   --color-bingo-gray-600: #c9c9c5;
   --color-bingo-gray-700: #e0e0dd;
@@ -708,7 +708,7 @@ html.dark {
     box-shadow: 0 4px 12px rgba(16, 19, 18, 0.35), 0 0 16px -6px rgba(80, 255, 10, 0.5);
     overflow: hidden;
   }
-  .ep-icon3d > img { width: 100%; height: 100%; object-fit: cover; }
+  .ep-icon3d > img { width: 100%; height: 100%; object-fit: contain; }
 
   /* הדגשת מילת מפתח בשאלה — מברשת טקסט שצומחת מימין */
   .ep-mark {
@@ -829,4 +829,374 @@ html.dark {
   .scrollbar-none::-webkit-scrollbar { display: none; }
   .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
   .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+}
+/* ================================================================
+   EPv5 — «הצפת הפסק-דין» · דלתא סופית מעל נייר חשמלי (אחרי שיפוט)
+   ----------------------------------------------------------------
+   · כל הטוקנים --epv5-* — אפס התנגשות עם --ease-out של Tailwind v4.
+   · אפס שינוי מחוץ ל-[data-client] — הדלתא חיה רק בכרטיס הליד.
+   · כל שימוש ב---cc* עם fallback — הקלאסים בטוחים גם מחוץ לשורש.
+   · בלי backdrop-filter על שכבות שמצטיירות תוך הקלדה.
+   · משטחי זכוכית EP הם light-first (כמו ep-* הקיים); משטחים צפים
+     חדשים (פופ-אובר, kbd, s1) כן מקבלים דארק.
+   · דורש Chrome 111+ (color-mix). CRM פנימי.
+   ================================================================ */
+
+/* ---------- 1. טוקנים (unlayered, namespaced) ---------- */
+:root {
+  --epv5-ease: cubic-bezier(.22, 1, .36, 1);
+  --epv5-dur-1: 150ms;  /* hover / פוקוס / צבע */
+  --epv5-dur-2: 220ms;  /* פתיחה-סגירה / טאב / reveal */
+  --epv5-dur-3: 300ms;  /* כניסת עמוד. התקרה. אין רביעי. */
+  --epv5-hairline: rgba(41,41,41,.08);
+  --epv5-hairline-soft: rgba(41,41,41,.06);
+}
+html.dark {
+  --epv5-hairline: rgba(255,255,255,.10);
+  --epv5-hairline-soft: rgba(255,255,255,.07);
+}
+
+/* ---------- 2. צנרת צבע-הלקוח ----------
+   חיווט: שורש CardV4 ← data-client={catalog.clientColor ?? "none"}.
+   --cc-soft = אחד-לאחד הערכים של CLIENT_COLOR_META.bg (lib/catalog.ts:204). */
+[data-client] {
+  --cc: #9C9C98; --cc-neon: #C9C9C5; --cc-ink: #565654;
+  --cc-soft: #F1F1EF; --cc-aura: rgba(156,156,152,.12);
+}
+[data-client="green"]  { --cc:#2B9410; --cc-neon:#50FF0A; --cc-ink:#1E6F08; --cc-soft:#DAFFCB; --cc-aura:rgba(80,255,10,.17); }
+[data-client="blue"]   { --cc:#1F81D6; --cc-neon:#58B0FF; --cc-ink:#16588F; --cc-soft:#DCEBF7; --cc-aura:rgba(88,176,255,.18); }
+[data-client="orange"] { --cc:#E28413; --cc-neon:#FFA82E; --cc-ink:#9A5A0B; --cc-soft:#FDEBD4; --cc-aura:rgba(255,168,46,.18); }
+[data-client="red"]    { --cc:#E5484D; --cc-neon:#FF6B5E; --cc-ink:#B3261E; --cc-soft:#FFE1DC; --cc-aura:rgba(255,74,46,.20); }
+/* דארק: פסטל בהיר מסנוור — ממזגים אל הבמה */
+html.dark [data-client] {
+  --cc-soft: color-mix(in srgb, var(--cc) 22%, #161613);
+  --cc-aura: color-mix(in srgb, var(--cc-neon) 14%, transparent);
+}
+
+/* ---------- 3. טיפוגרפיה עברית — בתוך הכרטיס בלבד ----------
+   unlayered מנצח כל שכבה: מנטרל גם letter-spacing של @layer base
+   וגם של .text-title-* בתוך תת-העץ. קידום גלובלי = גל 2 + QA. */
+[data-client] :is(h1,h2,h3,h4,h5,h6) { letter-spacing: 0; }
+[data-client] :is(.tabular-nums, .num-display) { letter-spacing: -0.01em; }
+
+@layer utilities {
+
+  /* ==============================================================
+     4. הכותרת: הצפת פסק-הדין
+     חיווט CardV4: header מקבל ep-island--verdict + data-client על
+     השורש; בתוך ה-header, ראשון:
+       <span className={cn("epv5-aura", still && "hidden-anim")}
+             key={clientColor} aria-hidden />
+     שומר-ריפליי (חובה): אם sessionStorage כבר ראה lead:color —
+     מוסיפים epv5-still ל-header: התוצאה מוצגת, שום דבר לא זז.
+     המידע (הגלולה) לעולם אינו מונפש — קריא מפריים 0.
+     ============================================================== */
+  .epv5-aura {
+    position: absolute; inset: 0; border-radius: inherit;
+    pointer-events: none; overflow: hidden;
+    background:
+      radial-gradient(720px 260px at 88% -30%, var(--cc-aura, transparent), transparent 62%),
+      radial-gradient(460px 200px at 4% 118%,
+        color-mix(in srgb, var(--cc-aura, transparent) 55%, transparent), transparent 62%);
+    animation: epv5-flood 600ms var(--epv5-ease) both;
+  }
+  [data-client="none"] .epv5-aura { display: none; }
+  [data-client="red"] .epv5-aura { animation-duration: 400ms; } /* אדום לא חוגג */
+  @keyframes epv5-flood { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+
+  /* הקרן העליונה — "פס הצבע" של חן, נמתחת מימין (RTL) */
+  .epv5-aura::after {
+    content: ""; position: absolute; inset-inline: 18px; top: 0; height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, transparent,
+      var(--cc-neon, #C9C9C5) 30%, var(--cc-neon, #C9C9C5) 70%, transparent);
+    filter: drop-shadow(0 1px 6px var(--cc-aura, transparent));
+    transform-origin: 100% 50%;
+    animation: epv5-draw-x 450ms var(--epv5-ease) 120ms both;
+  }
+  @keyframes epv5-draw-x { from { transform: scaleX(0); } }
+  /* שומר-הריפליי: אפס אנימציה בפתיחה חוזרת של אותו ליד+צבע */
+  .epv5-still .epv5-aura, .epv5-still .epv5-aura::after,
+  .epv5-still .epv5-verdict-dot::before { animation: none; }
+  /* ההיירליין הליים של האי מפנה את הבמה לצבע הלקוח */
+  .ep-island--verdict::before {
+    background: linear-gradient(90deg, transparent,
+      color-mix(in srgb, var(--cc-neon, #C9C9C5) 40%, transparent), transparent);
+  }
+
+  /* גלולת הפסק-דין — הקטלוג + שם הצבע, סטטית, קריאה מיידית */
+  .epv5-verdict {
+    position: relative; z-index: 1;
+    display: inline-flex; align-items: center; gap: 10px;
+    min-height: 40px; padding-inline: 16px 18px; border-radius: 50px;
+    font-size: 15px; font-weight: 700; color: #FAFAF9;
+    background: color-mix(in srgb, var(--cc-neon, #C9C9C5) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--cc-neon, #C9C9C5) 45%, transparent);
+    box-shadow: 0 0 26px -6px var(--cc-aura, transparent), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .epv5-verdict small {
+    font-size: 12px; font-weight: 600;
+    color: color-mix(in srgb, var(--cc-neon, #C9C9C5) 75%, #FAFAF9);
+  }
+  .epv5-verdict-dot {
+    position: relative; width: 12px; height: 12px; border-radius: 50%; flex: none;
+    background: var(--cc-neon, #C9C9C5);
+    box-shadow: 0 0 12px var(--cc-neon, #C9C9C5), 0 0 3px var(--cc-neon, #C9C9C5);
+  }
+  /* שתי פעימות בהיוולדות קטלוג — ואז שקט (ping-dot קיים ב-globals:516) */
+  .epv5-verdict-dot::before {
+    content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: inherit; animation: ping-dot 1.6s cubic-bezier(0,0,.2,1) 2;
+  }
+  [data-client="red"] .epv5-verdict-dot::before { animation: none; }
+
+  /* מספר-גיבור: הסכום שכל השיחה סובבת סביבו. לבן — הליים חזר להיות CTA בלבד */
+  .epv5-hero { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .epv5-hero-amount {
+    direction: ltr; unicode-bidi: isolate;
+    font-size: clamp(38px, 4.5vw, 46px); line-height: 1.05; font-weight: 700;
+    color: #FAFAF9; font-feature-settings: "tnum" on, "lnum" on;
+    letter-spacing: -0.01em;
+  }
+  .epv5-hero-amount .curr { font-size: .5em; font-weight: 600; color: rgba(250,250,249,.65); margin-inline-start: 6px; }
+  .epv5-hero-label { font-size: 13px; font-weight: 600; color: #9C9C98; }
+  .epv5-hero-chip {
+    display: inline-flex; align-items: center; gap: 6px; height: 30px;
+    padding-inline: 12px; border-radius: 50px; font-size: 13px; font-weight: 700;
+    color: #FAFAF9; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+  }
+
+  /* רחיצת-עמוד — הצבע מגיע אינליין מ-CLIENT_COLOR_META.bg (הקוד המת קם לתחייה) */
+  .epv5-wash {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(180deg, var(--wash, transparent), transparent 44%);
+    opacity: .5; transition: opacity 400ms var(--epv5-ease);
+  }
+  html.dark .epv5-wash { opacity: .14; }
+
+  /* ==============================================================
+     5. אייקון-לכל-שדה — אריח ממדי בשפת המותג (לא קו-על-אפור)
+     רקע גרדיאנט-חדר + inset highlight; שדות דגל מקבלים webp מ-3D.
+     <div className="fld">
+       <span className="fld-ico"><img src="/icons3d/coins.webp" alt=""/></span>
+       <input className="b-input ep-input" … />
+     </div>
+     ============================================================== */
+  .fld { position: relative; }
+  .fld-ico {
+    position: absolute; inset-inline-start: 10px; top: 50%; translate: 0 -50%;
+    width: 26px; height: 26px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(145deg, #fff 0%, var(--step-tint, var(--cc-soft, #F1F1EF)) 90%);
+    color: var(--step-deep, var(--color-bingo-gray-600));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 1px 2px rgba(41,41,41,.07),
+                0 0 0 1px var(--epv5-hairline-soft);
+    pointer-events: none; z-index: 1;
+    transition: background-color var(--epv5-dur-1) var(--epv5-ease),
+                box-shadow var(--epv5-dur-1) var(--epv5-ease);
+  }
+  .fld-ico > img { width: 18px; height: 18px; object-fit: contain; }
+  .fld > .b-input, .fld > .ep-input, .fld input.b-input {
+    padding-inline-start: 46px; text-overflow: ellipsis; /* רחובות עבריים ארוכים */
+  }
+  /* פוקוס: העמקה עדינה — בלי היפוך לשחור (אריח מהבהב בזווית העין בין 30 שדות) */
+  .fld:focus-within .fld-ico {
+    background: color-mix(in srgb, var(--step-deep, #565654) 14%, var(--step-tint, #F1F1EF));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5),
+                0 0 0 1px color-mix(in srgb, var(--step-deep, #565654) 35%, transparent);
+  }
+  /* שדה כסף: העטיפה dir="ltr" — האריח מעוגן לימין הפיזי (כמו כל שדה עברי)
+     וה-₪ גר בתוך האריח. מבטל את סיומת ה-pe-8 — נגמר הסטאק. */
+  .fld--money .fld-ico {
+    inset-inline-start: auto; inset-inline-end: 10px;
+    font-size: 13px; font-weight: 700;
+  }
+  .fld--money > .b-input { padding-inline-start: 14px; padding-inline-end: 46px; }
+  /* שדה עם לוגו נבחר (בנק/ביטוח) — צ'יפ לבן מנרמל מחליף את האריח */
+  .fld--logo .fld-ico { background: #fff; padding: 3px; }
+  .fld--logo .fld-ico img { width: 100%; height: 100%; object-fit: contain; }
+  /* אייקון לקבוצת גלולות (אין אינפוט לעגון בו) */
+  .lbl-ico {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 7px; flex: none;
+    margin-inline-end: 6px; vertical-align: -5px;
+    background: linear-gradient(145deg, #fff 0%, var(--step-tint, #F1F1EF) 90%);
+    color: var(--step-deep, var(--color-bingo-gray-600));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 0 0 1px var(--epv5-hairline-soft);
+  }
+
+  /* ==============================================================
+     6. צ'יפ-לוגו, שורות ואריחי בנק/ביטוח
+     נפילה: מונוגרמת LogoBadge הקיימת (אפור) — אין שדה brandColor בדאטה.
+     ============================================================== */
+  .logo-chip {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; padding: 4px; border-radius: 9px;
+    background: #fff; flex: none; box-shadow: 0 0 0 1px var(--epv5-hairline);
+  }
+  .logo-chip > img { width: 100%; height: 100%; object-fit: contain; }
+  html.dark .logo-chip { background: #fff; } /* במכוון: לוגו דורש לבן מנרמל גם בדארק */
+  .logo-opt {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    min-height: 44px; padding-inline: 10px; border-radius: 12px;
+    font-size: 14px; font-weight: 600; color: var(--color-bingo-gray-800);
+    transition: background-color var(--epv5-dur-1) var(--epv5-ease);
+  }
+  .logo-opt:hover { background: var(--color-bingo-gray-100); }
+  .logo-opt[aria-selected="true"], .logo-opt--on {
+    background: var(--cc-soft, #F1F1EF);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--cc, #9C9C98) 40%, transparent);
+  }
+  /* גריד 13 אריחי הבנקים — שכבת הדאטה הישראלית סוף-סוף על השולחן */
+  .logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .logo-tile {
+    display: flex; align-items: center; gap: 8px; min-height: 48px; padding-inline: 10px;
+    border-radius: 14px; border: 1.5px solid var(--color-bingo-gray-200); background: #fff;
+    font-size: 13.5px; font-weight: 600; color: var(--color-bingo-gray-800);
+    transition: border-color var(--epv5-dur-1) var(--epv5-ease),
+                background-color var(--epv5-dur-1) var(--epv5-ease);
+  }
+  .logo-tile:hover { border-color: var(--color-bingo-gray-400); }
+  .logo-tile[aria-pressed="true"] {
+    border-color: color-mix(in srgb, var(--cc, #9C9C98) 55%, transparent);
+    background: var(--cc-soft, #F1F1EF);
+  }
+
+  /* ==============================================================
+     7. פופ-אובר אוטוקומפליט — אטום. בלי blur: הרשימה מצטיירת מחדש
+     בכל הקשה, ו-backdrop-filter מעליה = ג'אנק במחשבי המוקד.
+     ============================================================== */
+  .epv5-pop {
+    background: rgba(255,255,255,.97);
+    border: 1px solid var(--epv5-hairline);
+    border-radius: 16px; padding: 6px;
+    box-shadow: 0 0 0 1px rgba(41,41,41,.03), 0 12px 32px -8px rgba(41,41,41,.18),
+                inset 0 1px 0 rgba(255,255,255,.9);
+  }
+  html.dark .epv5-pop { background: rgba(33,31,27,.98); box-shadow: 0 12px 32px -8px rgba(0,0,0,.6); }
+  .epv5-opt {
+    position: relative; display: flex; align-items: center; gap: 8px;
+    width: 100%; min-height: 40px; padding-inline: 12px; border-radius: 10px;
+    font-size: 14px; text-align: start; color: var(--color-bingo-gray-800);
+  }
+  .epv5-opt .sub { font-size: 12px; color: var(--color-bingo-gray-500); }
+  /* שורה פעילה: חייבת להיקרא בתאורת ניאון משרדית — רקע מלא, לא רמז */
+  .epv5-opt.is-active {
+    background: var(--cc-soft, #F1F1EF);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cc, #9C9C98) 30%, transparent);
+  }
+  .epv5-opt.is-active::before {
+    content: ""; position: absolute; inset-inline-start: 0; top: 9px; bottom: 9px;
+    width: 2.5px; border-radius: 2px;
+    background: var(--step-dot, var(--cc, var(--color-bingo-blue)));
+  }
+  .epv5-match { color: var(--color-bingo-blue); font-weight: 700; }
+  .epv5-pop-label { padding: 6px 12px 2px; font-size: 11px; font-weight: 700; color: var(--color-bingo-gray-600); }
+  .epv5-pop-empty { padding: 14px 12px; font-size: 13px; color: var(--color-bingo-gray-500); }
+
+  /* תג מקלדת — gray-600: ‏11px משלם על כל קונטרסט */
+  .kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding-inline: 5px;
+    border: 1px solid rgba(41,41,41,.16); border-bottom-width: 2px; border-radius: 4px;
+    background: #fff; font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    color: var(--color-bingo-gray-600);
+  }
+  html.dark .kbd { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.18); }
+  .ep-island .kbd { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); color: rgba(250,250,249,.8); }
+
+  /* ==============================================================
+     8. טאבים, חדרים, סצנת שלב 4, משטח S1
+     ============================================================== */
+  /* בלי !important: מוחקים את ה-boxShadow האינליין ב-CardV4.tsx:298 */
+  .epv5-tabpill { box-shadow: 0 8px 22px -8px var(--cc-aura, rgba(0,0,0,.3)), 0 2px 8px rgba(0,0,0,.35); }
+  .epv5-tab-badge {
+    min-width: 18px; height: 18px; padding-inline: 5px; border-radius: 9px;
+    display: inline-grid; place-items: center;
+    background: var(--color-bingo-green); color: #292929; font-size: 11px; font-weight: 700;
+  }
+
+  /* קירות לחדרים: גוף שלב פתוח בגוון החדר + רצועת זהות עליונה.
+     תנאי: הסרת ep-spotlight מ-StepCard (הזרקור כבוי בתוך הכרטיס — החלטה) */
+  .epv5-room {
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--step-tint, #F1F1EF) 40%, rgba(255,255,255,.62)) 0,
+      rgba(255,255,255,.62) 150px);
+  }
+  .epv5-room::after {
+    content: ""; position: absolute; inset-inline: 18px; top: 0; height: 3px;
+    border-radius: 3px; pointer-events: none;
+    background: linear-gradient(90deg, transparent,
+      color-mix(in srgb, var(--step-dot, #C9C9C5) 65%, transparent), transparent);
+  }
+
+  /* סצנת פסק-הדין בשלב 4 — הרגע שבו הלקוח נצבע (על האי הכהה) */
+  .epv5-scene-verdict { font-size: 30px; line-height: 1.2; font-weight: 800; color: var(--cc-neon, #FAFAF9); }
+  [data-client="green"] .epv5-scene-verdict { text-shadow: 0 0 22px var(--cc-aura, transparent); }
+  [data-client="red"] .epv5-scene-verdict { text-shadow: none; font-weight: 700; } /* בשורה קשה — בכבוד */
+  .epv5-scene-hint { font-size: 14px; color: rgba(250,250,249,.62); }
+
+  /* S1 — נייר שקט לשורות סיכום/חשבוניות */
+  .epv5-s1 { background: #fff; border: 1px solid var(--epv5-hairline); border-radius: 20px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9); }
+  html.dark .epv5-s1 { background: #1b1b1a; box-shadow: none; }
+  .epv5-hairline-b { border-block-end: 1px solid var(--epv5-hairline-soft); }
+
+  /* ==============================================================
+     9. רגעי מיקרו + חוזה תנועה
+     ============================================================== */
+  /* הבזק "מולא לבד" — מיקוד, תווית סניף */
+  @keyframes epv5-fill-flash {
+    from { background-color: color-mix(in srgb, var(--cc-neon, #50FF0A) 28%, transparent); }
+  }
+  .epv5-flash { animation: epv5-fill-flash 600ms var(--epv5-ease) 1; }
+  .epv5-autofill-note {
+    display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
+    font-size: 12px; font-weight: 600; color: var(--color-bingo-green-deep);
+  }
+
+  /* reveal מותנה בלי מלכודת מקלדת: מכווץ = מחוץ לטאב ולקורא מסך.
+     חובה בנוסף inert={!open} על העטיפה ב-JSX. פוקוס תכנותי — רק
+     אחרי שהמעבר הסתיים (onTransitionEnd), בלי scrollIntoView. */
+  .epv5-reveal { display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows var(--epv5-dur-2) var(--epv5-ease); }
+  .epv5-reveal > * { overflow: hidden; min-height: 0; }
+  .epv5-reveal:not([data-open="true"]) > * { visibility: hidden; transition: visibility 0s var(--epv5-dur-2); }
+  .epv5-reveal[data-open="true"] { grid-template-rows: 1fr; }
+  .epv5-reveal[data-open="true"] > * { visibility: visible; transition: none; }
+
+  /* פעולות בחשיפת-ריחוף (timeline, משימות) */
+  .epv5-row-actions { opacity: 0; transition: opacity var(--epv5-dur-1) var(--epv5-ease); }
+  .epv5-row:hover .epv5-row-actions, .epv5-row:focus-within .epv5-row-actions { opacity: 1; }
+
+  /* קו הדיו — צומח מימין; 270deg: הצבע החזק בקצה הימני, הדהייה שמאלה */
+  .epv5-ink {
+    display: block; height: 2px; border-radius: 2px; margin-top: 3px;
+    background: linear-gradient(270deg, var(--cc-neon, #C9C9C5),
+      color-mix(in srgb, var(--cc-neon, #C9C9C5) 25%, transparent));
+    transform-origin: 100% 50%;
+    animation: epv5-draw-x 300ms var(--epv5-ease) both;
+  }
+
+  /* שלד — שימר בכיוון RTL */
+  @keyframes epv5-shimmer-rtl { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .epv5-skeleton {
+    background: linear-gradient(90deg, var(--color-bingo-gray-100) 0%,
+      var(--color-bingo-gray-150) 50%, var(--color-bingo-gray-100) 100%);
+    background-size: 200% 100%;
+    animation: epv5-shimmer-rtl 1.4s ease-in-out infinite; border-radius: 10px;
+  }
+
+  /* חוזה התנועה — 8 שעות ביום:
+     1) שום תנועה בשדה בזמן הקלדה (CountUp כבר מגן — 600ms חלון);
+     2) width/height של אינפוטים והכותרת הדביקה — לעולם לא מונפשים;
+     3) כניסה מדורגת רק לשלב שנפתח עכשיו, לא בטעינת עמוד;
+     4) אנימציה אינסופית אסורה חוץ מ-dot-pulse על מידע חי ו-b-scan בזמן בדיקה;
+     5) ep-spotlight ו-cockpit-scanline — לא בתוך כרטיס ליד. לעולם;
+     6) חלקיקים/קונפטי — רק בחתימת הסכם. */
+  @media (prefers-reduced-motion: reduce) {
+    .epv5-aura, .epv5-aura::after, .epv5-verdict-dot::before,
+    .epv5-flash, .epv5-ink, .epv5-skeleton { animation: none; }
+    .epv5-reveal, .epv5-reveal > *, .epv5-wash { transition: none; }
+  }
 }

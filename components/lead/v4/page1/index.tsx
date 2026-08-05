@@ -309,6 +309,7 @@ export default function Page1Talk(props: CardV4PageProps & PendingActionProps) {
           </p>
         )}
         <TasksWidget leadId={state.lead.id} />
+        <QuickNote onAdd={(text) => state.addNote("note", text)} />
 
         <StepCard
           id="opening" index={++stepIndex} title="פתיחה"
@@ -422,6 +423,54 @@ export default function Page1Talk(props: CardV4PageProps & PendingActionProps) {
             <Step7Details state={state} />
           </StepCard>
         )}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- הערה מהירה — סוגר את סעיף "מוסיפים פעילויות" בעמוד 1 (חוקה §2) ---------- */
+function QuickNote({ onAdd }: { onAdd: (text: string) => void }) {
+  const [open, setOpen] = React.useState(false);
+  const [text, setText] = React.useState("");
+  const submit = () => {
+    if (!text.trim()) return;
+    onAdd(text.trim());
+    setText("");
+    setOpen(false);
+  };
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-[13px] font-semibold text-bingo-gray-500 hover:text-bingo-black transition-colors"
+      >
+        + הוסף הערה
+      </button>
+    );
+  }
+  return (
+    <div className="epv5-s1 p-3 space-y-2">
+      <textarea
+        autoFocus
+        className="b-input ep-input w-full min-h-[64px] py-2.5 text-[13.5px] resize-y"
+        placeholder="הערה לציר הזמן..."
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); submit(); }
+          if (e.key === "Escape") setOpen(false);
+        }}
+      />
+      <div className="flex gap-2">
+        <button type="button" onClick={submit} disabled={!text.trim()}
+          className="b-pill-dark min-h-[40px] px-5 text-[13px] disabled:opacity-40">
+          הוסף הערה
+        </button>
+        <button type="button" onClick={() => setOpen(false)}
+          className="text-[12.5px] text-bingo-gray-400 hover:text-bingo-gray-600">
+          ביטול
+        </button>
       </div>
     </div>
   );

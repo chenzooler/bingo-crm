@@ -96,16 +96,9 @@ export function Step4Ramzor({ state, catalog }: { state: ClassicCardState; catal
 
       {/* אי האובסידיאן — הבמה הכהה של הרמזור */}
       <div className="ep-island relative overflow-hidden p-6">
-        {flareKey > 0 && !rm && (
-          <motion.div
-            key={flareKey}
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(460px 280px at 50% 45%, rgba(80,255,10,0.32), transparent 70%)" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{ duration: 1.1, ease: "easeInOut" }}
-          />
+        {/* ההבזק בצבע הלקוח — לא ליים קבוע; אדום לא חוגג (מטופל ב-CSS) */}
+        {flareKey > 0 && !rm && catalog.clientColor && (
+          <span className="epv5-aura" key={`${flareKey}-${catalog.clientColor}`} aria-hidden />
         )}
 
         <div className="relative space-y-5">
@@ -136,7 +129,7 @@ export function Step4Ramzor({ state, catalog }: { state: ClassicCardState; catal
             <div className="flex flex-col items-center gap-3 py-2 v4p1-enter">
               <Ramzor
                 value={shown}
-                size="md"
+                size={shown !== null ? "lg" : "md"}
                 orientation="horizontal"
                 onSelect={autoValue === null
                   ? (c) => state.set("smileyManual", ramzorToDb(c))
@@ -149,16 +142,13 @@ export function Step4Ramzor({ state, catalog }: { state: ClassicCardState; catal
                     ? "אין תוצאה אוטומטית - בחר את הצבע לפי תוצאת הבדיקה"
                     : "נקבע ידנית לפי תוצאת הבדיקה"}
               </p>
-              {/* פסק הדין מהקטלוג */}
+              {/* סצנת פסק-הדין — 30px, בצבע הלקוח (רגע חתימה 1ב) */}
               {catalog.ramzor !== null && (
                 <div className="text-center v4p1-enter" aria-live="polite">
-                  <span
-                    className={`inline-block text-[17px] font-bold ${catalog.ramzor === "green" ? "ep-neon" : ""}`}
-                    style={{ color: verdictColor }}
-                  >
+                  <span className="epv5-scene-verdict" style={{ color: verdictColor }}>
                     {catalog.label}
                   </span>
-                  <p className="text-[13px] text-white/55 mt-2">{catalog.hint}</p>
+                  <p className="epv5-scene-hint mt-2">{catalog.hint}</p>
                   {noTrack && (
                     <p className="text-[13px] text-white/70 mt-2">
                       אין מסלול מתאים כרגע - מסכמים את השיחה ברוגע ומתעדים בכרטיס

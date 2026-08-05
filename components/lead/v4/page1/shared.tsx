@@ -7,7 +7,7 @@ import * as React from "react";
 import type { ClassicValues } from "@/lib/yoatsim/values";
 import type { RamzorValue } from "@/components/ui/Ramzor";
 import { ChevronDown } from "lucide-react";
-import { DrawnCheck, Icon3D, useSpotlight } from "./ep";
+import { DrawnCheck, Icon3D } from "./ep";
 
 /* ---------- עזרי ערכים ---------- */
 
@@ -88,7 +88,6 @@ export function StepCard({
   /* כל עוד הפוקוס בתוך הכרטיס — לא מתכווצים אוטומטית (הקלדה באמצע שדה) */
   const [holdsFocus, setHoldsFocus] = React.useState(false);
   const collapsed = done && !holdsFocus && !forcedOpen;
-  const spotlight = useSpotlight();
 
   if (collapsed) {
     /* שלב שהושלם — שורת זכוכית דקה עם וי מצויר וצ'יפ סיכום בגוון החדר */
@@ -140,10 +139,7 @@ export function StepCard({
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHoldsFocus(false);
       }}
     >
-      <div
-        className={`ep-glass ep-spotlight relative p-6 ${active ? "ep-glass-active ep-beam" : ""}`}
-        onMouseMove={spotlight}
-      >
+      <div className={`ep-glass epv5-room relative p-6 ${active ? "ep-glass-active ep-beam" : ""}`}>
         {/* פס הזהות של החדר — קצה פנימי בצד הפתיחה, רק בשלב הפעיל */}
         {active && (
           <span

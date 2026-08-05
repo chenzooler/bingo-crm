@@ -193,7 +193,7 @@ export function Step7Details({ state }: { state: ClassicCardState }) {
         <Field label="קרן פנסיה/השתלמות">
           <ChoicePills
             options={PENSION_Y.filter((p) => p !== "צעיר").map((p) => ({ label: p, store: p }))}
-            value={str(v.hasPension) === "צעיר" ? "צעיר" : str(v.hasPension)}
+            value={str(v.hasPension) === "צעיר" ? "לקוח צעיר" : str(v.hasPension)}
             onChange={(stored) => state.set("hasPension", stored)}
           />
         </Field>

@@ -53,7 +53,7 @@ export function AutocompleteInput({
         // אין הצעות — טקסט חופשי ממשיך לעבוד
         if (mySeq === seq.current) { setItems([]); setOpen(false); }
       }
-    }, 250);
+    }, 130);
   }, [fetcher, minChars]);
 
   React.useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
@@ -110,24 +110,35 @@ export function AutocompleteInput({
       {open && (
         <ul
           role="listbox"
-          className="absolute z-30 top-full w-full mt-1 bg-white border border-bingo-gray-150 rounded-[16px] shadow-lg overflow-hidden py-1"
+          className="epv5-pop absolute z-30 top-full w-full mt-1 overflow-hidden"
           style={{ insetInlineStart: 0 }}
         >
-          {items.map((s, i) => (
-            <li key={`${s.code ?? s.name}-${i}`} role="option" aria-selected={i === active}>
-              <button
-                type="button"
-                onMouseDown={(e) => { e.preventDefault(); pick(s); }}
-                onMouseEnter={() => setActive(i)}
-                className={`w-full text-start px-4 py-2.5 min-h-[40px] text-[14px] flex items-center gap-2 ${
-                  i === active ? "bg-bingo-gray-100" : "bg-white"
-                }`}
-              >
-                <span className="text-bingo-black">{s.name}</span>
-                {s.extra && <span className="text-[12px] text-bingo-gray-500">{s.extra}</span>}
-              </button>
-            </li>
-          ))}
+          {items.map((s, i) => {
+            /* הדגשת ההתאמה — "כפר יו" מודגש בתוך "כפר יונה" */
+            const q = value.trim();
+            const at = q ? s.name.indexOf(q) : -1;
+            return (
+              <li key={`${s.code ?? s.name}-${i}`} role="option" aria-selected={i === active}>
+                <button
+                  type="button"
+                  onMouseDown={(e) => { e.preventDefault(); pick(s); }}
+                  onMouseEnter={() => setActive(i)}
+                  className={`epv5-opt ${i === active ? "is-active" : ""}`}
+                >
+                  <span className="text-bingo-black">
+                    {at >= 0 ? (
+                      <>
+                        {s.name.slice(0, at)}
+                        <b className="epv5-match">{s.name.slice(at, at + q.length)}</b>
+                        {s.name.slice(at + q.length)}
+                      </>
+                    ) : s.name}
+                  </span>
+                  {s.extra && <span className="sub">{s.extra}</span>}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

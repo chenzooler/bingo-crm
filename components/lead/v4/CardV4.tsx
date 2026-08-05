@@ -22,7 +22,7 @@ import type { ClassicValues } from "@/lib/yoatsim/values";
 import { catalogClient, CLIENT_COLOR_META } from "@/lib/catalog";
 import { cn, formatCurrency, relativeTime } from "@/lib/utils";
 import type { CardV4Meta, CardV4Summary, CardV4QuickAction, TimelineItem, InvoiceDTO } from "./types";
-import { SPRING_ENTRANCE, SPRING_SNAPPY, TWEEN_REDUCED } from "./ep";
+import { CountUp, SPRING_ENTRANCE, SPRING_SNAPPY, TWEEN_REDUCED } from "./ep";
 import Page1Talk from "./page1";
 import { Page2Checks } from "./Page2Checks";
 import { Page3Timeline } from "./Page3Timeline";
@@ -173,19 +173,35 @@ export function CardV4(props: CardV4Props) {
 
   const colorMeta = catalog.clientColor ? CLIENT_COLOR_META[catalog.clientColor] : null;
 
+  /* שומר-ריפליי של הצפת הפסק-דין (רגע חתימה 1): אותו ליד + אותו צבע = אפס טקס */
+  const clientKey = catalog.clientColor ?? "none";
+  const floodSeen = React.useMemo(() => {
+    try { return sessionStorage.getItem(`epv5-flood:${props.lead.id}`); } catch { return null; }
+  }, [props.lead.id]);
+  const still = floodSeen === clientKey;
+  React.useEffect(() => {
+    try { sessionStorage.setItem(`epv5-flood:${props.lead.id}`, clientKey); } catch { /* private mode */ }
+  }, [clientKey, props.lead.id]);
+
   const pageProps = { state, meta: props.meta, catalog };
 
   return (
-    <div dir="rtl" className="max-w-5xl mx-auto space-y-4 pb-16">
-      {/* ---------- הכותרת: אי אובסידיאן דביק ---------- */}
+    <div dir="rtl" data-client={clientKey} className="max-w-5xl mx-auto space-y-4 pb-16">
+      {/* רחיצת-עמוד: הצבע של הלקוח שוטף את ראש הדף (CLIENT_COLOR_META.bg) */}
+      {colorMeta && (
+        <div aria-hidden className="epv5-wash" style={{ "--wash": colorMeta.bg } as React.CSSProperties} />
+      )}
+      {/* ---------- הכותרת: אי אובסידיאן דביק + הצפת הפסק-דין ---------- */}
       <motion.header
         initial={reduced ? { opacity: 0 } : { opacity: 0, y: -14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={reduced ? TWEEN_REDUCED : SPRING_ENTRANCE}
-        className="ep-island sticky top-2 z-30 px-6 pt-5 pb-4"
+        className={cn("ep-island ep-island--verdict sticky top-2 z-30 px-6 pt-5 pb-4", still && "epv5-still")}
+        suppressHydrationWarning
         /* ‎.ep-island מגדיר position:relative — הדביקות חייבת לנצח אינליין */
         style={{ position: "sticky" }}
       >
+        <span className="epv5-aura" key={clientKey} aria-hidden />
         <div className="flex items-start justify-between gap-4 flex-wrap">
           {/* צד ימין: שם + טלפון + קטלוג */}
           <div className="flex items-center gap-3.5 flex-wrap min-w-0">
@@ -197,22 +213,11 @@ export function CardV4(props: CardV4Props) {
                 {props.lead.phone}
               </span>
             )}
-            {/* תג צבע הלקוח — גלולה זוהרת על הבמה הכהה */}
-            <span
-              title={catalog.hint}
-              className="inline-flex items-center gap-2 rounded-full px-4 h-9 text-[13px] font-bold border"
-              style={colorMeta
-                ? { background: "rgba(255,255,255,.07)", borderColor: "rgba(255,255,255,.16)", color: "#FAFAF9" }
-                : { background: "rgba(255,255,255,.04)", borderColor: "rgba(255,255,255,.1)", color: "#A8AAA5" }}
-            >
-              <span
-                className="size-2.5 rounded-full shrink-0"
-                style={{
-                  background: colorMeta ? colorMeta.hex : "#A8AAA5",
-                  boxShadow: colorMeta ? `0 0 10px ${colorMeta.hex}, 0 0 3px ${colorMeta.hex}` : "none",
-                }}
-              />
+            {/* גלולת פסק-הדין — הקטלוג + שם הצבע. סטטית תמיד, קריאה מפריים 0 */}
+            <span title={catalog.hint} className="epv5-verdict" aria-live="polite">
+              <span className="epv5-verdict-dot" aria-hidden />
               {catalog.label}
+              {colorMeta && <small>· {colorMeta.name}</small>}
             </span>
           </div>
 
@@ -240,21 +245,23 @@ export function CardV4(props: CardV4Props) {
           </div>
         </div>
 
-        {/* ---------- רצועת סיכום ---------- */}
-        <p className="mt-3 text-[12.5px] text-[#9C9C98] leading-relaxed">
+        {/* ---------- מספר-הגיבור: הסכום שכל השיחה סובבת סביבו ---------- */}
+        <div className="mt-3 epv5-hero">
           {amount ? (
-            <span>
-              ביקש{" "}
-              {/* טקסט סטטי — CountUp כאן רץ מחדש על כל הקשה בשדה הסכום */}
-              <b className="text-[#50FF0A] ep-neon font-bold tabular-nums text-[13.5px]">
-                {formatCurrency(Number(amount))}
-              </b>
-              {purpose ? ` ל${purpose}` : ""}
-            </span>
+            <>
+              <span className="epv5-hero-label">ביקש</span>
+              <span className="epv5-hero-amount">
+                <CountUp value={Number(amount)} format={(n) => n.toLocaleString("he-IL")} />
+                <span className="curr">₪</span>
+              </span>
+              {purpose && <span className="epv5-hero-chip">{purpose}</span>}
+            </>
           ) : (
-            <span>סכום מבוקש טרם צוין</span>
+            <span className="epv5-hero-label">סכום מבוקש טרם צוין</span>
           )}
-          <span className="mx-2 text-white/20">·</span>
+        </div>
+        {/* ---------- רצועת מטא ---------- */}
+        <p className="mt-2 text-[12.5px] text-[#9C9C98] leading-relaxed">
           <span>
             {summary.lastCallAt
               ? <>שיחה אחרונה: <span className="text-[#FAFAF9]">{relativeTime(summary.lastCallAt)}</span></>
@@ -294,8 +301,7 @@ export function CardV4(props: CardV4Props) {
                   <motion.span
                     layoutId="cardv4-tab"
                     transition={reduced ? TWEEN_REDUCED : SPRING_SNAPPY}
-                    className="absolute inset-0 rounded-full bg-[#FAFAF9]"
-                    style={{ boxShadow: "0 8px 20px -8px rgba(80,255,10,.6), 0 2px 8px rgba(0,0,0,.35)" }}
+                    className="absolute inset-0 rounded-full bg-[#FAFAF9] epv5-tabpill"
                   />
                 )}
                 <span className="ep-icon3d relative z-[1]" style={{ width: 22, height: 22, borderRadius: 7 }} aria-hidden>

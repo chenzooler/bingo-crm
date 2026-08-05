@@ -214,9 +214,10 @@ export function Step2Screening({ state }: { state: ClassicCardState }) {
 
   const allCoreAnswered = screening.answered >= screening.total;
 
-  /** מענה במקלדת: ספרות 1..n בוחרות גלולה בשאלה הפעילה, Enter מאשר ריבוי */
-  React.useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
+  /** מענה במקלדת: ספרות 1..n בוחרות גלולה בשאלה הפעילה, Enter מאשר ריבוי.
+      דפוס latest-ref: מאזין אחד קבוע, ההנדלר מתעדכן בכל רינדור. */
+  const onKeyRef = React.useRef<(e: KeyboardEvent) => void>(() => {});
+  onKeyRef.current = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable)) return;
@@ -237,10 +238,12 @@ export function Step2Screening({ state }: { state: ClassicCardState }) {
       const opt = opts[n - 1];
       if (q.multi) toggleMulti(q, opt.store);
       else answer(q, opt.store);
-    };
+  };
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => onKeyRef.current(e);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  });
+  }, []);
 
   return (
     <div className="space-y-3">
@@ -334,8 +337,8 @@ export function Step2Screening({ state }: { state: ClassicCardState }) {
           );
         })}
 
-        {/* בדיקות קודמות + הערות — אחרי שש השאלות */}
-        {allCoreAnswered && (
+        {/* בדיקות קודמות + הערות — אחרי שש השאלות, וגם במסלול השלילי (חוקה 1.1) */}
+        {(allCoreAnswered || screening.negative) && (
           <motion.div
             layout
             key="checked-before"
@@ -356,7 +359,7 @@ export function Step2Screening({ state }: { state: ClassicCardState }) {
                     <AnswerPill
                       key={o}
                       role="checkbox"
-                      label={o}
+                      label={o === "בבנק הפרטי" ? "בבנק שלי" : o}
                       selected={selected}
                       bad={false}
                       onClick={() => {

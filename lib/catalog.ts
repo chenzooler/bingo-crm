@@ -160,7 +160,7 @@ export function catalogClient(values: Record<string, unknown>): CatalogResult {
       return {
         creditIndication: indication, ramzor,
         clientColor: "blue",
-        label: "רכב בלבד",
+        label: ramzor === "yellow" ? "לקוח צהוב רכב" : "לקוח שלילי עם רכב",
         hint: ramzor === "yellow" ? "רמזור צהוב - ממשיכים בהלוואה כנגד רכב" : "חיווי שלילי אבל יש רכב - ממשיכים בהלוואה כנגד רכב",
         tracks: { general: false, vehicle: ramzor !== null }, // מחכים לרמזור ירוק/צהוב לפני התקדמות
       };
@@ -168,7 +168,7 @@ export function catalogClient(values: Record<string, unknown>): CatalogResult {
     return {
       creditIndication: indication, ramzor,
       clientColor: "orange",
-      label: vehicle === false ? "מתאים לרכב - אין רכב" : "מתאים לרכב בלבד",
+      label: vehicle === false ? "לקוח כתום" : "מתאים לרכב בלבד",
       hint: vehicle === false
         ? "רק מסלול רכב רלוונטי אבל אין רכב בבעלות"
         : "רק מסלול רכב רלוונטי - לברר אם יש רכב בבעלות",
