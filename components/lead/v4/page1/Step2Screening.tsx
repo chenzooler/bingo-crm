@@ -266,15 +266,11 @@ export function Step2Screening({ state }: { state: ClassicCardState }) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0 }}
                 transition={spring(SPRING.entrance)}
-                className={`w-full flex items-center gap-3 rounded-[18px] border px-4 py-2.5 min-h-[44px] text-start transition-colors ${
-                  a.bad
-                    ? "border-[#ffcdc2] bg-[#fff3f0] hover:border-status-red"
-                    : "border-[#c4efac] bg-[#f0ffe7] hover:border-bingo-green-dark"
-                }`}
+                className="epv6-answered w-full flex items-center gap-3 rounded-[18px] border px-4 py-2.5 min-h-[44px] text-start transition-colors"
               >
-                <span className="text-[13px] text-bingo-gray-600 flex-1 min-w-0 truncate">{q.question}</span>
+                <span className="epv6-a-q text-[13px] flex-1 min-w-0 truncate">{q.question}</span>
                 <span className={`text-[12px] font-semibold px-3 py-1 rounded-full shrink-0 ${
-                  a.bad ? "bg-[#FFE1DC] text-status-red" : "bg-[#DAFFCB] text-bingo-green-deep"
+                  a.bad ? "epv6-a-bad" : "epv6-a-good"
                 }`}>
                   {a.bad ? "שלילי" : "תקין"}{a.display ? ` · ${a.display}` : ""}
                 </span>
@@ -291,7 +287,7 @@ export function Step2Screening({ state }: { state: ClassicCardState }) {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={spring(SPRING.entrance)}
-              className="epv6-q-stage rounded-[20px] bg-white/70 border border-bingo-gray-150 p-6"
+              className="epv6-paper rounded-[20px] bg-white/70 border border-bingo-gray-150 p-6"
             >
               <p className="text-[27px] leading-[1.25] font-bold text-bingo-black mb-6">
                 <span className="text-bingo-gray-300 tabular-nums me-2 text-[20px] font-semibold">{i + 1}.</span>
@@ -346,7 +342,7 @@ export function Step2Screening({ state }: { state: ClassicCardState }) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0 }}
             transition={spring(SPRING.entrance)}
-            className="rounded-[20px] bg-white/70 border border-bingo-gray-150 p-5 space-y-4"
+            className="epv6-paper rounded-[20px] bg-white/70 border border-bingo-gray-150 p-5 space-y-4"
           >
             <div>
               <p className="text-[16px] font-bold text-bingo-black mb-3">
